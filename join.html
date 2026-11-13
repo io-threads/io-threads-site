@@ -187,7 +187,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
         <div class="price" data-m="$9" data-y="$90"><b>$9</b><span>/ month</span></div>
         <p class="extra" aria-live="polite"></p>
         <a class="btn solid pay" data-plan="Builder" data-verb="Join" href="#">Join · $9/mo</a>
-        <div class="paybox" hidden><p class="pb-sum"></p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Card</button></div><button type="button" class="pb-x">Cancel</button></div>
+        <div class="paybox" hidden><p class="pb-sum"></p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Card</button><button type="button" class="pm sq" hidden>Square</button></div><button type="button" class="pb-x">Cancel</button></div>
       </article>
       <article class="way" data-plan="Buyer">
         <span class="who">→ Eval audit</span><h3>Buyer</h3>
@@ -196,7 +196,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
         <div class="price" data-m="$29" data-y="$290"><b>$29</b><span>/ month</span></div>
         <p class="extra" aria-live="polite"></p>
         <a class="btn solid pay" data-plan="Buyer" data-verb="Join" href="#">Join · $29/mo</a>
-        <div class="paybox" hidden><p class="pb-sum"></p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Card</button></div><button type="button" class="pb-x">Cancel</button></div>
+        <div class="paybox" hidden><p class="pb-sum"></p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Card</button><button type="button" class="pm sq" hidden>Square</button></div><button type="button" class="pb-x">Cancel</button></div>
       </article>
       <article class="way" data-plan="Partner">
         <span class="who">→ Fractional evaluation</span><h3>Partner</h3>
@@ -205,9 +205,10 @@ footer.site a.mark.mark b{font-size:1.05rem}
         <div class="price" data-m="$199" data-y="$1,990"><b>$199</b><span>/ month</span></div>
         <p class="extra" aria-live="polite"></p>
         <a class="btn solid pay" data-plan="Partner" data-verb="Apply" href="#">Apply · $199/mo</a>
-        <div class="paybox" hidden><p class="pb-sum"></p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Card</button></div><button type="button" class="pb-x">Cancel</button></div>
+        <div class="paybox" hidden><p class="pb-sum"></p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Card</button><button type="button" class="pm sq" hidden>Square</button></div><button type="button" class="pb-x">Cancel</button></div>
       </article>
     </div>
+    <script src="pay-links.js"></script>
     <script>(function(){
       document.querySelectorAll(".way[data-plan]").forEach(function(card){
         var pay=card.querySelector(".pay"),box=card.querySelector(".paybox");if(!pay||!box)return;
@@ -220,7 +221,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
           box.querySelector(".pb-sum").textContent=card.getAttribute("data-plan")+" · "+card.querySelector(".price b").textContent+card.querySelector(".price span").textContent.replace("/ ","/")+(extra?" "+extra:"");
           box.hidden=false;card.classList.add("paying");pay.setAttribute("aria-expanded","true");box.querySelector(".pm").focus();
         });
-        box.querySelectorAll(".pm").forEach(function(b){b.addEventListener("click",function(){location.href=pay.href})});
+        box.querySelectorAll(".pm").forEach(function(b){b.addEventListener("click",function(){location.href=(b.classList.contains("sq")&&card.dataset.sq)?card.dataset.sq:pay.href})});
         box.querySelector(".pb-x").addEventListener("click",function(){close();pay.focus()});
         box.addEventListener("keydown",function(e){if(e.key==="Escape"){close();pay.focus()}});
       });
@@ -228,7 +229,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
     <p class="fine">Included amounts reset every month (briefings every quarter). Extras are billed monthly on top of the membership. Cancel any time.</p>
     <script>(function(){
       /* Paste a hosted checkout link for each plan and period (for example a Stripe Payment Link with adjustable add-on quantities). Empty links fall back to an email that lists the extras. */
-      var CHECKOUT={Builder:{m:"",y:""},Buyer:{m:"",y:""},Partner:{m:"",y:""}};
+      var P=window.IOT_PAY||{},CHECKOUT=P.stripe||{},SQUARE=P.square||{};
       var period="m",btns=document.querySelectorAll(".bill button"),cards=document.querySelectorAll(".way[data-plan]");
       function money(n){return "$"+n.toLocaleString("en-US")}
       function render(){
@@ -239,9 +240,9 @@ footer.site a.mark.mark b{font-size:1.05rem}
             if(add>0){extra+=add*u;lines.push("+"+add+" "+r.querySelector(".ql").textContent.toLowerCase())}});
           price.querySelector("b").textContent=base;price.querySelector("span").textContent=period==="m"?"/ month":"/ year";
           card.querySelector(".extra").textContent=extra?("+ "+money(extra)+"/mo in extras"):"";
-          var b=card.querySelector(".pay"),verb=b.getAttribute("data-verb"),url=(CHECKOUT[plan]||{})[period];
+          var b=card.querySelector(".pay"),verb=b.getAttribute("data-verb"),url=(CHECKOUT[plan]||{})[period],sq=(SQUARE[plan]||{})[period];card.dataset.sq=(sq&&!extra)?sq:"";card.querySelector(".pm.sq").hidden=!card.dataset.sq;
           b.textContent=verb+" · "+base+(period==="m"?"/mo":"/yr")+(extra?" + "+money(extra):"");
-          if(url&&!extra){b.href=url}else{b.href="mailto:team@io-threads.com?subject="+encodeURIComponent((verb==="Apply"?"Partner application: ":"Join: ")+plan+" ("+(period==="m"?"monthly":"yearly")+", "+base+(extra?" + "+money(extra)+"/mo extras":"")+")")+"&body="+encodeURIComponent("Name:\n\nCompany:\n\n"+(lines.length?"Extras requested: "+lines.join(", ")+"\n\n":"")+"What you ship, buy or check:\n")}
+          if(url&&!extra){b.href=url}else if(sq&&!extra){b.href=sq}else{b.href="mailto:team@io-threads.com?subject="+encodeURIComponent((verb==="Apply"?"Partner application: ":"Join: ")+plan+" ("+(period==="m"?"monthly":"yearly")+", "+base+(extra?" + "+money(extra)+"/mo extras":"")+")")+"&body="+encodeURIComponent("Name:\n\nCompany:\n\n"+(lines.length?"Extras requested: "+lines.join(", ")+"\n\n":"")+"What you ship, buy or check:\n")}
         });
         btns.forEach(function(x){x.setAttribute("aria-pressed",String(x.getAttribute("data-p")===period))});
       }
