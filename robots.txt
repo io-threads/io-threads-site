@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /kit.html
 Sitemap: https://io-threads.com/sitemap.xml
