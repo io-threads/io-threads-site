@@ -56,90 +56,85 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
     box.innerHTML = '<div class="sq-done"><b>' + title + '</b><p class="sq-msg">' + line + "</p></div>";
   }
 
-  // Monthly plans: email, name, card form, subscribe.
-  function monthly(card) {
-    var plan = card.getAttribute("data-plan"), box = card.querySelector(".paybox"), pay = card.querySelector(".pay");
-    var hosted = (links[plan] || {}).m || "";
-    shell(box, plan + " · $" + PRICES[plan] + "/month");
+  // One checkout for every plan: email, Apple Pay, Google Pay, card, or Square's own page.
+  // Lifetime: one $999 charge. Monthly: the card is saved and billed monthly; a wallet pays the first month now and
+  // Square emails a monthly invoice after that (Square can't save a wallet for repeat charges).
+  function checkout(o) {
+    var box = o.box, pay = o.pay, id = o.id, monthly = o.monthly;
+    shell(box, o.title);
     var f = el('<div class="sq-f"><input type="email" autocomplete="email" placeholder="Email for your receipt and access" aria-label="Email" required>' +
-      '<input type="text" autocomplete="name" placeholder="Name" aria-label="Name"><div class="sq-card" id="sq-card-' + plan + '"></div>' +
-      '<button type="button" class="sq-go">Subscribe · $' + PRICES[plan] + '/mo</button><p class="sq-msg" aria-live="polite">Billed monthly to this card. Cancel any time by emailing team@io-threads.com.</p></div>');
+      '<apple-pay-button class="sq-apple" buttonstyle="black" type="plain" locale="en-US" role="button" tabindex="0" aria-label="Pay with Apple Pay" hidden></apple-pay-button>' +
+      '<div class="sq-gpay" id="sq-gpay-' + id + '" hidden></div><p class="sq-or sq-or1" hidden>or pay by card</p>' +
+      '<div class="sq-card" id="sq-card-' + id + '"></div><button type="button" class="sq-go">' + o.cta + '</button>' +
+      '<p class="sq-msg" aria-live="polite">' + (o.note || "") + "</p></div>");
     box.appendChild(f);
-    if (hosted) { f.appendChild(el('<p class="sq-or">or</p>')); f.appendChild(sqButton(hosted)); }
+    if (o.hosted) { f.appendChild(el('<p class="sq-or">or</p>')); f.appendChild(sqButton(o.hosted)); }
     var x = trust(box);
-    x.addEventListener("click", function () { box.hidden = true; card.classList.remove("paying"); pay.focus(); });
-    document.addEventListener("click", function (e) { if (!box.hidden && !box.contains(e.target) && !pay.contains(e.target)) { box.hidden = true; card.classList.remove("paying"); pay.setAttribute("aria-expanded", "false"); } });
-    var cardObj = null, go = f.querySelector(".sq-go"), msg = f.querySelector(".sq-msg"), em = f.querySelector('[type=email]'), nm = f.querySelector('[type=text]');
-    function init() {
-      if (cardObj) return;
-      load().then(function (p) { return p.card(); }).then(function (c) { cardObj = c; return c.attach("#sq-card-" + plan); })
-        .catch(function () { msg.className = "sq-msg err"; msg.textContent = "The card form didn't load. Use the link below to pay on Square's page."; });
-    }
-    pay.addEventListener("click", function () { if (!box.hidden) init(); });
-    go.addEventListener("click", function () {
-      if (!cardObj) return;
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em.value.trim())) { msg.className = "sq-msg err"; msg.textContent = "Enter your email."; em.focus(); return; }
-      go.disabled = true; msg.className = "sq-msg"; msg.textContent = "Checking your card…";
-      var name = nm.value.trim();
-      cardObj.tokenize({ intent: "STORE", customerInitiated: true, sellerKeyedIn: false,
-        billingContact: { email: em.value.trim(), givenName: name.split(" ")[0] || undefined, familyName: name.split(" ").slice(1).join(" ") || undefined } })
-        .then(function (t) {
-          if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Check your card details.");
-          msg.textContent = "Starting your membership…";
-          return post("/subscribe", { plan: plan, cardToken: t.token, email: em.value.trim(), name: name, idempotencyKey: key() });
-        })
-        .then(function (r) {
-          if (!r.ok) throw new Error(r.error || "That didn't go through. Nothing was charged.");
-          done(box, "Welcome to " + plan + ".", "Your membership is active. Square emails your receipt, and we'll email your access to " + em.value.trim() + ".");
-        })
-        .catch(function (e) { go.disabled = false; msg.className = "sq-msg err"; msg.textContent = e.message; });
-    });
-  }
-
-  // Lifetime: Apple Pay, Google Pay or card, one charge of $999.
-  function lifetime() {
-    var box = document.getElementById("life-box"), pay = document.getElementById("life-pay");
-    if (!box || !pay) return;
-    var hosted = links.Lifetime || "";
-    shell(box, "Lifetime · $999 once");
-    var f = el('<div class="sq-f"><input type="email" autocomplete="email" placeholder="Email for your receipt and access" aria-label="Email" required>' +
-      '<apple-pay-button class="sq-apple" buttonstyle="black" type="plain" locale="en-US" role="button" tabindex="0" aria-label="Pay with Apple Pay" hidden></apple-pay-button><div id="sq-gpay" hidden></div>' +
-      '<p class="sq-or" hidden>or pay by card</p><div class="sq-card" id="sq-card-life"></div>' +
-      '<button type="button" class="sq-go">Pay $999</button><p class="sq-msg" aria-live="polite"></p></div>');
-    box.appendChild(f);
-    if (hosted) { f.appendChild(el('<p class="sq-or">or</p>')); f.appendChild(sqButton(hosted)); }
-    var x = trust(box);
-    x.addEventListener("click", function () { box.hidden = true; pay.focus(); });
-    var em = f.querySelector('[type=email]'), msg = f.querySelector(".sq-msg"), go = f.querySelector(".sq-go"), ap = f.querySelector(".sq-apple"), gp = f.querySelector("#sq-gpay"), or = f.querySelector(".sq-or");
+    function close() { box.hidden = true; if (o.card) o.card.classList.remove("paying"); pay.setAttribute("aria-expanded", "false"); }
+    x.addEventListener("click", function () { close(); pay.focus(); });
+    if (o.card) document.addEventListener("click", function (e) { if (!box.hidden && !box.contains(e.target) && !pay.contains(e.target)) close(); });
+    var em = f.querySelector("[type=email]"), msg = f.querySelector(".sq-msg"), go = f.querySelector(".sq-go"),
+      ap = f.querySelector(".sq-apple"), gp = f.querySelector(".sq-gpay"), or1 = f.querySelector(".sq-or1");
     var cardObj = null, apple = null, google = null, started = false;
     function fail(e) { msg.className = "sq-msg err"; msg.textContent = (e && e.message) || "That didn't go through. Nothing was charged."; go.disabled = false; }
-    function email() { var v = em.value.trim(); if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) return v; fail({ message: "Enter your email first." }); em.focus(); return null; }
-    function charge(tokenPromise) {
-      msg.className = "sq-msg"; msg.textContent = "Processing…"; go.disabled = true;
-      tokenPromise.then(function (t) {
-        if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Payment was cancelled.");
-        return post("/charge-lifetime", { sourceId: t.token, email: em.value.trim(), idempotencyKey: key() });
-      }).then(function (r) {
+    function validEmail(v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v || ""); }
+    function needEmail() { if (validEmail(em.value.trim())) return true; fail({ message: monthly ? "Add your email first: it's where your membership and monthly invoices go." : "Add your email first: it's where your access goes." }); em.focus(); return false; }
+    function finish(t, kind) {
+      if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Payment was cancelled.");
+      var mail = em.value.trim();
+      msg.className = "sq-msg"; msg.textContent = monthly ? "Starting your membership…" : "Processing…";
+      if (!monthly) return post("/charge-lifetime", { sourceId: t.token, email: mail, idempotencyKey: key() });
+      var b = { plan: o.plan, email: mail, idempotencyKey: key() };
+      b[kind === "card" ? "cardToken" : "walletToken"] = t.token;
+      return post("/subscribe", b);
+    }
+    function run(p, kind) {
+      go.disabled = true; msg.className = "sq-msg"; msg.textContent = "Processing…";
+      p.then(function (t) { return finish(t, kind); }).then(function (r) {
         if (!r.ok) throw new Error(r.error || "That didn't go through. Nothing was charged.");
-        done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + em.value.trim() + ".");
+        var mail = em.value.trim();
+        if (!monthly) return done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + mail + ".");
+        done(box, "Welcome to " + o.plan + ".", r.invoiced
+          ? "First month paid. Square emails an invoice each month to " + mail + ", payable with Apple Pay, Google Pay or card."
+          : "Your membership is active and billed monthly to this card. Square emails your receipt to " + mail + ".");
       }).catch(fail);
     }
-    var details = function () { return { amount: "999.00", currencyCode: "USD", intent: "CHARGE", customerInitiated: true, sellerKeyedIn: false, billingContact: { email: em.value.trim() } }; };
     function init() {
       if (started) return; started = true;
       load().then(function (p) {
-        var req = p.paymentRequest({ countryCode: "US", currencyCode: "USD", total: { amount: "999.00", label: "io threads Lifetime" } });
-        p.card().then(function (c) { cardObj = c; return c.attach("#sq-card-life"); }).catch(function () { fail({ message: "The card form didn't load. Use the link below to pay on Square's page." }); });
-        p.applePay(req).then(function (a) { apple = a; ap.hidden = false; or.hidden = false; }).catch(function () {});
-        p.googlePay(req).then(function (g) { google = g; gp.hidden = false; or.hidden = false; return g.attach("#sq-gpay", { buttonColor: "white", buttonType: "plain", buttonSizeMode: "fill" }); }).catch(function () {});
-      }).catch(function () { fail({ message: "Payments didn't load. Use the link below to pay on Square's page." }); });
+        var req = p.paymentRequest({ countryCode: "US", currencyCode: "USD", total: { amount: o.amount, label: o.label } });
+        p.card().then(function (c) { cardObj = c; return c.attach("#sq-card-" + id); }).catch(function () { fail({ message: "The card form didn't load. Use Pay with Square below." }); });
+        p.applePay(req).then(function (a) { apple = a; ap.hidden = false; or1.hidden = false; }).catch(function () {});
+        p.googlePay(req).then(function (g) { google = g; gp.hidden = false; or1.hidden = false; return g.attach("#sq-gpay-" + id, { buttonColor: "white", buttonType: "plain", buttonSizeMode: "fill" }); }).catch(function () {});
+      }).catch(function () { fail({ message: "Payments didn't load. Use Pay with Square below." }); });
     }
     pay.addEventListener("click", function () { setTimeout(function () { if (!box.hidden) init(); }, 0); });
-    // Apple requires the sheet to open straight from the tap, so tokenize() is the first call.
-    ap.addEventListener("click", function () { if (!apple) return; if (!email()) return; charge(apple.tokenize()); });
-    ap.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && apple) { e.preventDefault(); if (email()) charge(apple.tokenize()); } });
-    gp.addEventListener("click", function () { if (!google) return; if (!email()) return; charge(google.tokenize()); });
-    go.addEventListener("click", function () { if (!cardObj || !email()) return; charge(cardObj.tokenize(details())); });
+    // Apple requires the sheet to open straight from the tap: the email check is synchronous, tokenize() comes next.
+    function wallet(w) { if (!w || !needEmail()) return; run(w.tokenize(), "wallet"); }
+    ap.addEventListener("click", function () { wallet(apple); });
+    ap.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wallet(apple); } });
+    gp.addEventListener("click", function () { wallet(google); });
+    go.addEventListener("click", function () {
+      if (!cardObj || !needEmail()) return;
+      var v = monthly ? { intent: "STORE", customerInitiated: true, sellerKeyedIn: false, billingContact: { email: em.value.trim() } }
+        : { amount: o.amount, currencyCode: "USD", intent: "CHARGE", customerInitiated: true, sellerKeyedIn: false, billingContact: { email: em.value.trim() } };
+      run(cardObj.tokenize(v), "card");
+    });
+  }
+
+  function monthly(card) {
+    var plan = card.getAttribute("data-plan");
+    checkout({ box: card.querySelector(".paybox"), pay: card.querySelector(".pay"), card: card, id: plan, monthly: true, plan: plan,
+      title: plan + " · $" + PRICES[plan] + "/month", amount: PRICES[plan], label: "io threads " + plan + " (first month)",
+      cta: "Subscribe by card · $" + PRICES[plan] + "/mo", hosted: (links[plan] || {}).m || "",
+      note: "Card: billed monthly. Apple Pay or Google Pay: first month now, then a monthly invoice by email. Cancel any time." });
+  }
+
+  function lifetime() {
+    var box = document.getElementById("life-box"), pay = document.getElementById("life-pay");
+    if (!box || !pay) return;
+    checkout({ box: box, pay: pay, id: "life", monthly: false, title: "Lifetime · $999 once", amount: "999.00",
+      label: "io threads Lifetime", cta: "Pay $999 by card", hosted: links.Lifetime || "" });
   }
 
   function start() {
