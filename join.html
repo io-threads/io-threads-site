@@ -218,8 +218,9 @@ footer.site a.mark.mark b{font-size:1.05rem}
         <div class="paybox" id="life-box" hidden><p class="pb-sum">Lifetime · $999 once</p><p class="pb-t" style="justify-content:flex-start">How would you like to pay?</p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Credit or debit card</button></div><p class="pb-t"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Secure checkout by Square · billed as Io Threads</p><button type="button" class="pb-x">Cancel</button></div>
         <p class="fine">Extras are billed separately.</p></div>
     </article>
-    <script>document.addEventListener("DOMContentLoaded",function(){var P=window.IOT_PAY||{},s=(P.stripe||{}).Lifetime,q=(P.square||{}).Lifetime,b=document.getElementById("life-pay");if(s){b.href=s}else if(q){b.href=q}var x=document.getElementById("life-box");if(!/^https?:/.test(b.href)||!x)return;function shut(){x.hidden=true;b.setAttribute("aria-expanded","false")}b.setAttribute("aria-expanded","false");b.addEventListener("click",function(e){e.preventDefault();if(!x.hidden){shut();return}x.hidden=false;b.setAttribute("aria-expanded","true");x.querySelector(".pm").focus({preventScroll:true});x.scrollIntoView({block:"nearest",behavior:"smooth"})});x.querySelectorAll(".pm").forEach(function(m){m.addEventListener("click",function(){window.location.assign(b.href)})});x.querySelector(".pb-x").addEventListener("click",function(){shut();b.focus()});x.addEventListener("keydown",function(e){if(e.key==="Escape"){shut();b.focus()}})});</script>
+    <script>document.addEventListener("DOMContentLoaded",function(){var P=window.IOT_PAY||{},s=(P.stripe||{}).Lifetime,q=(P.square||{}).Lifetime,b=document.getElementById("life-pay");if(s){b.href=s}else if(q){b.href=q}var x=document.getElementById("life-box");if(!/^https?:/.test(b.href)||!x)return;function shut(){x.hidden=true;b.setAttribute("aria-expanded","false")}b.setAttribute("aria-expanded","false");b.addEventListener("click",function(e){e.preventDefault();if(!x.hidden){shut();return}x.hidden=false;b.setAttribute("aria-expanded","true");var xf=x.querySelector(".pm,input");if(xf)xf.focus({preventScroll:true});x.scrollIntoView({block:"nearest",behavior:"smooth"})});x.querySelectorAll(".pm").forEach(function(m){m.addEventListener("click",function(){window.location.assign(b.href)})});x.querySelector(".pb-x").addEventListener("click",function(){shut();b.focus()});x.addEventListener("keydown",function(e){if(e.key==="Escape"){shut();b.focus()}})});</script>
     <script src="pay-links.js"></script>
+    <script src="square-pay.js"></script>
     <script>(function(){
       document.querySelectorAll(".way[data-plan]").forEach(function(card){
         var pay=card.querySelector(".pay"),box=card.querySelector(".paybox");if(!pay||!box)return;
@@ -230,7 +231,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
           document.querySelectorAll(".way.paying").forEach(function(c){c.querySelector(".paybox").hidden=true;c.classList.remove("paying");c.querySelector(".pay").setAttribute("aria-expanded","false")});
           var extra=card.querySelector(".extra").textContent.trim();
           box.querySelector(".pb-sum").textContent=card.getAttribute("data-plan")+" · "+card.querySelector(".price b").textContent+card.querySelector(".price span").textContent.replace("/ ","/")+(extra?" "+extra:"");
-          box.hidden=false;card.classList.add("paying");pay.setAttribute("aria-expanded","true");box.querySelector(".pm").focus({preventScroll:true});box.scrollIntoView({block:"nearest",behavior:"smooth"});
+          box.hidden=false;card.classList.add("paying");pay.setAttribute("aria-expanded","true");var ff=box.querySelector(".pm,input");if(ff)ff.focus({preventScroll:true});box.scrollIntoView({block:"nearest",behavior:"smooth"});
         });
         box.querySelectorAll(".pm").forEach(function(b){b.addEventListener("click",function(){window.location.assign(pay.href)})});
         box.querySelector(".pb-x").addEventListener("click",function(){close();pay.focus()});
@@ -243,12 +244,12 @@ footer.site a.mark.mark b{font-size:1.05rem}
          Each opens the plan's Square checkout, where the payment itself happens. If a script fails, the plain buttons stay. */
       function target(box){var c=box.closest(".way,.life");var a=c&&c.querySelector(".pay,#life-pay");return a?a.href:""}
       function go(box){var u=target(box);if(u)window.location.assign(u)}
-      function apple(){if(!window.customElements||!customElements.get("apple-pay-button"))return;
+      function apple(){if(window.IOT_SQUARE_ON)return;if(!window.customElements||!customElements.get("apple-pay-button"))return;
         document.querySelectorAll(".paybox .pm.ap").forEach(function(old){if(old.dataset.official)return;
           var el=document.createElement("apple-pay-button");el.setAttribute("buttonstyle","black");el.setAttribute("type","plain");el.setAttribute("locale","en-US");el.className="pm-off pm-apple";el.setAttribute("tabindex","0");el.setAttribute("role","button");el.setAttribute("aria-label","Pay with Apple Pay");
           var box=old.closest(".paybox");el.addEventListener("click",function(){go(box)});el.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();go(box)}});
           old.dataset.official="1";old.replaceWith(el)})}
-      function gpay(){var G=window.google;if(!(G&&G.payments&&G.payments.api))return;
+      function gpay(){if(window.IOT_SQUARE_ON)return;var G=window.google;if(!(G&&G.payments&&G.payments.api))return;
         var client=new G.payments.api.PaymentsClient({environment:"PRODUCTION"});
         document.querySelectorAll(".paybox .pm.gp").forEach(function(old){if(old.dataset.official)return;var box=old.closest(".paybox");
           var btn=client.createButton({buttonColor:"white",buttonType:"plain",buttonSizeMode:"fill",buttonRadius:8,onClick:function(){go(box)}});

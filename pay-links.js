@@ -8,5 +8,8 @@
 window.IOT_PAY = {
   stripe: { Builder: { m: "", y: "" }, Buyer: { m: "", y: "" }, Partner: { m: "", y: "" }, Lifetime: "" },
   square: { Builder: { m: "https://square.link/u/xIlkX7Cb", y: "" }, Buyer: { m: "https://square.link/u/gKoiSiI1", y: "" }, Partner: { m: "https://square.link/u/gYnG7De1", y: "" }, Lifetime: "https://square.link/u/A45sbXLT" },
-  portal: ""
+  portal: "",
+  /* In-page payments (square-pay.js). appId and locationId are public; the secret token lives only on the payment server.
+     Leave appId empty to keep the hosted Square links above. A sandbox- appId uses Square's test environment. */
+  sdk: { appId: "", locationId: "", api: "https://io-threads-pay.netlify.app" }
 };
