@@ -250,10 +250,10 @@ footer.site a.mark.mark b{font-size:1.05rem}
             r.querySelector("output b").textContent=v;r.querySelector(".dn").disabled=v<=inc;r.classList.toggle("locked",v<=inc);r.classList.toggle("plus",add>0);
             if(add>0){extra+=add*u;lines.push("+"+add+" "+r.querySelector(".ql").textContent.toLowerCase())}});
           price.querySelector("b").textContent=base;price.querySelector("span").textContent=period==="m"?"/ month":"/ year";
-          card.querySelector(".extra").textContent=extra?("+ "+money(extra)+"/mo in extras"):"";
-          var b=card.querySelector(".pay"),verb=b.getAttribute("data-verb"),url=(CHECKOUT[plan]||{})[period],sq=(SQUARE[plan]||{})[period];card.dataset.sq=(sq&&!extra)?sq:"";card.querySelector(".pm.sq").hidden=!card.dataset.sq;
-          b.textContent=verb+" · "+base+(period==="m"?"/mo":"/yr")+(extra?" + "+money(extra):"");
-          if(url&&!extra){b.href=url}else if(sq&&!extra){b.href=sq}else{b.href="mailto:team@io-threads.com?subject="+encodeURIComponent((verb==="Apply"?"Partner application: ":"Join: ")+plan+" ("+(period==="m"?"monthly":"yearly")+", "+base+(extra?" + "+money(extra)+"/mo extras":"")+")")+"&body="+encodeURIComponent("Name:\n\nCompany:\n\n"+(lines.length?"Extras requested: "+lines.join(", ")+"\n\n":"")+"What you ship, buy or check:\n")}
+          var ex=card.querySelector(".extra");ex.textContent=extra?("+ "+money(extra)+"/mo in extras, invoiced separately. "):"";if(extra&&((CHECKOUT[plan]||{})[period]||(SQUARE[plan]||{})[period])){var a=document.createElement("a");a.textContent="Request extras";a.href="mailto:team@io-threads.com?subject="+encodeURIComponent("Extras: "+plan)+"&body="+encodeURIComponent("Plan: "+plan+"\nExtras: "+lines.join(", ")+"\n");ex.appendChild(a)}
+          var b=card.querySelector(".pay"),verb=b.getAttribute("data-verb"),url=(CHECKOUT[plan]||{})[period],sq=(SQUARE[plan]||{})[period];card.dataset.sq=sq||"";card.querySelector(".pm.sq").hidden=!card.dataset.sq;
+          b.textContent=verb+" · "+base+(period==="m"?"/mo":"/yr")+(extra&&!(url||sq)?" + "+money(extra):"");
+          if(url){b.href=url}else if(sq){b.href=sq}else{b.href="mailto:team@io-threads.com?subject="+encodeURIComponent((verb==="Apply"?"Partner application: ":"Join: ")+plan+" ("+(period==="m"?"monthly":"yearly")+", "+base+(extra?" + "+money(extra)+"/mo extras":"")+")")+"&body="+encodeURIComponent("Name:\n\nCompany:\n\n"+(lines.length?"Extras requested: "+lines.join(", ")+"\n\n":"")+"What you ship, buy or check:\n")}
         });
         btns.forEach(function(x){x.setAttribute("aria-pressed",String(x.getAttribute("data-p")===period))});
       }
@@ -261,7 +261,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
         r.querySelector(".up").addEventListener("click",function(){r.dataset.v=Math.min(inc+20,(+(r.dataset.v||inc))+1);render()});
         r.querySelector(".dn").addEventListener("click",function(){r.dataset.v=Math.max(inc,(+(r.dataset.v||inc))-1);render()});
       });
-      btns.forEach(function(x){x.addEventListener("click",function(){period=x.getAttribute("data-p");render()})});
+      btns.forEach(function(x){x.addEventListener("click",function(){period=x.getAttribute("data-p");render()})});var hasY=["Builder","Buyer","Partner"].some(function(k){return (CHECKOUT[k]||{}).y||(SQUARE[k]||{}).y});var bill=document.querySelector(".bill");if(bill&&!hasY)bill.hidden=true;
       render();
     })();</script>
 
