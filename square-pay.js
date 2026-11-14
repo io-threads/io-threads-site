@@ -84,7 +84,7 @@
         .then(function (t) {
           if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Check your card details.");
           msg.textContent = "Starting your membership…";
-          return post("/api/subscribe", { plan: plan, cardToken: t.token, email: em.value.trim(), name: name, idempotencyKey: key() });
+          return post("/subscribe", { plan: plan, cardToken: t.token, email: em.value.trim(), name: name, idempotencyKey: key() });
         })
         .then(function (r) {
           if (!r.ok) throw new Error(r.error || "That didn't go through. Nothing was charged.");
@@ -115,7 +115,7 @@
       msg.className = "sq-msg"; msg.textContent = "Processing…"; go.disabled = true;
       tokenPromise.then(function (t) {
         if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Payment was cancelled.");
-        return post("/api/charge-lifetime", { sourceId: t.token, email: em.value.trim(), idempotencyKey: key() });
+        return post("/charge-lifetime", { sourceId: t.token, email: em.value.trim(), idempotencyKey: key() });
       }).then(function (r) {
         if (!r.ok) throw new Error(r.error || "That didn't go through. Nothing was charged.");
         done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + em.value.trim() + ".");
