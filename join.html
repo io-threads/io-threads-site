@@ -225,7 +225,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
         var pay=card.querySelector(".pay"),box=card.querySelector(".paybox");if(!pay||!box)return;
         function close(){box.hidden=true;card.classList.remove("paying");pay.setAttribute("aria-expanded","false")}
         pay.setAttribute("aria-expanded","false");
-        pay.addEventListener("click",function(e){e.preventDefault();
+        pay.addEventListener("click",function(e){if(/^https?:/.test(pay.href)){return}e.preventDefault();
           if(!box.hidden){close();return}
           document.querySelectorAll(".way.paying").forEach(function(c){c.querySelector(".paybox").hidden=true;c.classList.remove("paying");c.querySelector(".pay").setAttribute("aria-expanded","false")});
           var extra=card.querySelector(".extra").textContent.trim();
