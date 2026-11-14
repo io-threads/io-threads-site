@@ -68,6 +68,7 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
     if (hosted) { f.appendChild(el('<p class="sq-or">or</p>')); f.appendChild(sqButton(hosted)); }
     var x = trust(box);
     x.addEventListener("click", function () { box.hidden = true; card.classList.remove("paying"); pay.focus(); });
+    document.addEventListener("click", function (e) { if (!box.hidden && !box.contains(e.target) && !pay.contains(e.target)) { box.hidden = true; card.classList.remove("paying"); pay.setAttribute("aria-expanded", "false"); } });
     var cardObj = null, go = f.querySelector(".sq-go"), msg = f.querySelector(".sq-msg"), em = f.querySelector('[type=email]'), nm = f.querySelector('[type=text]');
     function init() {
       if (cardObj) return;

@@ -283,7 +283,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
         r.querySelector(".up").addEventListener("click",function(){r.dataset.v=Math.min(inc+20,(+(r.dataset.v||inc))+1);render()});
         r.querySelector(".dn").addEventListener("click",function(){r.dataset.v=Math.max(inc,(+(r.dataset.v||inc))-1);render()});
       });
-      btns.forEach(function(x){x.addEventListener("click",function(){period=x.getAttribute("data-p");render()})});var hasY=["Builder","Buyer","Partner"].some(function(k){return (CHECKOUT[k]||{}).y||(SQUARE[k]||{}).y});var bill=document.querySelector(".bill");if(bill&&!hasY)bill.hidden=true;
+      btns.forEach(function(x){x.addEventListener("click",function(){period=x.getAttribute("data-p");render()})});var hasY=["Builder","Buyer","Partner"].some(function(k){return (CHECKOUT[k]||{}).y||(SQUARE[k]||{}).y});var bill=document.querySelector(".bill");if(bill&&!hasY)bill.style.display="none";
       render();
     })();</script>
 
