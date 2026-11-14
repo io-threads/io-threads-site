@@ -208,6 +208,17 @@ footer.site a.mark.mark b{font-size:1.05rem}
         <div class="paybox" hidden><p class="pb-sum"></p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Card</button><button type="button" class="pm sq" hidden>Square</button></div><button type="button" class="pb-x">Cancel</button></div>
       </article>
     </div>
+    <style>.life{margin-top:var(--sp4);display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:var(--sp4);align-items:center;border:1px solid var(--ink);border-radius:12px;padding:var(--sp5);background:var(--sheet)}.life h3{margin:0}.life .who{font:400 .78rem/1 var(--f-mono);color:var(--accent)}.life .act{display:grid;gap:var(--sp2)}.life .price b{font-size:1.8rem}.life .pm-row{display:flex;flex-wrap:wrap;gap:6px}.life .pm-row a{flex:1;justify-content:center}@media (max-width:760px){.life{grid-template-columns:minmax(0,1fr)}}</style>
+    <article class="life" id="lifetime">
+      <div><span class="who">→ One payment</span><h3>Lifetime</h3>
+        <p class="for">Everything in Buyer, for as long as io threads runs. No renewals.</p>
+        <ul class="opens"><li>iolin</li><li>MCP feed</li><li>API · 10,000 calls/day</li><li>Archive · 10/mo</li><li>Briefings · 1/qtr</li><li>Early findings · 1/mo</li></ul></div>
+      <div class="act"><div class="price"><b>$999</b><span> once</span></div>
+        <a class="btn solid" id="life-pay" href="mailto:team@io-threads.com?subject=Join%3A%20Lifetime%20(%24999%20once)&amp;body=Name%3A%0A%0ACompany%3A%0A%0AWhat%20you%20ship%2C%20buy%20or%20check%3A%0A">Get Lifetime · $999</a>
+        <div class="pm-row" id="life-sq" hidden><a class="btn line" href="#">Pay with Square</a></div>
+        <p class="fine">Card, Apple Pay or Google Pay. Extras are billed separately.</p></div>
+    </article>
+    <script>(function(){var P=window.IOT_PAY||{},s=(P.stripe||{}).Lifetime,q=(P.square||{}).Lifetime,b=document.getElementById("life-pay"),r=document.getElementById("life-sq");if(s){b.href=s}else if(q){b.href=q}if(q&&s){r.hidden=false;r.querySelector("a").href=q}})();</script>
     <script src="pay-links.js"></script>
     <script>(function(){
       document.querySelectorAll(".way[data-plan]").forEach(function(card){
