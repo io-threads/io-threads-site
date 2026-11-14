@@ -11,5 +11,5 @@ window.IOT_PAY = {
   portal: "",
   /* In-page payments (square-pay.js). appId and locationId are public; the secret token lives only on the payment server (Supabase Edge Functions; api = https://<project>.supabase.co/functions/v1).
      Leave appId empty to keep the hosted Square links above. A sandbox- appId uses Square's test environment. */
-  sdk: { appId: "", locationId: "", api: "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1" }
+  sdk: { appId: "sq0idp-1s8ZblRtSjareUcO7Q6X9Q", locationId: "L61Q2TYHHTM3G", api: "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1" }
 };

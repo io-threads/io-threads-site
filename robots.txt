@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /join-test.html
 Sitemap: https://io-threads.com/sitemap.xml
