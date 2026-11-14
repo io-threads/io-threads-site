@@ -7,6 +7,6 @@
    Money goes straight from the payer to your Stripe or Square account; no card details ever touch this site. */
 window.IOT_PAY = {
   stripe: { Builder: { m: "", y: "" }, Buyer: { m: "", y: "" }, Partner: { m: "", y: "" }, Lifetime: "" },
-  square: { Builder: { m: "", y: "" }, Buyer: { m: "", y: "" }, Partner: { m: "", y: "" }, Lifetime: "" },
+  square: { Builder: { m: "https://square.link/u/xIlkX7Cb", y: "" }, Buyer: { m: "https://square.link/u/gKoiSiI1", y: "" }, Partner: { m: "https://square.link/u/gYnG7De1", y: "" }, Lifetime: "https://square.link/u/A45sbXLT" },
   portal: ""
 };
