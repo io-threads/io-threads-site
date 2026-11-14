@@ -79,7 +79,7 @@
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em.value.trim())) { msg.className = "sq-msg err"; msg.textContent = "Enter your email."; em.focus(); return; }
       go.disabled = true; msg.className = "sq-msg"; msg.textContent = "Checking your card…";
       var name = nm.value.trim();
-      cardObj.tokenize({ intent: "STORE", customerInitiated: true, sellerKeyedIn: false, currencyCode: "USD",
+      cardObj.tokenize({ intent: "STORE", customerInitiated: true, sellerKeyedIn: false,
         billingContact: { email: em.value.trim(), givenName: name.split(" ")[0] || undefined, familyName: name.split(" ").slice(1).join(" ") || undefined } })
         .then(function (t) {
           if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Check your card details.");
