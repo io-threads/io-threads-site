@@ -36,7 +36,7 @@
   css.textContent = ".sq-f{display:grid;gap:8px}.sq-f input{font:400 .95rem/1.2 var(--f-display);color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;min-height:44px;width:100%;box-sizing:border-box}" +
     ".sq-f input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}.sq-card{min-height:90px}.sq-msg{margin:0;font:400 .85rem/1.35 var(--f-display);color:var(--muted)}.sq-msg.err{color:#c0392b}" +
     ".sq-go{all:unset;box-sizing:border-box;cursor:pointer;min-height:44px;border-radius:8px;display:grid;place-items:center;font:600 .98rem/1 var(--f-display);background:var(--ink);color:var(--paper)}.sq-go[disabled]{opacity:.5;cursor:wait}" +
-    ".sq-apple{-webkit-appearance:-apple-pay-button;-apple-pay-button-type:plain;-apple-pay-button-style:black;display:block;width:100%;height:44px;border-radius:8px;cursor:pointer}.sq-or{margin:0;text-align:center;font:400 .78rem/1 var(--f-display);color:var(--muted)}" +
+    ".sq-apple{display:block;width:100%;height:44px;cursor:pointer;--apple-pay-button-width:100%;--apple-pay-button-height:44px;--apple-pay-button-border-radius:8px;--apple-pay-button-padding:0;--apple-pay-button-box-sizing:border-box}.sq-apple[hidden]{display:none}.sq-or{margin:0;text-align:center;font:400 .78rem/1 var(--f-display);color:var(--muted)}" +
     ".sq-done{display:grid;gap:6px;text-align:center;padding:8px 0}.sq-done b{font:600 1.05rem/1.3 var(--f-display);color:var(--ink)}.sq-alt{justify-self:center;font:400 .8rem/1 var(--f-display);color:var(--muted)}";
   document.head.appendChild(css);
 
@@ -101,7 +101,7 @@
     var hosted = links.Lifetime || "";
     shell(box, "Lifetime · $999 once");
     var f = el('<div class="sq-f"><input type="email" autocomplete="email" placeholder="Email for your receipt and access" aria-label="Email" required>' +
-      '<button type="button" class="sq-apple" aria-label="Pay with Apple Pay" hidden></button><div id="sq-gpay" hidden></div>' +
+      '<apple-pay-button class="sq-apple" buttonstyle="black" type="plain" locale="en-US" role="button" tabindex="0" aria-label="Pay with Apple Pay" hidden></apple-pay-button><div id="sq-gpay" hidden></div>' +
       '<p class="sq-or" hidden>or pay by card</p><div class="sq-card" id="sq-card-life"></div>' +
       '<button type="button" class="sq-go">Pay $999</button><p class="sq-msg" aria-live="polite"></p></div>');
     box.appendChild(f);
@@ -134,6 +134,7 @@
     pay.addEventListener("click", function () { setTimeout(function () { if (!box.hidden) init(); }, 0); });
     // Apple requires the sheet to open straight from the tap, so tokenize() is the first call.
     ap.addEventListener("click", function () { if (!apple) return; if (!email()) return; charge(apple.tokenize()); });
+    ap.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && apple) { e.preventDefault(); if (email()) charge(apple.tokenize()); } });
     gp.addEventListener("click", function () { if (!google) return; if (!email()) return; charge(google.tokenize()); });
     go.addEventListener("click", function () { if (!cardObj || !email()) return; charge(cardObj.tokenize(details())); });
   }
