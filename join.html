@@ -218,7 +218,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
         <div class="pm-row" id="life-sq" hidden><a class="btn line" href="#">Pay with Square</a></div>
         <p class="fine">Card, Apple Pay or Google Pay. Extras are billed separately.</p></div>
     </article>
-    <script>(function(){var P=window.IOT_PAY||{},s=(P.stripe||{}).Lifetime,q=(P.square||{}).Lifetime,b=document.getElementById("life-pay"),r=document.getElementById("life-sq");if(s){b.href=s}else if(q){b.href=q}if(q&&s){r.hidden=false;r.querySelector("a").href=q}})();</script>
+    <script>document.addEventListener("DOMContentLoaded",function(){var P=window.IOT_PAY||{},s=(P.stripe||{}).Lifetime,q=(P.square||{}).Lifetime,b=document.getElementById("life-pay"),r=document.getElementById("life-sq");if(s){b.href=s}else if(q){b.href=q}if(q&&s){r.hidden=false;r.querySelector("a").href=q}});</script>
     <script src="pay-links.js"></script>
     <script>(function(){
       document.querySelectorAll(".way[data-plan]").forEach(function(card){
