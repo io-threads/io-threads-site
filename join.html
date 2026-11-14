@@ -237,6 +237,27 @@ footer.site a.mark.mark b{font-size:1.05rem}
         box.addEventListener("keydown",function(e){if(e.key==="Escape"){close();pay.focus()}});
       });
     })();</script>
+        <script src="https://applepay.cdn-apple.com/jsapi/1.latest/apple-pay-sdk.js" async crossorigin></script>
+    <script>(function(){
+      /* Official wallet buttons (Apple: Apple Pay on the Web button; Google: Google Pay API createButton).
+         Each opens the plan's Square checkout, where the payment itself happens. If a script fails, the plain buttons stay. */
+      function target(box){var c=box.closest(".way,.life");var a=c&&c.querySelector(".pay,#life-pay");return a?a.href:""}
+      function go(box){var u=target(box);if(u)window.location.assign(u)}
+      function apple(){if(!window.customElements||!customElements.get("apple-pay-button"))return;
+        document.querySelectorAll(".paybox .pm.ap").forEach(function(old){if(old.dataset.official)return;
+          var el=document.createElement("apple-pay-button");el.setAttribute("buttonstyle","black");el.setAttribute("type","plain");el.setAttribute("locale","en-US");el.className="pm-off pm-apple";el.setAttribute("tabindex","0");el.setAttribute("role","button");el.setAttribute("aria-label","Pay with Apple Pay");
+          var box=old.closest(".paybox");el.addEventListener("click",function(){go(box)});el.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();go(box)}});
+          old.dataset.official="1";old.replaceWith(el)})}
+      function gpay(){var G=window.google;if(!(G&&G.payments&&G.payments.api))return;
+        var client=new G.payments.api.PaymentsClient({environment:"PRODUCTION"});
+        document.querySelectorAll(".paybox .pm.gp").forEach(function(old){if(old.dataset.official)return;var box=old.closest(".paybox");
+          var btn=client.createButton({buttonColor:"white",buttonType:"plain",buttonSizeMode:"fill",buttonRadius:8,onClick:function(){go(box)}});
+          var w=document.createElement("div");w.className="pm-off pm-google";w.appendChild(btn);old.dataset.official="1";old.replaceWith(w)})}
+      window.addEventListener("load",apple);if(window.customElements&&customElements.whenDefined)customElements.whenDefined("apple-pay-button").then(apple);
+      window.iotGPay=gpay;if(window.google&&window.google.payments)gpay();
+    })();</script>
+    <script async src="https://pay.google.com/gp/p/js/pay.js" onload="window.iotGPay&&window.iotGPay()"></script>
+    <style>.pm-off{display:block;width:100%;height:44px}apple-pay-button.pm-apple{--apple-pay-button-width:100%;--apple-pay-button-height:44px;--apple-pay-button-border-radius:8px;--apple-pay-button-padding:0;--apple-pay-button-box-sizing:border-box;cursor:pointer}.pm-google button{width:100%!important;height:44px!important}.pm-google>div{width:100%;height:44px}</style>
     <p class="fine">Included amounts reset every month (briefings every quarter). Extras are billed monthly on top of the membership. Cancel any time.</p>
     <script>(function(){
       /* Paste a hosted checkout link for each plan and period (for example a Stripe Payment Link with adjustable add-on quantities). Empty links fall back to an email that lists the extras. */
