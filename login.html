@@ -97,13 +97,23 @@ footer.site a.mark.mark b{font-size:1.05rem}
     <label for="lg-email">Email<input id="lg-email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
     <button class="btn solid" type="submit">Email me a sign-in link</button>
     <p class="or">or</p>
-    <a class="btn line" href="join.html">Join free as a Reader</a>
+    <a class="btn line" href="join.html">See plans</a>
     <p class="fine" id="lg-note" aria-live="polite">Sign-in links are sent by email while the members area is in preview.</p>
   </form>
   <ul class="fine"><li>Reader: iolin and the MCP feed</li><li>Builder, Buyer, Partner: archive, credits and extras</li><li>Free tier: your API key and request history</li></ul>
 </div>
-<script src="pay-links.js"></script>
-<script>(function(){var f=document.getElementById("lg-form");var portal=(window.IOT_PAY||{}).portal;if(portal){document.getElementById("lg-note").textContent="You'll get a one-time sign-in code by email to manage your membership."}else{document.getElementById("lg-note").textContent="We email members their sign-in link. To change or cancel a plan, email team@io-threads.com."}f.addEventListener("submit",function(e){e.preventDefault();var v=document.getElementById("lg-email").value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){document.getElementById("lg-note").textContent="Enter the email you joined with.";return}if(portal){location.href=portal+(portal.indexOf("?")<0?"?":"&")+"prefilled_email="+encodeURIComponent(v);return}location.href="mailto:team@io-threads.com?subject="+encodeURIComponent("Sign-in link request")+"&body="+encodeURIComponent("Please send a sign-in link to: "+v+"\n")})})();</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="auth.js"></script>
+<script>(function(){var f=document.getElementById("lg-form"),note=document.getElementById("lg-note"),btn=f.querySelector("button");
+var next=iotAuth.safeNext(new URLSearchParams(location.search).get("next"));
+iotAuth.session().then(function(s){if(s){location.replace(next)}});
+note.textContent=new URLSearchParams(location.search).get("next")?"Log in to open that page. New here? Joining free as a Reader takes one email.":"We'll email you a one-time sign-in link. New emails join free as a Reader.";
+f.addEventListener("submit",function(e){e.preventDefault();var v=document.getElementById("lg-email").value.trim();
+if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.textContent="Enter a valid email.";return}
+btn.disabled=true;note.textContent="Sending…";
+iotAuth.sb.auth.signInWithOtp({email:v,options:{emailRedirectTo:location.origin+"/"+next,shouldCreateUser:true}}).then(function(r){btn.disabled=false;
+if(r.error){note.textContent=/rate|seconds/i.test(r.error.message)?"Too many sign-in emails. Wait a minute and try again.":"Couldn't send the link: "+r.error.message;return}
+note.textContent="Check "+v+" for your sign-in link. You can close this tab."})})})();</script>
 <div class="band">
   <div><h2>Building agents, IDEs or search apps?</h2><p>Plug in the check layer. The iot API, MCP feed and agent skill put a PASS, FAIL or ABSTAIN on every answer your product gives, with the evidence attached.</p></div>
   <div class="cta"><a class="btn solid" href="sample-report.html">Try the iot API</a><a class="btn line" href="mailto:team@io-threads.com?subject=Partnership%3A%20agentic%20apps">Partner with us</a></div>

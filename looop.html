@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="iot-gate">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -1099,6 +1099,7 @@ html .ip-term.drag *{user-select:none}
 .phone .dlg{margin:6px 0 0;display:flex;gap:8px;align-items:center;font:400 .5rem/1 var(--f-display);color:#8C97AD;max-width:none}
 .phone .dlg i{width:6px;height:6px;border-radius:2px;margin-right:-4px}
 </style>
+<style>.iot-gate body{visibility:hidden}</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -2290,5 +2291,8 @@ addEventListener("pointerup",function(e){if(!D)return;if(!D.on){D=null;return}va
 addEventListener("pointercancel",end);addEventListener("keydown",function(e){if(e.key==="Escape")end()});
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="auth.js"></script>
+<script>iotAuth.gate("looop.html")</script>
 </body>
 </html>
