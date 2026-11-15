@@ -89,21 +89,28 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
       if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Payment was cancelled.");
       var mail = em.value.trim();
       msg.className = "sq-msg"; msg.textContent = monthly ? "Starting your membership…" : "Processing…";
-      if (!monthly) return post("/charge-lifetime", { sourceId: t.token, email: mail, idempotencyKey: idem });
+      if (!monthly) return send("/charge-lifetime", { sourceId: t.token, email: mail, idempotencyKey: idem });
       var b = { plan: o.plan, email: mail, idempotencyKey: idem };
       b[kind === "card" ? "cardToken" : "walletToken"] = t.token;
-      return post("/subscribe", b);
+      return send("/subscribe", b);
     }
-    function run(p, kind) {
+    // The last request sent, and the one whose reply was lost. A lost one is resent exactly (same token, same key) on the
+    // next click, so Square replays its original result instead of seeing a new payment.
+    var last = null, pending = null;
+    function send(path, body) { last = { path: path, body: body }; return post(path, body); }
+    function run(p, kind) { handle(p.then(function (t) { return finish(t, kind); })); }
+    function replay() { msg.className = "sq-msg"; handle(post(pending.path, pending.body)); }
+    function handle(reply) {
       go.disabled = true; msg.className = "sq-msg"; msg.textContent = "Processing…";
-      p.then(function (t) { return finish(t, kind); }).then(function (r) {
+      reply.then(function (r) {
+        pending = null;
         if (!r.ok) { if (!r.keep) idem = key(); throw new Error(r.error || "That didn't go through. Nothing was charged."); }
         var mail = em.value.trim();
         if (!monthly) return done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + mail + ".");
         done(box, "Welcome to " + o.plan + ".", r.invoiced
           ? "First month paid. Square emails an invoice each month to " + mail + ", payable with Apple Pay, Google Pay or card."
           : "Your membership is active and billed monthly to this card. Square emails your receipt to " + mail + ".");
-      }).catch(fail);
+      }).catch(function (e) { if (e && e.unknown) pending = last; fail(e); });
     }
     function init() {
       if (started) return; started = true;
@@ -116,11 +123,12 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
     }
     pay.addEventListener("click", function () { setTimeout(function () { if (!box.hidden) init(); }, 0); });
     // Apple requires the sheet to open straight from the tap: the email check is synchronous, tokenize() comes next.
-    function wallet(w) { if (!w || !needEmail()) return; run(w.tokenize(), "wallet"); }
+    function wallet(w) { if (pending) return replay(); if (!w || !needEmail()) return; run(w.tokenize(), "wallet"); }
     ap.addEventListener("click", function () { wallet(apple); });
     ap.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wallet(apple); } });
     gp.addEventListener("click", function () { wallet(google); });
     go.addEventListener("click", function () {
+      if (pending) return replay();
       if (!cardObj || !needEmail()) return;
       var v = monthly ? { intent: "STORE", customerInitiated: true, sellerKeyedIn: false, billingContact: { email: em.value.trim() } }
         : { amount: o.amount, currencyCode: "USD", intent: "CHARGE", customerInitiated: true, sellerKeyedIn: false, billingContact: { email: em.value.trim() } };
