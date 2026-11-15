@@ -12,3 +12,9 @@
   });
   document.querySelectorAll('header a.btn.solid[href="join.html"]').forEach(function (a) { a.style.display = "none"; });
 })();
+
+/* Cross-page fade: Chrome sometimes skips it and reports the skipped transition as an uncaught error. Swallow that. */
+(function () {
+  function quiet(e) { var t = e.viewTransition; if (t) [t.ready, t.finished, t.updateCallbackDone].forEach(function (p) { if (p) p.catch(function () {}); }); }
+  addEventListener("pagereveal", quiet); addEventListener("pageswap", quiet);
+})();
