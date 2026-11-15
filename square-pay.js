@@ -25,9 +25,13 @@
     return ready;
   }
   function key() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "-" + Math.random().toString(36).slice(2, 10); }
+  // A lost or timed-out reply means we don't know if Square charged, so say so instead of "nothing was charged".
+  var UNKNOWN = "We couldn't confirm your payment. Check your email for a Square receipt before trying again, or email team@io-threads.com.";
   function post(path, body) {
-    return fetch(cfg.api + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().catch(function () { return { ok: false }; }); });
+    var ctl = window.AbortController ? new AbortController() : null, t = ctl && setTimeout(function () { ctl.abort(); }, 20000);
+    return fetch(cfg.api + path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { clearTimeout(t); return r.json().catch(function () { return { ok: false }; }); },
+        function () { clearTimeout(t); var e = new Error(UNKNOWN); e.unknown = true; throw e; });
   }
   function el(html) { var d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
   var LOCK = '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>';
@@ -76,6 +80,8 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
     var em = f.querySelector("[type=email]"), msg = f.querySelector(".sq-msg"), go = f.querySelector(".sq-go"),
       ap = f.querySelector(".sq-apple"), gp = f.querySelector(".sq-gpay"), or1 = f.querySelector(".sq-or1");
     var cardObj = null, apple = null, google = null, started = false;
+    // One idempotency key per checkout: a retry after a lost reply can't charge twice. A new key only after a definite "failed".
+    var idem = key();
     function fail(e) { msg.className = "sq-msg err"; msg.textContent = (e && e.message) || "That didn't go through. Nothing was charged."; go.disabled = false; }
     function validEmail(v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v || ""); }
     function needEmail() { if (validEmail(em.value.trim())) return true; fail({ message: monthly ? "Add your email first: it's where your membership and monthly invoices go." : "Add your email first: it's where your access goes." }); em.focus(); return false; }
@@ -83,15 +89,15 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
       if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Payment was cancelled.");
       var mail = em.value.trim();
       msg.className = "sq-msg"; msg.textContent = monthly ? "Starting your membership…" : "Processing…";
-      if (!monthly) return post("/charge-lifetime", { sourceId: t.token, email: mail, idempotencyKey: key() });
-      var b = { plan: o.plan, email: mail, idempotencyKey: key() };
+      if (!monthly) return post("/charge-lifetime", { sourceId: t.token, email: mail, idempotencyKey: idem });
+      var b = { plan: o.plan, email: mail, idempotencyKey: idem };
       b[kind === "card" ? "cardToken" : "walletToken"] = t.token;
       return post("/subscribe", b);
     }
     function run(p, kind) {
       go.disabled = true; msg.className = "sq-msg"; msg.textContent = "Processing…";
       p.then(function (t) { return finish(t, kind); }).then(function (r) {
-        if (!r.ok) throw new Error(r.error || "That didn't go through. Nothing was charged.");
+        if (!r.ok) { if (!r.keep) idem = key(); throw new Error(r.error || "That didn't go through. Nothing was charged."); }
         var mail = em.value.trim();
         if (!monthly) return done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + mail + ".");
         done(box, "Welcome to " + o.plan + ".", r.invoiced

@@ -1,29 +1,65 @@
 /* io threads sign-in (Supabase Auth). The publishable key is public by design; data is protected by row-level security.
-   Needs the supabase-js script loaded first. */
+   Needs vendor/supabase-2.45.4.js loaded first. If it didn't load, gated pages show a message instead of staying blank. */
 (function () {
   var URL = "https://tckvatqkjfrvavleunzk.supabase.co", KEY = "sb_publishable_q1qGRS3znQOnod-6whZONg_OrhNQVwJ";
+  var GATED = ["app.html", "looop.html"];
+
+  // Unhide a gated page and say what went wrong (used when sign-in can't load at all).
+  function fail(msg) {
+    var root = document.documentElement;
+    if (!root.classList.contains("iot-gate")) return;
+    root.classList.remove("iot-gate");
+    var p = document.createElement("p");
+    p.setAttribute("role", "alert");
+    p.style.cssText = "max-width:440px;margin:96px auto;padding:16px 20px;border:1px solid var(--rule,#ddd);border-radius:12px;font:400 1rem/1.5 system-ui,sans-serif";
+    p.innerHTML = msg + ' <a href="">Reload</a> or email <a href="mailto:team@io-threads.com">team@io-threads.com</a>.';
+    document.body.innerHTML = "";
+    document.body.appendChild(p);
+  }
+
+  // Magic-link errors come back in the URL hash, e.g. #error=access_denied&error_code=otp_expired.
+  var hash = new URLSearchParams(location.hash.slice(1));
+  var linkError = hash.get("error_code") || hash.get("error");
+
+  if (!window.supabase) {
+    window.iotAuth = null;
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { fail("Sign-in couldn't load."); });
+    else fail("Sign-in couldn't load.");
+    return;
+  }
+
   var sb = window.supabase.createClient(URL, KEY, { auth: { flowType: "implicit", persistSession: true, detectSessionInUrl: true } });
+
   window.iotAuth = {
     sb: sb,
     fn: URL + "/functions/v1",
+    linkError: linkError,
     session: function () { return sb.auth.getSession().then(function (r) { return r.data.session; }); },
-    // Only plain page names are allowed as a return target.
-    safeNext: function (n) { return /^[a-z0-9-]+\.html(#[a-z0-9-]+)?$/i.test(n || "") ? n : "app.html"; },
-    // Hide the page until we know who is viewing; send visitors without a session to log in.
+    // Server-checked: resolves to the user only when the saved session is genuine.
+    user: function () { return sb.auth.getUser().then(function (r) { return r.error ? null : r.data.user; }, function () { return null; }); },
+    // Only the members pages are valid return targets.
+    safeNext: function (n) { return GATED.indexOf(n) >= 0 ? n : "app.html"; },
+    // Hide the page until the server confirms who is viewing; anyone else goes to log in.
     gate: function (page) {
-      return this.session().then(function (s) {
-        if (!s) { location.replace("login.html?next=" + encodeURIComponent(page)); return null; }
+      var timer = setTimeout(function () { fail("Sign-in is taking too long to respond."); }, 8000);
+      return sb.auth.getUser().then(function (r) {
+        clearTimeout(timer);
+        if (r.error || !r.data.user) {
+          var q = "next=" + encodeURIComponent(page) + (linkError ? "&err=" + encodeURIComponent(linkError) : "");
+          // Drop a saved session the server rejected, or login would send us straight back.
+          var go = function () { location.replace("login.html?" + q); };
+          sb.auth.signOut({ scope: "local" }).then(go, go);
+          return null;
+        }
         document.documentElement.classList.remove("iot-gate");
-        return s;
-      });
+        return sb.auth.getSession().then(function (s) { return s.data.session; });
+      }).catch(function () { clearTimeout(timer); fail("Sign-in couldn't be checked."); return null; });
     },
     signOut: function () { return sb.auth.signOut().then(function () { location.href = "./"; }); }
   };
-  // Signed in: the header "Log in" link becomes "Account".
-  iotAuth.session().then(function (s) {
-    if (!s) return;
-    document.querySelectorAll("a.login").forEach(function (a) {
-      a.href = "app.html"; a.lastChild.textContent = "Account";
-    });
+
+  // Signed out in another tab: leave the members page.
+  sb.auth.onAuthStateChange(function (event) {
+    if (event === "SIGNED_OUT" && GATED.indexOf(location.pathname.split("/").pop()) >= 0) location.replace("login.html");
   });
 })();

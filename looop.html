@@ -1099,9 +1099,15 @@ html .ip-term.drag *{user-select:none}
 .phone .dlg{margin:6px 0 0;display:flex;gap:8px;align-items:center;font:400 .5rem/1 var(--f-display);color:#8C97AD;max-width:none}
 .phone .dlg i{width:6px;height:6px;border-radius:2px;margin-right:-4px}
 </style>
+<meta name="robots" content="noindex">
 <style>.iot-gate body{visibility:hidden}</style>
+<noscript><style>.iot-gate body{visibility:visible}</style></noscript>
 </head>
 <body>
+<script src="vendor/supabase-2.45.4.js"></script>
+<script src="auth.js"></script>
+<script>window.iotAuth&&iotAuth.gate("looop.html")</script>
+<noscript><p style="max-width:440px;margin:24px auto">iolin needs JavaScript and a free sign-in. <a href="login.html">Log in</a>.</p></noscript>
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
@@ -2291,8 +2297,6 @@ addEventListener("pointerup",function(e){if(!D)return;if(!D.on){D=null;return}va
 addEventListener("pointercancel",end);addEventListener("keydown",function(e){if(e.key==="Escape")end()});
 })();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="auth.js"></script>
-<script>iotAuth.gate("looop.html")</script>
+<script src="nav-auth.js"></script>
 </body>
 </html>

@@ -77,6 +77,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
 </header>
 <main class="wrap" id="main">
 <style>
+.lg [hidden]{display:none!important}
 .lg{max-width:440px;margin:var(--sp8) auto var(--sp7);display:grid;gap:var(--sp4)}
 .lg form{display:grid;gap:var(--sp3);background:var(--sheet);border:1px solid var(--rule);border-radius:12px;padding:var(--sp5)}
 .lg label{display:grid;gap:6px;font:500 .9rem/1 var(--f-display);color:var(--muted)}
@@ -93,27 +94,44 @@ footer.site a.mark.mark b{font-size:1.05rem}
     <h1>Log in</h1>
     <p>Your archive, credits and free API key.</p>
   </div>
-  <form id="lg-form" novalidate>
+  <form id="lg-form" action="javascript:void 0" novalidate>
     <label for="lg-email">Email<input id="lg-email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
-    <button class="btn solid" type="submit">Email me a sign-in link</button>
+    <button class="btn solid" type="submit" id="lg-send">Email me a sign-in link</button>
+    <div id="lg-code-box" hidden>
+      <label for="lg-code">Or type the code from the email<input id="lg-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="8" placeholder="8-digit code"></label>
+      <button class="btn line" type="button" id="lg-verify">Sign in with code</button>
+    </div>
     <p class="or">or</p>
     <a class="btn line" href="join.html">See plans</a>
-    <p class="fine" id="lg-note" aria-live="polite">Sign-in links are sent by email while the members area is in preview.</p>
+    <p class="fine" id="lg-note" aria-live="polite">Sign-in needs JavaScript. Email <a href="mailto:team@io-threads.com">team@io-threads.com</a> for help.</p>
   </form>
   
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="vendor/supabase-2.45.4.js"></script>
 <script src="auth.js"></script>
-<script>(function(){var f=document.getElementById("lg-form"),note=document.getElementById("lg-note"),btn=f.querySelector("button");
-var next=iotAuth.safeNext(new URLSearchParams(location.search).get("next"));
-iotAuth.session().then(function(s){if(s){location.replace(next)}});
-note.textContent=new URLSearchParams(location.search).get("next")?"Log in to open that page. New here? Joining free as a Reader takes one email.":"We'll email you a one-time sign-in link. New emails join free as a Reader.";
-f.addEventListener("submit",function(e){e.preventDefault();var v=document.getElementById("lg-email").value.trim();
-if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){note.textContent="Enter a valid email.";return}
-btn.disabled=true;note.textContent="Sending…";
-iotAuth.sb.auth.signInWithOtp({email:v,options:{emailRedirectTo:location.origin+"/"+next,shouldCreateUser:true}}).then(function(r){btn.disabled=false;
-if(r.error){note.textContent=/rate|seconds/i.test(r.error.message)?"Sign-in emails are limited right now. Wait a few minutes, or email team@io-threads.com.":"Couldn't send the link: "+r.error.message;return}
-note.textContent="Check "+v+" for your sign-in link. You can close this tab."})})})();</script>
+<script>(function(){
+var $=function(i){return document.getElementById(i)},note=$("lg-note"),send=$("lg-send"),q=new URLSearchParams(location.search);
+var ERR={otp_expired:"That sign-in link expired or was already used. Send a new one.",access_denied:"That sign-in link didn't work. Send a new one."};
+function say(t,bad){note.textContent=t;$("lg-email").setAttribute("aria-invalid",bad?"true":"false")}
+if(!window.iotAuth){say("Sign-in couldn't load. Reload, or email team@io-threads.com.");send.disabled=true;return}
+var next=iotAuth.safeNext(q.get("next")),err=q.get("err")||iotAuth.linkError;
+iotAuth.user().then(function(u){if(u)location.replace(next)});
+say(err?(ERR[err]||ERR.access_denied):q.get("next")?"Log in to open that page. New here? Your first sign-in makes you a free Reader.":"We'll email you a sign-in link and code. New emails join free as a Reader.");
+function email(){return $("lg-email").value.trim()}
+$("lg-form").addEventListener("submit",function(e){e.preventDefault();var v=email();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){say("Enter a valid email.",true);$("lg-email").focus();return}
+  send.disabled=true;say("Sending…");
+  iotAuth.sb.auth.signInWithOtp({email:v,options:{emailRedirectTo:location.origin+"/"+next,shouldCreateUser:true}}).then(function(r){send.disabled=false;
+    if(r.error){say(/rate|seconds|too many/i.test(r.error.message)?"Sign-in emails are limited right now. Wait a few minutes, or email team@io-threads.com.":"Couldn't send the email: "+r.error.message);return}
+    say("Check "+v+" for your sign-in link, or type the code below.");$("lg-code-box").hidden=false;$("lg-code").focus()})
+  .catch(function(){send.disabled=false;say("Couldn't reach sign-in. Check your connection and try again.")})});
+$("lg-verify").addEventListener("click",function(){var c=$("lg-code").value.replace(/\D/g,"");
+  if(c.length<6){say("Enter the code from the email.");return}
+  $("lg-verify").disabled=true;say("Checking…");
+  iotAuth.sb.auth.verifyOtp({email:email(),token:c,type:"email"}).then(function(r){$("lg-verify").disabled=false;
+    if(r.error){say("That code didn't work. It may have expired; send a new one.");return}
+    location.replace(next)}).catch(function(){$("lg-verify").disabled=false;say("Couldn't reach sign-in. Try again.")})});
+})();</script>
 <div class="band">
   <div><h2>Building agents, IDEs or search apps?</h2><p>Plug in the check layer. The iot API, MCP feed and agent skill put a PASS, FAIL or ABSTAIN on every answer your product gives, with the evidence attached.</p></div>
   <div class="cta"><a class="btn solid" href="sample-report.html">Try the iot API</a><a class="btn line" href="mailto:team@io-threads.com?subject=Partnership%3A%20agentic%20apps">Partner with us</a></div>
@@ -167,5 +185,6 @@ note.textContent="Check "+v+" for your sign-in link. You can close this tab."})}
   function req(){if(!tick){tick=true;requestAnimationFrame(frame)}}
   addEventListener("scroll",req,{passive:true});addEventListener("resize",req);frame();
 })();</script>
+<script src="nav-auth.js"></script>
 </body>
 </html>
