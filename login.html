@@ -111,19 +111,21 @@ footer.site a.mark.mark b{font-size:1.05rem}
 <script src="auth.js"></script>
 <script>(function(){
 var $=function(i){return document.getElementById(i)},note=$("lg-note"),send=$("lg-send"),q=new URLSearchParams(location.search);
+// Turn on once the email templates include the 8-digit code (needs custom SMTP on the Supabase free tier).
+var CODE=false;
 var ERR={otp_expired:"That sign-in link expired or was already used. Send a new one.",access_denied:"That sign-in link didn't work. Send a new one."};
 function say(t,bad){note.textContent=t;$("lg-email").setAttribute("aria-invalid",bad?"true":"false")}
 if(!window.iotAuth){say("Sign-in couldn't load. Reload, or email team@io-threads.com.");send.disabled=true;return}
 var next=iotAuth.safeNext(q.get("next")),err=q.get("err")||iotAuth.linkError;
 iotAuth.user().then(function(u){if(u)location.replace(next)});
-say(err?(ERR[err]||ERR.access_denied):q.get("next")?"Log in to open that page. New here? Your first sign-in makes you a free Reader.":"We'll email you a sign-in link and code. New emails join free as a Reader.");
+say(err?(ERR[err]||ERR.access_denied):q.get("next")?"Log in to open that page. New here? Your first sign-in makes you a free Reader.":"We'll email you a sign-in link. New emails join free as a Reader.");
 function email(){return $("lg-email").value.trim()}
 $("lg-form").addEventListener("submit",function(e){e.preventDefault();var v=email();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){say("Enter a valid email.",true);$("lg-email").focus();return}
   send.disabled=true;say("Sending…");
   iotAuth.sb.auth.signInWithOtp({email:v,options:{emailRedirectTo:location.origin+"/"+next,shouldCreateUser:true}}).then(function(r){send.disabled=false;
     if(r.error){say(/rate|seconds|too many/i.test(r.error.message)?"Sign-in emails are limited right now. Wait a few minutes, or email team@io-threads.com.":"Couldn't send the email: "+r.error.message);return}
-    say("Check "+v+" for your sign-in link, or type the code below.");$("lg-code-box").hidden=false;$("lg-code").focus()})
+    say("Check "+v+" for your sign-in link."+(CODE?" Or type the code below.":""));if(CODE){$("lg-code-box").hidden=false;$("lg-code").focus()}})
   .catch(function(){send.disabled=false;say("Couldn't reach sign-in. Check your connection and try again.")})});
 $("lg-verify").addEventListener("click",function(){var c=$("lg-code").value.replace(/\D/g,"");
   if(c.length<6){say("Enter the code from the email.");return}
