@@ -63,7 +63,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
 <style id="oring">
 /* o-ring identity (11-16): the I-tick + O-ring mark animates in the header; dark mode ("twilight") uses the mark's
    maroon and terracotta on every page. Light mode keeps the paper and ink palette. */
-:root{--ring:light-dark(#B5502E,#E07A52);
+html:root{--ring:light-dark(#B5502E,#E07A52);
 --paper: light-dark(oklch(97.6% var(--paper-c) var(--paper-h)),#2A1416);
 --sheet: light-dark(oklch(99.6% .002 var(--paper-h)),#341A1C);
 --ink: light-dark(oklch(23% .035 var(--ink-h)),#F4E9E3);
@@ -72,16 +72,16 @@ footer.site a.mark.mark b{font-size:1.05rem}
 --accent: light-dark(oklch(var(--brand-l) var(--brand-c) var(--brand-h)),#F0A07E);
 --accent-ink: light-dark(oklch(99% 0 0),#2A1416);
 --accent-soft: light-dark(oklch(94.5% calc(var(--brand-c) * .19) var(--brand-h)),#4A2421)}
-a.mark.mark .mk.or{overflow:visible}
+a.mark.mark .mk.or{overflow:visible;width:36px;height:36px;shape-rendering:geometricPrecision}
 a.mark.mark .or-o,a.mark.mark .or-i{stroke:var(--ring)}
 a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;color:var(--ink)}
 @media (prefers-reduced-motion:no-preference){
   header a.mark.mark .or-o{stroke-dasharray:100;stroke-dashoffset:100;animation:or-draw 1.1s cubic-bezier(.65,0,.35,1) .1s forwards}
-  header a.mark.mark .or-i{opacity:0;transform:translateY(-60px);animation:or-tick .5s cubic-bezier(.2,1.4,.4,1) 1.05s forwards}
+  header a.mark.mark .or-i{opacity:0;transform:translateY(-40px);animation:or-tick .5s cubic-bezier(.2,1.4,.4,1) 1.05s forwards}
   header a.mark.mark:hover .or-i{animation:or-nod .6s ease}
   @keyframes or-draw{to{stroke-dashoffset:0}}
   @keyframes or-tick{to{opacity:1;transform:none}}
-  @keyframes or-nod{0%,100%{transform:none}40%{transform:translateY(-26px)}}
+  @keyframes or-nod{0%,100%{transform:none}40%{transform:translateY(-16px)}}
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h1{text-shadow:0 0 34px rgba(224,122,82,.28),0 0 3px rgba(255,240,230,.12)}:root:not([data-theme="light"]) h2{text-shadow:0 0 24px rgba(224,122,82,.18)}}
 :root[data-theme="dark"] h1{text-shadow:0 0 34px rgba(224,122,82,.28),0 0 3px rgba(255,240,230,.12)}
@@ -94,7 +94,7 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
-    <a class="mark only" href="./" aria-label="io threads home"><svg class="mk or" viewBox="98 70 316 352" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="22" pathLength="100"/><line class="or-i" x1="256" y1="84" x2="256" y2="126" stroke-width="22" stroke-linecap="round"/></svg><b>io</b></a>
+    <a class="mark only" href="./" aria-label="io threads home"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a>
     <nav class="nav" aria-label="Main">
       <a href="looop.html" data-looop>iolin</a>
       <a href="sample-report.html">iot API</a>
@@ -168,7 +168,7 @@ $("lg-verify").addEventListener("click",function(){var c=$("lg-code").value.repl
   <div class="cta"><a class="btn solid" href="sample-report.html">Try the iot API</a><a class="btn line" href="mailto:team@io-threads.com?subject=Partnership%3A%20agentic%20apps">Partner with us</a></div>
 </div>
 <footer class="site">
-  <div><a class="mark" href="./"><svg class="mk or" viewBox="98 70 316 352" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="22" pathLength="100"/><line class="or-i" x1="256" y1="84" x2="256" y2="126" stroke-width="22" stroke-linecap="round"/></svg><b>io</b></a></div>
+  <div><a class="mark" href="./"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a></div>
   <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iot API</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
   <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a><p>&copy; 2026 io threads</p></div>
 </footer>
