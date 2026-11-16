@@ -17,7 +17,7 @@ with sync_playwright() as p:
         errs = [e for e in errs if "Transition was skipped" not in e]
         if r.status != 200 or errs: fails.append(f"{f}: HTTP {r.status} {errs}")
         print(f, r.status, errs or "ok"); pg.close()
-    for gated in ("app.html", "looop.html"):
+    for gated in ("app.html", "looop.html", "ops.html"):
         pg = b.new_page(); pg.goto(BASE + gated)
         try: pg.wait_for_url("**/login.html?next=" + gated + "*", timeout=10000); print(gated, "logged out -> login ok")
         except Exception: fails.append(f"{gated}: logged-out visitor not sent to login (at {pg.url})")

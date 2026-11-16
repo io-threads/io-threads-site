@@ -2,7 +2,7 @@
    Needs vendor/supabase-2.45.4.js loaded first. If it didn't load, gated pages show a message instead of staying blank. */
 (function () {
   var URL = "https://tckvatqkjfrvavleunzk.supabase.co", KEY = "sb_publishable_q1qGRS3znQOnod-6whZONg_OrhNQVwJ";
-  var GATED = ["app.html", "looop.html"];
+  var GATED = ["app.html", "looop.html", "ops.html"];
 
   // Unhide a gated page and say what went wrong (used when sign-in can't load at all).
   function fail(msg) {
