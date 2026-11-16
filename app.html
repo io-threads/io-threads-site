@@ -146,6 +146,7 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
 .ap-adm label{display:grid;gap:4px;font:400 .78rem/1 var(--f-mono);color:var(--muted)}
 .ap-adm input,.ap-adm select{font:inherit;font-size:.95rem;padding:8px 10px;border:1px solid var(--rule);border-radius:var(--radius);background:var(--paper);color:var(--ink)}
 .ap-adm .ap-scroll{overflow-x:auto}
+.ap-adm .ap-adm-chk{display:flex;flex-direction:row;gap:8px;align-items:center;color:var(--ink)}.ap-adm .ap-adm-chk input{width:18px;height:18px;padding:0}
 </style>
 <noscript><p style="max-width:440px;margin:96px auto">Your account needs JavaScript. Email <a href="mailto:team@io-threads.com">team@io-threads.com</a> for help.</p></noscript>
 <div class="ap">
@@ -187,9 +188,11 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
       <label>Email<input id="ap-adm-email" type="email" required autocomplete="off"></label>
       <label>Plan<select id="ap-adm-plan"><option>Reader</option><option>Builder</option><option>Buyer</option><option>Partner</option><option>Lifetime</option></select></label>
       <label>Status<select id="ap-adm-status"><option>active</option><option value="past_due">past due</option><option>cancelled</option></select></label>
+      <label class="ap-adm-chk"><input type="checkbox" id="ap-adm-verified"> They replied from this address</label>
       <button class="btn solid" type="submit">Set plan</button>
     </form>
-    <div class="ap-scroll"><table><thead><tr><th>Email</th><th>Plan</th><th>Status</th><th>Role</th><th>Joined</th></tr></thead><tbody id="ap-adm-rows"></tbody></table></div>
+    <p class="fine">Paid plans need a verified email. Sign-ups don't prove someone owns their address, so tick the box only after the buyer has emailed you from it.</p>
+    <div class="ap-scroll"><table><thead><tr><th>Email</th><th>Verified</th><th>Plan</th><th>Status</th><th>Role</th><th>Joined</th></tr></thead><tbody id="ap-adm-rows"></tbody></table></div>
   </section>
   <section class="ap-plus" aria-labelledby="ap-h-plus">
     <p class="ap-soon">iot+ · Coming soon</p>
@@ -216,7 +219,7 @@ iotAuth.gate("app.html").then(function(s){if(!s)return;
   $("ap-out").onclick=function(){iotAuth.signOut()};
   $("ap-pw-form").onsubmit=function(){var p=$("ap-pw").value;if(p.length<10){$("ap-pw-state").textContent="Use at least 10 characters.";return}
     $("ap-pw-state").textContent="Saving…";iotAuth.sb.auth.updateUser({password:p}).then(function(r){
-      if(r.error){$("ap-pw-state").textContent=/different|same/i.test(r.error.message)?"That's your current password. Pick a new one.":/least|short|weak/i.test(r.error.message)?"Use a longer password.":"Couldn't change it. Try again.";return}
+      if(r.error){$("ap-pw-state").textContent=/reauth/i.test(r.error.message+(r.error.code||""))?"For your security, log out and log in again, then change your password.":/different|same/i.test(r.error.message)?"That's your current password. Pick a new one.":/least|short|weak/i.test(r.error.message)?"Use a longer password.":"Couldn't change it. Try again.";return}
       $("ap-pw").value="";$("ap-pw-state").textContent="Password changed. Use it next time you log in."}).catch(function(){$("ap-pw-state").textContent="Couldn't reach sign-in. Try again."})};
   $("ap-key-make").onclick=function(){call("create").then(function(r){if(r.key){key=r.key;$("ap-key-new").textContent=r.key;$("ap-key-new").hidden=false;$("ap-key-copy").hidden=false;$("ap-key-state").textContent="Here's your new key. It's shown once; any older key no longer works.";$("ap-key-revoke").hidden=false;$("ap-key-make").textContent="Replace key"}})};
   $("ap-key-copy").onclick=function(){navigator.clipboard.writeText(key).then(function(){$("ap-key-copy").textContent="Copied"})};
@@ -226,9 +229,9 @@ iotAuth.gate("app.html").then(function(s){if(!s)return;
 function adm(body){return iotAuth.session().then(function(s){if(!s){location.replace("login.html?next=app.html");throw 0}return fetch(iotAuth.fn+"/admin",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+s.access_token},body:JSON.stringify(body)})}).then(function(r){return r.json()}).catch(function(){return {ok:false,error:"Couldn't reach the admin service. Try again."}})}
 function loadAdmin(msg){adm({action:"overview"}).then(function(r){if(!r.ok){if(r.error==="Admins only.")return;$("ap-admin").hidden=false;$("ap-adm-state").textContent=r.error;return}
   $("ap-admin").hidden=false;var tb=$("ap-adm-rows");tb.textContent="";
-  r.members.forEach(function(m){var tr=document.createElement("tr");[m.email,m.plan,m.status.replace("_"," "),m.role,new Date(m.created_at).toLocaleDateString()].forEach(function(v){var td=document.createElement("td");td.textContent=v;tr.appendChild(td)});tr.onclick=function(){$("ap-adm-email").value=m.email;$("ap-adm-plan").value=m.plan;$("ap-adm-status").value=m.status};tb.appendChild(tr)});
+  r.members.forEach(function(m){var tr=document.createElement("tr");[m.email,m.email_verified_at?"yes":"no",m.plan,m.status.replace("_"," "),m.role,new Date(m.created_at).toLocaleDateString()].forEach(function(v){var td=document.createElement("td");td.textContent=v;tr.appendChild(td)});tr.onclick=function(){$("ap-adm-email").value=m.email;$("ap-adm-plan").value=m.plan;$("ap-adm-status").value=m.status};tb.appendChild(tr)});
   $("ap-adm-state").textContent=(msg?msg+" ":"")+r.total+" member"+(r.total===1?"":"s")+(r.total>r.members.length?" (showing the newest "+r.members.length+")":"")+", "+r.activeKeys+" active API key"+(r.activeKeys===1?"":"s")+". Tap a row to edit it."})}
-$("ap-adm-form").onsubmit=function(){$("ap-adm-state").textContent="Saving…";adm({action:"set_plan",email:$("ap-adm-email").value,plan:$("ap-adm-plan").value,status:$("ap-adm-status").value}).then(function(r){if(!r.ok){$("ap-adm-state").textContent=r.error||"Something went wrong.";return}loadAdmin(r.member.email+" is now "+r.member.plan+" ("+r.member.status.replace("_"," ")+").")})};
+$("ap-adm-form").onsubmit=function(){$("ap-adm-state").textContent="Saving…";adm({action:"set_plan",email:$("ap-adm-email").value,plan:$("ap-adm-plan").value,status:$("ap-adm-status").value,verified:$("ap-adm-verified").checked}).then(function(r){if(!r.ok){$("ap-adm-state").textContent=r.error||"Something went wrong.";return}loadAdmin(r.member.email+" is now "+r.member.plan+" ("+r.member.status.replace("_"," ")+").")})};
 function loadKey(){iotAuth.sb.from("api_keys").select("prefix,created_at").is("revoked_at",null).order("created_at",{ascending:false}).limit(1).then(function(r){if(r.error){$("ap-key-state").textContent="Couldn't load your key. Reload the page.";return}var k=r.data&&r.data[0];
   $("ap-key-state").textContent=k?"Active key "+k.prefix+"… created "+new Date(k.created_at).toLocaleDateString()+".":"You don't have a key yet. The free tier is 60 requests an hour, 1,000 a day.";
   $("ap-key-make").textContent=k?"Replace key":"Create key";$("ap-key-revoke").hidden=!k})}
