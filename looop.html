@@ -1102,6 +1102,12 @@ html .ip-term.drag *{user-select:none}
 <meta name="robots" content="noindex">
 <style>.iot-gate body{visibility:hidden}</style>
 <noscript><style>.iot-gate body{visibility:visible}</style></noscript>
+<style id="spacing-pass">
+/* Spacing pass 11-16: session titles shrink with an ellipsis instead of running under the live dots; in a narrow sidebar the "2 live" label folds to dots only. */
+.zide-side .sp-sess li>span,.zide .za-list li>span{display:block;min-width:0;margin-left:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zide-side .sp-dev{container-type:inline-size}
+@container (max-width:300px){.zide-side .sp-sess .zlv{font-size:0;gap:4px}.zide-side .sp-sess .zlv i+i{margin-right:0}}
+</style>
 </head>
 <body>
 <script src="vendor/supabase-2.45.4.js"></script>
