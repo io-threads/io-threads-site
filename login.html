@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Log in | io threads</title>
-<meta name="description" content="Log in to io threads with a one-time email link or code: your iolin, API key and membership.">
+<meta name="description" content="Log in to io threads or create a free account with your email and password: your iolin, API key and membership.">
 <link rel="canonical" href="https://io-threads.com/login.html">
 <meta property="og:title" content="Log in | io threads">
-<meta property="og:description" content="Log in to io threads with a one-time email link or code: your iolin, API key and membership.">
+<meta property="og:description" content="Log in to io threads or create a free account with your email and password: your iolin, API key and membership.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://io-threads.com/login.html">
 <meta property="og:site_name" content="io threads">
@@ -18,7 +18,7 @@
 <meta property="og:image:alt" content="io threads: your AI claim is only as good as the person who checked it. Verdict table showing PASS, FAIL and ABSTAIN.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Log in | io threads">
-<meta name="twitter:description" content="Log in to io threads with a one-time email link or code: your iolin, API key and membership.">
+<meta name="twitter:description" content="Log in to io threads or create a free account with your email and password: your iolin, API key and membership.">
 <meta name="twitter:image" content="https://io-threads.com/assets/og-card.png">
 <meta name="theme-color" content="#141D2D">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%232a1416'/%3E%3Ccircle cx='256' cy='282' r='150' fill='none' stroke='%23E07A52' stroke-width='44'/%3E%3Cline x1='256' y1='58' x2='256' y2='108' stroke='%23E07A52' stroke-width='44' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -106,6 +106,15 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
 </header>
 <main class="wrap" id="main">
 <style>
+.lg-tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule);margin-bottom:var(--sp3)}
+.lg-tabs button{font:500 1rem/1 var(--f-display);background:none;border:0;border-bottom:2px solid transparent;padding:10px 4px;margin-right:16px;color:var(--muted);cursor:pointer}
+.lg-tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.lg-pw{display:flex;gap:8px;align-items:stretch}.lg-pw input{flex:1;min-width:0}
+.lg-show{font:500 .85rem/1 var(--f-display);padding:0 12px;border:1px solid var(--rule);border-radius:var(--radius);background:transparent;color:var(--ink);cursor:pointer}
+.lg-keep{display:flex!important;flex-direction:row!important;gap:10px;align-items:center;font-weight:400}
+.lg-keep input{width:18px;height:18px;margin:0}
+.lg-help{margin-top:0}
+
 .lg [hidden]{display:none!important}
 .lg{max-width:440px;margin:var(--sp8) auto var(--sp7);display:grid;gap:var(--sp4)}
 .lg form{display:grid;gap:var(--sp3);background:var(--sheet);border:1px solid var(--rule);border-radius:12px;padding:var(--sp5)}
@@ -123,45 +132,53 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
     <h1>Log in</h1>
     <p>Your archive, credits and free API key.</p>
   </div>
+  <div class="lg-tabs" role="tablist" aria-label="Log in or create an account">
+    <button type="button" role="tab" id="lg-t-in" aria-selected="true" aria-controls="lg-form">Log in</button>
+    <button type="button" role="tab" id="lg-t-up" aria-selected="false" aria-controls="lg-form">Create account</button>
+  </div>
   <form id="lg-form" action="javascript:void 0" novalidate>
     <label for="lg-email">Email<input id="lg-email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
-    <button class="btn solid" type="submit" id="lg-send">Email me a sign-in link</button>
-    <div id="lg-code-box" hidden>
-      <label for="lg-code">Or type the code from the email<input id="lg-code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="8" placeholder="8-digit code"></label>
-      <button class="btn line" type="button" id="lg-verify">Sign in with code</button>
-    </div>
+    <label for="lg-pw">Password<span class="lg-pw"><input id="lg-pw" type="password" autocomplete="current-password" minlength="10" required><button type="button" class="lg-show" id="lg-show" aria-pressed="false">Show</button></span></label>
+    <label class="lg-keep"><input type="checkbox" id="lg-keep" checked> Keep me signed in on this device</label>
+    <button class="btn solid" type="submit" id="lg-go">Log in</button>
+    <p class="fine" id="lg-note" aria-live="polite">Sign-in needs JavaScript. Email <a href="mailto:team@io-threads.com">team@io-threads.com</a> for help.</p>
     <p class="or">or</p>
     <a class="btn line" href="join.html">See plans</a>
-    <p class="fine" id="lg-note" aria-live="polite">Sign-in needs JavaScript. Email <a href="mailto:team@io-threads.com">team@io-threads.com</a> for help.</p>
+    <p class="fine lg-help">Forgot your password? Email <a href="mailto:team@io-threads.com?subject=Password%20reset">team@io-threads.com</a>.</p>
   </form>
   
 </div>
 <script src="vendor/supabase-2.45.4.js"></script>
 <script src="auth.js"></script>
 <script>(function(){
-var $=function(i){return document.getElementById(i)},note=$("lg-note"),send=$("lg-send"),q=new URLSearchParams(location.search);
-// Turn on once the email templates include the 8-digit code (needs custom SMTP on the Supabase free tier).
-var CODE=false;
-var ERR={otp_expired:"That sign-in link expired or was already used. Send a new one.",access_denied:"That sign-in link didn't work. Send a new one."};
-function say(t,bad){note.textContent=t;$("lg-email").setAttribute("aria-invalid",bad?"true":"false")}
-if(!window.iotAuth){say("Sign-in couldn't load. Reload, or email team@io-threads.com.");send.disabled=true;return}
-var next=iotAuth.safeNext(q.get("next")),err=q.get("err")||iotAuth.linkError;
+var $=function(i){return document.getElementById(i)},note=$("lg-note"),go=$("lg-go"),pw=$("lg-pw"),q=new URLSearchParams(location.search),mode="in";
+function say(t,bad){note.textContent=t;$("lg-email").setAttribute("aria-invalid",bad==="email"?"true":"false");pw.setAttribute("aria-invalid",bad==="pw"?"true":"false")}
+if(!window.iotAuth){say("Sign-in couldn't load. Reload, or email team@io-threads.com.");go.disabled=true;return}
+var next=iotAuth.safeNext(q.get("next"));
 iotAuth.user().then(function(u){if(u)location.replace(next)});
-say(err?(ERR[err]||ERR.access_denied):q.get("next")?"Log in to open that page. New here? Your first sign-in makes you a free Reader.":"We'll email you a sign-in link. New emails join free as a Reader.");
-function email(){return $("lg-email").value.trim()}
-$("lg-form").addEventListener("submit",function(e){e.preventDefault();var v=email();
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){say("Enter a valid email.",true);$("lg-email").focus();return}
-  send.disabled=true;say("Sending…");
-  iotAuth.sb.auth.signInWithOtp({email:v,options:{emailRedirectTo:location.origin+"/"+next,shouldCreateUser:true}}).then(function(r){send.disabled=false;
-    if(r.error){say(/rate|seconds|too many/i.test(r.error.message)?"Sign-in emails are limited right now. Wait a few minutes, or email team@io-threads.com.":"Couldn't send the email: "+r.error.message);return}
-    say("Check "+v+" for your sign-in link."+(CODE?" Or type the code below.":""));if(CODE){$("lg-code-box").hidden=false;$("lg-code").focus()}})
-  .catch(function(){send.disabled=false;say("Couldn't reach sign-in. Check your connection and try again.")})});
-$("lg-verify").addEventListener("click",function(){var c=$("lg-code").value.replace(/\D/g,"");
-  if(c.length<6){say("Enter the code from the email.");return}
-  $("lg-verify").disabled=true;say("Checking…");
-  iotAuth.sb.auth.verifyOtp({email:email(),token:c,type:"email"}).then(function(r){$("lg-verify").disabled=false;
-    if(r.error){say("That code didn't work. It may have expired; send a new one.");return}
-    location.replace(next)}).catch(function(){$("lg-verify").disabled=false;say("Couldn't reach sign-in. Try again.")})});
+var HINT={in:q.get("next")?"Log in to open that page.":"",up:"Free Reader account. Use at least 10 characters for your password."};
+function setMode(m){mode=m;$("lg-t-in").setAttribute("aria-selected",m==="in");$("lg-t-up").setAttribute("aria-selected",m==="up");
+  go.textContent=m==="in"?"Log in":"Create account";pw.autocomplete=m==="in"?"current-password":"new-password";say(HINT[m])}
+$("lg-t-in").onclick=function(){setMode("in")};$("lg-t-up").onclick=function(){setMode("up")};
+if(q.get("mode")==="signup")setMode("up");else say(HINT.in);
+$("lg-show").onclick=function(){var on=pw.type==="password";pw.type=on?"text":"password";this.textContent=on?"Hide":"Show";this.setAttribute("aria-pressed",on)};
+function msg(e){var m=(e&&e.message)||"";
+  if(/invalid login credentials/i.test(m))return["Email or password is wrong.","pw"];
+  if(/already registered|already exists/i.test(m))return["That email already has an account. Log in instead.","email"];
+  if(/password/i.test(m)&&/(least|short|weak|characters)/i.test(m))return["Use a longer password: at least 10 characters.","pw"];
+  if(/email.*(invalid|valid)/i.test(m))return["Enter a valid email.","email"];
+  if(/rate|too many|seconds/i.test(m))return["Too many tries. Wait a minute and try again.",""];
+  if(/not confirmed/i.test(m))return["This account isn't active yet. Email team@io-threads.com.",""];
+  return["Couldn't sign you in. Try again, or email team@io-threads.com.",""]}
+$("lg-form").addEventListener("submit",function(ev){ev.preventDefault();var em=$("lg-email").value.trim(),p=pw.value;
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){say("Enter a valid email.","email");$("lg-email").focus();return}
+  if(p.length<(mode==="up"?10:1)){say(mode==="up"?"Use at least 10 characters for your password.":"Enter your password.","pw");pw.focus();return}
+  iotAuth.remember($("lg-keep").checked);go.disabled=true;say(mode==="in"?"Signing in…":"Creating your account…");
+  var call=mode==="in"?iotAuth.sb.auth.signInWithPassword({email:em,password:p}):iotAuth.sb.auth.signUp({email:em,password:p});
+  call.then(function(r){go.disabled=false;
+    if(r.error){var x=msg(r.error);say(x[0],x[1]);return}
+    if(!r.data.session){say("Account created. Log in to continue.");setMode("in");return}
+    location.replace(next)}).catch(function(){go.disabled=false;say("Couldn't reach sign-in. Check your connection and try again.")})});
 })();</script>
 <div class="band">
   <div><h2>Building agents, IDEs or search apps?</h2><p>Plug in the check layer. The iot API, MCP feed and agent skill put a PASS, FAIL or ABSTAIN on every answer your product gives, with the evidence attached.</p></div>

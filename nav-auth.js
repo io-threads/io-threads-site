@@ -2,7 +2,7 @@
    (no network, no library), so it can be wrong for an expired session; the Account page checks properly. */
 (function () {
   try {
-    var raw = localStorage.getItem("sb-tckvatqkjfrvavleunzk-auth-token");
+    var K = "sb-tckvatqkjfrvavleunzk-auth-token", raw = sessionStorage.getItem(K) || localStorage.getItem(K);
     var s = raw && JSON.parse(raw);
     if (!s || !s.refresh_token) return;
   } catch (e) { return; }

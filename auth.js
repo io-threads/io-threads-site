@@ -28,7 +28,19 @@
     return;
   }
 
-  var sb = window.supabase.createClient(URL, KEY, { auth: { flowType: "implicit", persistSession: true, detectSessionInUrl: true } });
+  // "Keep me signed in": on (default) keeps the session in localStorage across browser restarts; off keeps it in
+  // sessionStorage, so it ends when the browser closes. Storage can be blocked (private mode), so every call is guarded.
+  var KEEP = "iot-keep";
+  function keep() { try { return localStorage.getItem(KEEP) !== "0"; } catch (e) { return false; } }
+  function get(st, k) { try { return st.getItem(k); } catch (e) { return null; } }
+  function put(st, k, v) { try { st.setItem(k, v); } catch (e) {} }
+  function drop(st, k) { try { st.removeItem(k); } catch (e) {} }
+  var storage = {
+    getItem: function (k) { return get(sessionStorage, k) || get(localStorage, k); },
+    setItem: function (k, v) { if (keep()) { put(localStorage, k, v); drop(sessionStorage, k); } else { put(sessionStorage, k, v); drop(localStorage, k); } },
+    removeItem: function (k) { drop(localStorage, k); drop(sessionStorage, k); }
+  };
+  var sb = window.supabase.createClient(URL, KEY, { auth: { flowType: "implicit", persistSession: true, detectSessionInUrl: true, autoRefreshToken: true, storage: storage } });
 
   window.iotAuth = {
     sb: sb,
@@ -38,6 +50,7 @@
     // Server-checked: resolves to the user only when the saved session is genuine.
     user: function () { return sb.auth.getUser().then(function (r) { return r.error ? null : r.data.user; }, function () { return null; }); },
     // Only the members pages are valid return targets.
+    remember: function (on) { try { localStorage.setItem(KEEP, on ? "1" : "0"); } catch (e) {} },
     safeNext: function (n) { return GATED.indexOf(n) >= 0 ? n : "app.html"; },
     // Hide the page until the server confirms who is viewing; anyone else goes to log in.
     gate: function (page) {
