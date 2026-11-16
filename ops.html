@@ -2,6 +2,8 @@
 <html lang="en" class="iot-gate">
 <head>
 <meta charset="utf-8">
+<script>try{if(top!==self&&top.location.origin!==location.origin)throw 0}catch(e){document.documentElement.style.display="none"}</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ops | io threads</title>
 <meta name="robots" content="noindex">
@@ -139,7 +141,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
       <p id="op-eng-head" class="fine"></p>
       <div class="hist" id="op-eng-hist" aria-label="Recent runs, newest first"></div>
       <ul class="links" id="op-eng-list"></ul>
-      <a class="btn line" id="op-eng-run" href="https://github.com/pjackson31/io-threads-server/actions/workflows/engine.yml" target="_blank" rel="noopener">Open the latest run</a>
+      <a class="btn line" id="op-eng-run" href="#" target="_blank" rel="noopener" hidden>Open the latest run</a>
     </section>
     <section class="op-card" aria-labelledby="op-h-mem">
       <p class="op-k">Members</p>
@@ -164,7 +166,7 @@ footer.site a.mark.mark b{font-size:1.05rem}
       <a class="btn line" id="op-pv-open" href="./" target="_blank" rel="noopener">Open</a>
     </div>
     <p class="fine">You're signed in, so the header shows Account. Visitors see Log in and Join now; open a private window to check that view.</p>
-    <div class="pv" id="op-pv"><iframe id="op-pv-frame" title="Page preview" loading="lazy"></iframe></div>
+    <div class="pv" id="op-pv"><iframe id="op-pv-frame" title="Page preview" loading="lazy" sandbox="allow-same-origin allow-scripts"></iframe></div>
   </section>
   <div class="op-two" style="margin-top:var(--sp4)">
     <section class="op-card" aria-labelledby="op-h-rel">
@@ -190,7 +192,9 @@ var PAGES=[["Home","./"],["Join","join.html"],["iot API (sample report)","sample
 function el(tag,text,cls){var e=document.createElement(tag);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
 function ago(t){var s=(Date.now()-new Date(t).getTime())/1000;if(s<90)return "just now";if(s<5400)return Math.round(s/60)+" min ago";if(s<129600)return Math.round(s/3600)+" h ago";return Math.round(s/86400)+" days ago"}
 function row(tb,cells){var tr=el("tr");cells.forEach(function(c){var td=el("td");if(c&&c.nodeType)td.appendChild(c);else td.textContent=c==null?"":c;tr.appendChild(td)});tb.appendChild(tr)}
-function link(text,href){var a=el("a",text);a.href=href;a.target="_blank";a.rel="noopener";return a}
+// Only same-site paths and known https hosts become links; anything else shows as plain text.
+var HOSTS=["https://github.com/","https://supabase.com/","https://app.squareup.com/","https://10threads.store/"];
+function link(text,href){href=String(href||"");var safe=/^[a-z0-9-]+\.html(#[\w-]+)?$/i.test(href)||HOSTS.some(function(h){return href.indexOf(h)===0});if(!safe)return el("span",text);var a=el("a",text);a.href=href;a.target="_blank";a.rel="noopener";return a}
 function timed(p,ms){return Promise.race([p,new Promise(function(_,no){setTimeout(function(){no(new Error("timeout"))},ms||12000)})])}
 
 // Live tiles: each probe resolves to [state, detail].
@@ -208,13 +212,13 @@ function live(){$("op-live").textContent="";
   tile("Sign-in email (DKIM)",function(){return fetch("https://dns.google/resolve?name=google._domainkey.io-threads.com&type=TXT").then(function(r){return r.json()}).then(function(d){var on=JSON.stringify(d.Answer||[]).indexOf("v=DKIM1")>=0;return [on?"ok":"warn",on?"Google DKIM set":"not set up yet (runbook block A)"]})});
 }
 
-function projects(siteRuns,lastProd,lastStage){var g=$("op-proj");g.textContent="";
+function projects(siteRuns,lastProd,lastStage,L){L=L||{};var g=$("op-proj");g.textContent="";
   function card(name,state,lines,links){var t=el("div",null,"tile "+(state||"")),b=el("b"),d=el("i",null,"dot");b.appendChild(d);b.appendChild(document.createTextNode(name));t.appendChild(b);lines.forEach(function(l){t.appendChild(el("span",l))});var ln=el("div",null,"links");links.forEach(function(x){ln.appendChild(link(x[0],x[1]))});t.appendChild(ln);g.appendChild(t)}
   var sr=siteRuns&&siteRuns[0];
   card("Website · io-threads.com",sr?(sr.conclusion==="success"?"ok":(sr.conclusion?"bad":"warn")):"",[sr?"last publish "+(sr.conclusion||sr.status)+", "+ago(sr.created_at):"publish history unavailable","GitHub Pages, checks gate every publish"],[["Repo","https://github.com/"+SITE_REPO],["Publishes","https://github.com/"+SITE_REPO+"/actions/workflows/pages.yml"]]);
-  card("Production server",lastProd?(lastProd.verdict==="success"?"ok":"bad"):"",[lastProd?"release "+lastProd.ref+" "+lastProd.verdict+", "+ago(lastProd.created_at):"no release recorded yet","Supabase iothreads · Square live"],[["Supabase","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk"],["Deploy production","https://github.com/pjackson31/io-threads-server/actions/workflows/production.yml"],["Logs","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk/functions"]]);
-  card("Staging",lastStage?(lastStage.verdict==="success"?"ok":"bad"):"",[lastStage?"deploy "+lastStage.ref+" "+lastStage.verdict+", "+ago(lastStage.created_at):"no deploy recorded yet","Supabase iothreads-staging · Square sandbox"],[["Supabase","https://supabase.com/dashboard/project/ubrtniizrwxblwauzaos"],["Deploys","https://github.com/pjackson31/io-threads-server/actions/workflows/staging.yml"]]);
-  card("Server code",null,["migrations, Edge Functions, engine suite","push to main = staging; tag + run = production"],[["Repo","https://github.com/pjackson31/io-threads-server"],["Releases (tags)","https://github.com/pjackson31/io-threads-server/tags"]]);
+  card("Production server",lastProd?(lastProd.verdict==="success"?"ok":"bad"):"",[lastProd?"release "+lastProd.ref+" "+lastProd.verdict+", "+ago(lastProd.created_at):"no release recorded yet","Supabase iothreads · Square live"],[["Supabase","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk"],["Deploy production",L.production],["Logs","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk/functions"]]);
+  card("Staging",lastStage?(lastStage.verdict==="success"?"ok":"bad"):"",[lastStage?"deploy "+lastStage.ref+" "+lastStage.verdict+", "+ago(lastStage.created_at):"no deploy recorded yet","Supabase iothreads-staging · Square sandbox"],[["Supabase",L.stagingDashboard],["Deploys",L.stagingDeploys]]);
+  card("Server code",null,["migrations, Edge Functions, engine suite","push to main = staging; tag + run = production"],[["Repo",L.serverRepo],["Releases (tags)",L.serverTags]]);
   card("Payments · Square",null,["in-page checkout + 4 payment links","Builder, Buyer, Partner monthly; Lifetime"],[["Square dashboard","https://app.squareup.com/dashboard/"],["Join page","join.html"]]);
   card("Merch · 10threads.store",null,["Shopify store"],[["Store","https://10threads.store/"]]);
 }
@@ -243,7 +247,7 @@ function load(){$("op-when").textContent="Checking…";live();
     $("op-eng-list").textContent="";if(last&&last.summary){var S=last.summary;
       (S.fails||[]).forEach(function(f){$("op-eng-list").appendChild(el("li","✗ "+f,"bad-t"))});(S.splits||[]).forEach(function(f){$("op-eng-list").appendChild(el("li","≠ engines disagree: "+f,"bad-t"))});
       (S.warns||[]).forEach(function(f){$("op-eng-list").appendChild(el("li","! "+f+" (known gap)","warn-t"))});(S.flaky||[]).forEach(function(f){$("op-eng-list").appendChild(el("li","~ flaky: "+f))})}
-    if(last&&last.run_url)$("op-eng-run").href=last.run_url;
+    var er=last&&last.run_url&&last.run_url.indexOf("https://github.com/")===0?last.run_url:(r.links||{}).engine;if(er){$("op-eng-run").href=er;$("op-eng-run").hidden=false}
     // Members
     var m=r.members;$("op-mem-n").textContent=m.total+" member"+(m.total===1?"":"s");$("op-mem-plans").textContent="";
     ["Reader","Builder","Buyer","Partner","Lifetime"].forEach(function(p){if(m.plans[p])$("op-mem-plans").appendChild(el("span",p+" "+m.plans[p]))});
@@ -256,7 +260,7 @@ function load(){$("op-when").textContent="Checking…";live();
     if(!rel.length)row($("op-rel"),["","No releases recorded yet.","",""]);
     $("op-log").textContent="";(r.log||[]).forEach(function(x){row($("op-log"),[x.action.replace("_"," ")+(x.detail&&x.detail.plan?" → "+x.detail.plan+(x.detail.status&&x.detail.status!=="active"?" ("+x.detail.status+")":""):""),x.target_email,ago(x.created_at)])});
     if(!(r.log||[]).length)row($("op-log"),["No admin changes yet.","",""]);
-    projects(site,(r.releases||[]).filter(function(x){return x.env==="production"})[0],(r.releases||[]).filter(function(x){return x.env==="staging"})[0]);
+    projects(site,(r.releases||[]).filter(function(x){return x.env==="production"})[0],(r.releases||[]).filter(function(x){return x.env==="staging"})[0],r.links);
     $("op-when").textContent="Updated "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
   }).catch(function(){$("op-when").textContent="Couldn't reach the admin service. Try Refresh."})}
 iotAuth.gate("ops.html").then(function(s){if(s)load()});
