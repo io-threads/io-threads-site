@@ -1,0 +1,31 @@
+# Publishes io-threads.com only when the site checks and the browser smoke test pass.
+name: Check and publish site
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions: { contents: read, pages: write, id-token: write }
+concurrency: { group: pages, cancel-in-progress: false }
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python .ci/check.py
+      - run: pip install playwright==1.48.0 && python -m playwright install --with-deps chromium
+      - run: python .ci/smoke.py
+      - name: Bundle what Pages serves (no CI or tooling files)
+        run: rsync -a --exclude .git --exclude .github --exclude .ci --exclude .netlify ./ _site/
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: check
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: "${{ steps.d.outputs.page_url }}" }
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4
