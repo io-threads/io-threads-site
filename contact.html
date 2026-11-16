@@ -86,6 +86,15 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h1{text-shadow:0 0 34px rgba(224,122,82,.28),0 0 3px rgba(255,240,230,.12)}:root:not([data-theme="light"]) h2{text-shadow:0 0 24px rgba(224,122,82,.18)}}
 :root[data-theme="dark"] h1{text-shadow:0 0 34px rgba(224,122,82,.28),0 0 3px rgba(255,240,230,.12)}
 :root[data-theme="dark"] h2{text-shadow:0 0 24px rgba(224,122,82,.18)}
+/* Home and shared art (ocean band, globe, loop card) shift from night-blue into the o-ring maroon family; text stays as is. */
+.osec>canvas,figure.tri-sea>canvas{filter:hue-rotate(140deg) saturate(.78) brightness(.92)!important}
+html .osec{--sea:#2A1416}
+html .osec .ocean{--obg:#3A1D1F}
+.fly:not(.fly2){background:#341A1C!important}
+.osec .ocean *{filter:none}
+.band{background:#2A1416!important;color:#F4E9E3!important}
+.band .btn.solid{background:#E07A52!important;border-color:#E07A52!important;color:#2A1416!important}
+.band .btn.line{color:#F4E9E3!important;border-color:rgba(244,233,227,.5)!important}
 /* iot+ panel: Twilight (its default theme) takes the o-ring ground and the same dot pattern as Night and Day. */
 .ipnet:not(.th-day):not(.th-night) .ipn-main{background:radial-gradient(60% 70% at 20% 10%,rgba(224,122,82,.16),transparent 60%),radial-gradient(circle at 1px 1px,rgba(255,236,226,.06) 1px,transparent 1.5px) 0 0/18px 18px,linear-gradient(160deg,#341A1C,#2A1416 60%,#1F0E10)!important}
 </style>
