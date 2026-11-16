@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-11 -29 134 134'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%23C29BFF'/%3E%3Cstop offset='.55' stop-color='%23FF7DC0'/%3E%3Cstop offset='1' stop-color='%23FFD45C'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='-11' y='-29' width='134' height='134' rx='28' fill='%230E2547'/%3E%3Cpath d='M66 26.3 A32 32 0 1 1 34 26.3' fill='none' stroke='url(%23g)' stroke-width='11' stroke-linecap='round'/%3E%3Cpath d='M50 62 V36 C50 20 56 12 66 10 S80 6 85 1' fill='none' stroke='url(%23g)' stroke-width='11' stroke-linecap='round'/%3E%3Ccircle cx='90' cy='-5' r='8' fill='none' stroke='url(%23g)' stroke-width='7'/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%232a1416'/%3E%3Ccircle cx='256' cy='282' r='150' fill='none' stroke='%23E07A52' stroke-width='44'/%3E%3Cline x1='256' y1='58' x2='256' y2='108' stroke='%23E07A52' stroke-width='44' stroke-linecap='round'/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="io threads is an independent AI evaluation practice. We don&#x27;t sell the model, platform or cloud being evaluated.">
 <link rel="canonical" href="https://io-threads.com/">
 <meta property="og:title" content="io threads: Independent AI Evaluation">
@@ -332,6 +332,35 @@ section.osec::after{display:none}
 @media (prefers-reduced-motion:reduce){#oceans .grip{display:none}}
 </style>
 <style id="miniglobe-css">.fly{position:relative}.fly .mglobe{position:absolute;pointer-events:none;z-index:2;border-radius:50%}#fly .grove{display:none}</style>
+<style id="oring">
+/* o-ring identity (11-16): the I-tick + O-ring mark animates in the header; dark mode ("twilight") uses the mark's
+   maroon and terracotta on every page. Light mode keeps the paper and ink palette. */
+:root{--ring:light-dark(#B5502E,#E07A52);
+--paper: light-dark(oklch(97.6% var(--paper-c) var(--paper-h)),#2A1416);
+--sheet: light-dark(oklch(99.6% .002 var(--paper-h)),#341A1C);
+--ink: light-dark(oklch(23% .035 var(--ink-h)),#F4E9E3);
+--muted: light-dark(oklch(47% .025 var(--ink-h)),#CDB0A6);
+--rule: light-dark(oklch(89% .01 var(--paper-h)),#4C2C2D);
+--accent: light-dark(oklch(var(--brand-l) var(--brand-c) var(--brand-h)),#F0A07E);
+--accent-ink: light-dark(oklch(99% 0 0),#2A1416);
+--accent-soft: light-dark(oklch(94.5% calc(var(--brand-c) * .19) var(--brand-h)),#4A2421)}
+a.mark.mark .mk.or{overflow:visible}
+a.mark.mark .or-o,a.mark.mark .or-i{stroke:var(--ring)}
+a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;color:var(--ink)}
+@media (prefers-reduced-motion:no-preference){
+  header a.mark.mark .or-o{stroke-dasharray:100;stroke-dashoffset:100;animation:or-draw 1.1s cubic-bezier(.65,0,.35,1) .1s forwards}
+  header a.mark.mark .or-i{opacity:0;transform:translateY(-60px);animation:or-tick .5s cubic-bezier(.2,1.4,.4,1) 1.05s forwards}
+  header a.mark.mark:hover .or-i{animation:or-nod .6s ease}
+  @keyframes or-draw{to{stroke-dashoffset:0}}
+  @keyframes or-tick{to{opacity:1;transform:none}}
+  @keyframes or-nod{0%,100%{transform:none}40%{transform:translateY(-26px)}}
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h1{text-shadow:0 0 34px rgba(224,122,82,.28),0 0 3px rgba(255,240,230,.12)}:root:not([data-theme="light"]) h2{text-shadow:0 0 24px rgba(224,122,82,.18)}}
+:root[data-theme="dark"] h1{text-shadow:0 0 34px rgba(224,122,82,.28),0 0 3px rgba(255,240,230,.12)}
+:root[data-theme="dark"] h2{text-shadow:0 0 24px rgba(224,122,82,.18)}
+/* iot+ panel: Twilight (its default theme) takes the o-ring ground and the same dot pattern as Night and Day. */
+.ipnet:not(.th-day):not(.th-night) .ipn-main{background:radial-gradient(60% 70% at 20% 10%,rgba(224,122,82,.16),transparent 60%),radial-gradient(circle at 1px 1px,rgba(255,236,226,.06) 1px,transparent 1.5px) 0 0/18px 18px,linear-gradient(160deg,#341A1C,#2A1416 60%,#1F0E10)!important}
+</style>
 </head><body>
 <title>io threads: Independent AI Evaluation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -341,7 +370,7 @@ section.osec::after{display:none}
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
-    <a class="mark only" href="./" aria-label="io threads home"><svg class="mk" viewBox="0 -22 112 114" aria-hidden="true"><defs><linearGradient id="mkg1" x1="0" y1="1" x2="1" y2="0"><stop class="g1" offset="0"/><stop class="g2" offset=".55"/><stop class="g3" offset="1"/></linearGradient></defs><path d="M66 26.3 A32 32 0 1 1 34 26.3" fill="none" stroke="url(#mkg1)" stroke-width="9" stroke-linecap="round"/><path d="M50 62 V36 C50 20 56 12 66 10 S80 6 85 1" fill="none" stroke="url(#mkg1)" stroke-width="9" stroke-linecap="round"/><circle cx="90" cy="-5" r="8" fill="none" stroke="url(#mkg1)" stroke-width="6"/></svg><b>io</b></a>
+    <a class="mark only" href="./" aria-label="io threads home"><svg class="mk or" viewBox="98 70 316 352" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="22" pathLength="100"/><line class="or-i" x1="256" y1="84" x2="256" y2="126" stroke-width="22" stroke-linecap="round"/></svg><b>io</b></a>
     <nav class="nav" aria-label="Main">
       <a href="looop.html" data-looop>iolin</a>
       <a href="sample-report.html">iot API</a>
@@ -959,7 +988,7 @@ section.osec::after{display:none}
   <div class="cta"><a class="btn solid" href="sample-report.html">Try the iot API</a><a class="btn line" href="mailto:team@io-threads.com?subject=Partnership%3A%20agentic%20apps">Partner with us</a></div>
 </div>
 <footer class="site">
-  <div><a class="mark" href="./"><svg class="mk" viewBox="0 -22 112 114" aria-hidden="true"><defs><linearGradient id="mkg2" x1="0" y1="1" x2="1" y2="0"><stop class="g1" offset="0"/><stop class="g2" offset=".55"/><stop class="g3" offset="1"/></linearGradient></defs><path d="M66 26.3 A32 32 0 1 1 34 26.3" fill="none" stroke="url(#mkg2)" stroke-width="9" stroke-linecap="round"/><path d="M50 62 V36 C50 20 56 12 66 10 S80 6 85 1" fill="none" stroke="url(#mkg2)" stroke-width="9" stroke-linecap="round"/><circle cx="90" cy="-5" r="8" fill="none" stroke="url(#mkg2)" stroke-width="6"/></svg><b>io</b></a></div>
+  <div><a class="mark" href="./"><svg class="mk or" viewBox="98 70 316 352" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="22" pathLength="100"/><line class="or-i" x1="256" y1="84" x2="256" y2="126" stroke-width="22" stroke-linecap="round"/></svg><b>io</b></a></div>
   <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iot API</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
   <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a><p>&copy; 2026 io threads</p></div>
 </footer>
