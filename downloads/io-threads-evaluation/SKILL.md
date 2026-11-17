@@ -29,10 +29,8 @@ If the claim can't be quoted, stop and ask for it. A vague claim can't be checke
 | Needing an agent built with its evaluations | Agent build |
 | Evaluation being nobody's job | Fractional head of evaluation |
 | A report that is more than a year old | Annual re-check |
-| Sensors, firmware or device-to-cloud security | Connected hardware check |
-| Quantum or photonic fidelity, speed-up or cost claims | Quantum and photonic check |
+| Sensors, cameras, optics, firmware or device-to-cloud security | Connected hardware check |
 | GPU spend growing faster than usage | GPU execution cost management |
-| AI in hiring, performance or pay decisions | HCM systems check |
 
 ## 3. Run the checks you can, and write down the ones you can't
 
