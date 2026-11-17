@@ -122,16 +122,24 @@ a.mark.mark b{font-family:var(--f-display);font-weight:300;font-size:1.3rem;lett
 footer.site a.mark.mark b{font-size:1.05rem}
 </style>
 <style id="anchor-css">
-.osec .anchor{--rope:130px;position:relative;height:66px;width:64px;margin-bottom:var(--sp2);z-index:1;will-change:transform,opacity}
-.osec .anc-sway{position:absolute;inset:0;transform-origin:51px calc(-1 * var(--rope))}
-.osec .rope{position:absolute;left:50.5px;bottom:calc(100% - 6px);width:1.4px;height:var(--rope);transform-origin:50% 0;
+/* The o-ring mark hangs from the thread by its tick (x 32px, 1px from the top at 64px wide); it drops, then the ring draws and the tick settles, like the header. */
+.osec .anchor{--rope:130px;position:relative;height:73px;width:64px;margin-bottom:var(--sp2);z-index:1;will-change:transform,opacity}
+.osec .anc-sway{position:absolute;inset:0;transform-origin:32px calc(-1 * var(--rope))}
+.osec .rope{position:absolute;left:31.3px;bottom:calc(100% - 2px);width:1.4px;height:var(--rope);transform-origin:50% 0;
   background:linear-gradient(180deg,rgba(185,204,255,.15),rgba(220,230,255,.75));box-shadow:0 0 6px rgba(157,187,255,.45)}
-.osec .anc{display:block;width:64px;height:auto;filter:drop-shadow(0 0 10px rgba(255,125,192,.35)) drop-shadow(0 6px 12px rgba(0,0,0,.35))}
+.osec .anc{display:block;width:64px;height:auto;overflow:visible;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--ring) 45%,transparent)) drop-shadow(0 6px 12px rgba(0,0,0,.3))}
+.osec .anc .or-o,.osec .anc .or-i{stroke:var(--ring)}
 @media (prefers-reduced-motion:no-preference){
  .osec .anchor:not(.dropped) .rope{transform:scaleY(0)}
  .osec .anchor:not(.dropped) .anc-drop{transform:translateY(calc(-1 * var(--rope) + 6px));opacity:0}
  .osec .anchor .rope,.osec .anchor .anc-drop{transition:transform 1.5s cubic-bezier(.3,1.25,.45,1),opacity .4s ease}
  .osec .anchor.dropped .anc-sway{animation:asway 5.5s ease-in-out 1.5s infinite}
+ .osec .anchor .anc .or-o{stroke-dasharray:100;stroke-dashoffset:100}
+ .osec .anchor .anc .or-i{opacity:0;transform:translateY(-40px)}
+ .osec .anchor.dropped .anc .or-o{animation:anc-draw 1.1s cubic-bezier(.65,0,.35,1) .5s forwards}
+ .osec .anchor.dropped .anc .or-i{animation:anc-tick .5s cubic-bezier(.2,1.4,.4,1) 1.45s forwards}
+ @keyframes anc-draw{to{stroke-dashoffset:0}}
+ @keyframes anc-tick{to{opacity:1;transform:none}}
  @keyframes asway{0%,100%{transform:rotate(2.5deg)}50%{transform:rotate(-2.5deg)}}
 }
 </style>
@@ -488,7 +496,7 @@ section.free2{border-bottom:1px solid var(--rule)}
 <circle class="sbead b2" r="5"><animateMotion dur="26s" begin="-9s" repeatCount="indefinite"><mpath href="#sthread-v"></mpath></animateMotion></circle>
 <circle class="sbead b3" r="4"><animateMotion dur="26s" begin="-17s" repeatCount="indefinite"><mpath href="#sthread-v"></mpath></animateMotion></circle>
 </g><use href="#sx1" x="3200"/></svg></div></div>
-  <div class="anchor" id="anchor" aria-hidden="true"><div class="anc-sway"><span class="rope"></span><div class="anc-drop"><svg class="anc" viewBox="0 -22 112 114" aria-hidden="true"><defs><linearGradient id="ancg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#C29BFF"/><stop offset=".55" stop-color="#FF7DC0"/><stop offset="1" stop-color="#FFD45C"/></linearGradient></defs><path d="M66 26.3 A32 32 0 1 1 34 26.3" fill="none" stroke="url(#ancg)" stroke-width="9" stroke-linecap="round"/><path d="M50 62 V36 C50 20 56 12 66 10 S80 6 85 1" fill="none" stroke="url(#ancg)" stroke-width="9" stroke-linecap="round"/><circle cx="90" cy="-5" r="8" fill="none" stroke="url(#ancg)" stroke-width="6"/></svg></div></div></div>
+  <div class="anchor" id="anchor" aria-hidden="true"><div class="anc-sway"><span class="rope"></span><div class="anc-drop"><svg class="anc or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="14" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="14" stroke-linecap="round"/></svg></div></div></div>
   <div class="stack">
     <h1 id="h-ind" class="as-h2 ind-h">Industries</h1>
     <div class="ojump" role="group" aria-label="Jump to a group">
