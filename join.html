@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>/* site theme before first paint (footer toggle); Dawn (kraft) is the default */try{var t=null;try{t=localStorage.getItem("iot-site-theme")}catch(x){}if(t!=="twilight"&&t!=="dusk")t="dawn";if(t!=="dusk"){var e=document.documentElement;e.setAttribute("data-site",t);e.setAttribute("data-theme",t==="twilight"?"dark":"light")}}catch(x){}</script>
+<script>/* site theme before first paint (footer toggle); Dawn (kraft) is the default */try{var t=null;try{t=localStorage.getItem("iot-site-theme")}catch(x){}if(t!=="twilight"&&t!=="dusk")t="dawn";var e=document.documentElement;if(t==="dusk")e.setAttribute("data-theme","dark");else{e.setAttribute("data-site",t);e.setAttribute("data-theme",t==="twilight"?"dark":"light")}}catch(x){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Join io threads: memberships</title>
@@ -102,7 +102,7 @@ html .osec .ocean{--obg:#3A1D1F}
 <style id="site-themes">
 /* Site themes (11-17), chosen with the footer toggle and kept in localStorage "iot-site-theme".
    Dawn = kraft paper with Truchet arcs, like the LinkedIn banners (the default). Twilight = the original night-blue ocean.
-   Dusk = the earlier look (no attribute; follows the device). */
+   Dusk = the maroon o-ring look (no data-site; data-theme=dark). */
 html:root[data-site="twilight"]{color-scheme:dark;--paper:oklch(17% .014 var(--ink-h));--sheet:oklch(21% .016 var(--ink-h));--ink:oklch(94% .008 var(--paper-h));--muted:oklch(74% .018 var(--ink-h));--rule:oklch(31% .018 var(--ink-h));--accent:oklch(var(--brand-l-dark) calc(var(--brand-c) * .7) var(--brand-h));--accent-ink:oklch(19% .04 var(--brand-h));--accent-soft:oklch(27% calc(var(--brand-c) * .31) var(--brand-h));--ring:#9DBBFF}
 html:root[data-site="twilight"] .osec>canvas,html:root[data-site="twilight"] figure.tri-sea>canvas{filter:none!important}
 html:root[data-site="twilight"] .osec{--sea:#0E2547!important}

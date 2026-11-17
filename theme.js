@@ -1,13 +1,13 @@
 /* Site theme toggle (Dawn / Twilight / Dusk) at the bottom of every page.
-   Dawn (kraft) is the default; Dusk sets nothing, so the page follows the device as before. */
+   Dawn (kraft) is the default; Dusk is the maroon look (dark scheme, no data-site); Twilight is the night-blue ocean. */
 (function(){
   var KEY="iot-site-theme", NAMES=[["dawn","Dawn"],["twilight","Twilight"],["dusk","Dusk"]], root=document.documentElement;
   function get(){try{var t=localStorage.getItem(KEY);return t==="twilight"||t==="dusk"?t:"dawn"}catch(x){return "dawn"}}
   function apply(t){
-    if(t==="dusk"){root.removeAttribute("data-site");root.removeAttribute("data-theme")}
+    if(t==="dusk"){root.removeAttribute("data-site");root.setAttribute("data-theme","dark")}
     else{root.setAttribute("data-site",t);root.setAttribute("data-theme",t==="twilight"?"dark":"light")}
     var m=document.querySelector('meta[name="theme-color"]');
-    if(m)m.setAttribute("content",t==="dawn"?"#D9C7A7":t==="twilight"?"#0E2547":"#141D2D");
+    if(m)m.setAttribute("content",t==="dawn"?"#D9C7A7":t==="twilight"?"#0E2547":"#2A1416");
     document.querySelectorAll(".sitetheme button").forEach(function(b){b.setAttribute("aria-pressed",b.getAttribute("data-t")===t?"true":"false")});
   }
   function build(){
