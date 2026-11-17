@@ -300,7 +300,7 @@ function projects(siteRuns,lastProd,lastStage,L){L=L||{};var g=$("op-proj");g.te
   card("Production server",lastProd?(lastProd.verdict==="success"?"ok":"bad"):"",[lastProd?"release "+lastProd.ref+" "+lastProd.verdict+", "+ago(lastProd.created_at):"no release recorded yet","Supabase iothreads · Square live"],[["Supabase","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk"],["Deploy production",L.production],["Logs","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk/functions"]]);
   card("Staging",lastStage?(lastStage.verdict==="success"?"ok":"bad"):"",[lastStage?"deploy "+lastStage.ref+" "+lastStage.verdict+", "+ago(lastStage.created_at):"no deploy recorded yet","Supabase iothreads-staging · Square sandbox"],[["Supabase",L.stagingDashboard],["Deploys",L.stagingDeploys]]);
   card("Server code",null,["migrations, Edge Functions, engine suite","push to main = staging; tag + run = production"],[["Repo",L.serverRepo],["Releases (tags)",L.serverTags]]);
-  card("Payments · Square",null,["in-page checkout + 4 payment links","Builder, Buyer, Partner monthly; Lifetime"],[["Square dashboard","https://app.squareup.com/dashboard/"],["Join page","join.html"]]);
+  card("Payments · Square",null,["in-page checkout + 3 payment links","Builder, Buyer, Partner monthly; Lifetime closed to new sales"],[["Square dashboard","https://app.squareup.com/dashboard/"],["Join page","join.html"]]);
   card("Merch · 10threads.store",null,["Shopify store"],[["Store","https://10threads.store/"]]);
 }
 
