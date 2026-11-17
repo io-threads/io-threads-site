@@ -174,6 +174,21 @@ main .band h2,main .band p{color:#F4E9E3!important}main .band p{opacity:.88}
     <div><p class="label">Members</p><h1>Your account</h1></div>
     <div class="ap-who"><span id="ap-email">…</span><span class="ap-plan" id="ap-plan">Reader</span><button class="btn line" type="button" id="ap-out">Sign out</button></div>
   </div>
+<style>
+.getapp{grid-template-columns:minmax(0,1fr);margin:0 0 var(--sp5);display:grid;gap:var(--sp3)}
+.getapp .kicker{max-width:none;display:flex;justify-content:space-between;gap:var(--sp3);flex-wrap:wrap;margin:0;font:500 .8rem/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--rule);padding-bottom:var(--sp3)}
+.ga-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp3)}
+@media (max-width:860px){.ga-list{grid-template-columns:repeat(2,minmax(0,1fr))}} @media (max-width:480px){.ga-list{grid-template-columns:minmax(0,1fr)}}
+.ga-p{border:1px solid var(--rule);border-radius:10px;padding:var(--sp3);display:grid;gap:var(--sp2);align-content:start;min-width:0}
+.ga-p[data-stage="Preview"],.ga-p[data-stage="Available"]{border-color:var(--ink)}
+.ga-h{display:flex;justify-content:space-between;align-items:baseline;gap:var(--sp2)} .ga-h b{font:700 1.05rem/1.2 var(--f-display)}
+.ga-chip{font:500 .72rem/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ga-p[data-stage="Preview"] .ga-chip,.ga-p[data-stage="Available"] .ga-chip{color:var(--ink)}
+.ga-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+.ga-track i{display:block;height:6px;border-radius:3px;background:var(--rule)}
+.ga-track i.ga-on{background:var(--muted)} .ga-track i.ga-now{background:var(--ink)}
+.ga-p p{margin:0;font-size:.88rem;line-height:1.4;color:var(--muted)}
+</style><section class="getapp" aria-labelledby="h-getapp"><p class="kicker"><span id="h-getapp">Get iolin</span><span>Planned · Building · Preview · Available</span></p><ol class="ga-list"><li class="ga-p" data-stage="Preview"><div class="ga-h"><b>Browser</b><span class="ga-chip">Preview</span></div><span class="ga-track" role="img" aria-label="Browser: Preview, step 3 of 4"><i class="ga-on"></i><i class="ga-on"></i><i class="ga-on ga-now"></i><i></i></span><p>Here now: you're using it. Works on any recent browser, phone or desktop.</p></li><li class="ga-p" data-stage="Planned"><div class="ga-h"><b>Mac</b><span class="ga-chip">Planned</span></div><span class="ga-track" role="img" aria-label="Mac: Planned, step 1 of 4"><i class="ga-on ga-now"></i><i></i><i></i><i></i></span><p>Desktop app with local runs on your own machine.</p></li><li class="ga-p" data-stage="Planned"><div class="ga-h"><b>iPhone</b><span class="ga-chip">Planned</span></div><span class="ga-track" role="img" aria-label="iPhone: Planned, step 1 of 4"><i class="ga-on ga-now"></i><i></i><i></i><i></i></span><p>iot+ on iPhone: run and review on the go.</p></li><li class="ga-p" data-stage="Planned"><div class="ga-h"><b>Windows</b><span class="ga-chip">Planned</span></div><span class="ga-track" role="img" aria-label="Windows: Planned, step 1 of 4"><i class="ga-on ga-now"></i><i></i><i></i><i></i></span><p>Desktop app with local runs on your own machine.</p></li></ol></section>
   <div class="ap-grid">
     <section class="ap-card" aria-labelledby="ap-h-iolin">
       <p class="ap-k">Included with every plan</p>
@@ -187,7 +202,7 @@ main .band h2,main .band p{color:#F4E9E3!important}main .band p{opacity:.88}
       <p id="ap-key-state" aria-live="polite">Checking…</p>
       <div class="ap-key" id="ap-key-new" hidden></div>
       <div class="ap-row"><button class="btn solid" type="button" id="ap-key-make">Create key</button><button class="btn line" type="button" id="ap-key-copy" hidden>Copy</button><button class="btn line" type="button" id="ap-key-revoke" hidden>Revoke</button></div>
-      <p class="fine">Send it as <code>Authorization: Bearer $IOT_KEY</code>. We keep only a fingerprint, so copy it when it's shown. The public API endpoint isn't open yet; your key will work when it does.</p>
+      <p class="fine">Send it as <code>Authorization: Bearer $IOT_KEY</code>. We keep only a fingerprint, so copy it when it's shown. It works now on the iot API.</p>
     </section>
     <section class="ap-card" aria-labelledby="ap-h-pw" id="ap-pw-card">
       <p class="ap-k">Sign-in</p>
