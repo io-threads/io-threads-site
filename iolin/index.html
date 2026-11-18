@@ -26,7 +26,7 @@ a{color:inherit}
 /* ---------- site chrome ---------- */
 .site{max-width:1180px;margin:0 auto;padding:18px 20px 40px}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:10px;font-size:20px}.brand i{width:30px;height:30px;border-radius:50%;border:1.5px solid #9b5a3c;display:inline-block}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px;color:inherit;text-decoration:none}.brand i{width:30px;height:30px;border-radius:50%;border:1.5px solid #9b5a3c;display:inline-block}
 .nav nav{display:flex;gap:18px;align-items:center;font-size:15px;color:var(--site-quiet)}
 .nav nav .on{color:var(--site-ink);text-decoration:underline;text-underline-offset:6px}
 .acct{border:1px solid var(--site-line);border-radius:8px;padding:6px 12px;color:var(--site-ink)}
@@ -164,6 +164,8 @@ body.full.stack .vhead span:last-child{display:none}
 body.full.stack .events{bottom:48px;font-size:11px}
 body.full.stack .tbody{font-size:13px}
 body.full.stack .proj .l1{flex-wrap:wrap}
+body.full.stack .fdr{grid-template-columns:minmax(0,1fr);height:auto;max-height:210px}body.full.stack .fdr .c1,body.full.stack .fdr .c3{display:none}
+body.full.stack .fbar{margin-top:14px}body.full.stack .zboard{zoom:.6;height:620px}
 .coach{position:absolute;left:16px;top:44px;width:min(440px,calc(100% - 32px));z-index:8;background:#171a22;border:1px solid #3a3f4d;border-radius:14px;padding:16px 18px;box-shadow:0 18px 50px rgba(0,0,0,.55);color:var(--w-ink)}
 .coach .step{font:12px var(--mono);color:var(--purple);letter-spacing:.5px}
 .coach h4{margin:4px 0 6px;font-size:18px;font-weight:600}
@@ -175,12 +177,49 @@ body.full.stack .proj .l1{flex-wrap:wrap}
 .coach .bar{margin:6px 0}
 .hl{outline:2px solid var(--purple)!important;outline-offset:3px;border-radius:10px;transition:outline-color .3s}
 .demo{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--amber);color:#111;font-size:12px;font-weight:700;border-radius:99px;padding:2px 10px;z-index:5}
+
+/* Instruct: Finder-style thread list above the chat (from the members page's .fdr) */
+.fbar{display:flex;align-items:center;gap:10px;max-width:980px;margin:0 auto 8px;color:var(--w-quiet);font-size:13px}
+.fdr{display:grid;grid-template-columns:170px minmax(0,1fr) minmax(0,1fr);height:230px;max-width:980px;margin:0 auto 16px;border:1px solid var(--w-line);border-radius:12px;background:#0e1015;overflow:hidden}
+.fdr.closed{display:none}
+.fdr .fc{min-height:0;overflow-y:auto;border-right:1px solid #1E2229;padding:8px 6px;scrollbar-width:thin}.fdr .fc:last-child{border-right:0}
+.fdr .fi{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:6px;font-size:13px;line-height:1.25;color:#E9ECF1}
+.fdr .fi:hover{background:rgba(255,255,255,.05)}.fdr .fi:focus-visible{outline:1.5px solid #9DBBFF;outline-offset:-1px}
+.fdr .fi .d{width:7px;height:7px;border-radius:50%;flex:none;background:var(--c,#8E96A4)}
+.fdr .fi .n{margin-left:auto;font-size:12px;color:#6E7787;font-variant-numeric:tabular-nums}
+.fdr .fi[aria-selected="true"]{background:#3B78F0;color:#fff}.fdr .fi[aria-selected="true"] .n{color:rgba(255,255,255,.8)}
+.fdr .c2 .fi{align-items:flex-start;padding:7px 8px}.fdr .c2 .fi .d{margin-top:5px}
+.fdr .c2 .tx{min-width:0;display:grid;gap:2px;flex:1}.fdr .c2 .tx b{font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fdr .c2 .tx span{font-size:12px;color:#8E96A4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fdr .c2 .fi[aria-selected="true"] .tx span{color:rgba(255,255,255,.75)}
+.fdr .fh{margin:2px 8px 6px;font-size:11px;color:#6E7787;letter-spacing:.02em}
+.fdr .c3{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.fdr .dt-bc{font-size:12px;color:#8E96A4}.fdr .dt-h{display:flex;align-items:flex-start;gap:10px}.fdr .dt-h b{font-size:15px;font-weight:500;color:#F2F4F7;flex:1}
+.fdr .dt-st{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;font-size:12px;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+.fdr .dt-st::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c)}
+.fdr .dt-m{display:grid;grid-template-columns:78px minmax(0,1fr);gap:5px 10px;margin:0;font-size:12.5px}.fdr .dt-m dt{color:#6E7787}.fdr .dt-m dd{margin:0;color:#E9ECF1;min-width:0;overflow-wrap:anywhere}
+.fdr .dt-a{display:flex;flex-wrap:wrap;gap:6px}
+/* Projects: board with template items (from the members page's .zboard) */
+.zboard{position:relative;height:430px;max-width:980px;margin:0 auto;overflow:hidden;border:1px solid var(--w-line);border-radius:12px;
+  background:radial-gradient(60% 80% at 15% 10%,rgba(194,155,255,.28),transparent 60%),radial-gradient(60% 80% at 90% 90%,rgba(114,227,203,.22),transparent 60%),
+  radial-gradient(circle at 1px 1px,rgba(255,255,255,.08) 1px,transparent 1.5px) 0 0/18px 18px,linear-gradient(140deg,#1B2340,#121A2E 60%,#0F2430)}
+.zboard .bi{position:absolute;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;transform:rotate(var(--r,0deg));transition:box-shadow .2s}
+.zboard .bi.drag{cursor:grabbing;z-index:5;box-shadow:0 18px 30px -10px rgba(0,0,0,.6)}.zboard .bi:focus-visible{outline:2px solid #C9D9FF;outline-offset:3px}
+.zboard .note{width:150px;padding:10px 11px 9px;border-radius:3px;color:#1F2430;box-shadow:0 8px 16px -8px rgba(0,0,0,.55);font-size:12.5px;line-height:1.35}
+.zboard .note b{display:block;font-size:13.5px;margin-bottom:3px}.zboard .note p{margin:0}.zboard .note i{display:block;margin-top:5px;font-size:11px;opacity:.6}
+.zboard .note.y{background:#FFE79A}.zboard .note.p{background:#FFC6DE}.zboard .note.g{background:#BDEFD6}
+.zboard .ico{width:110px;display:grid;justify-items:center;gap:4px;text-align:center;padding:6px;border-radius:8px}.zboard .ico:hover{background:rgba(255,255,255,.07)}
+.zboard .ico svg{width:46px;height:40px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+.zboard .ico span{font-size:12.5px;font-weight:500;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7)}.zboard .ico em{font:11px var(--mono);font-style:normal;color:rgba(232,238,248,.7)}
+.zb-hint{position:absolute;right:12px;bottom:10px;font:11px var(--mono);color:rgba(232,238,248,.55)}
+/* reply bubble while waiting for the first words */
+.bub.typing::after{content:"";display:inline-block;width:26px;height:8px;background:radial-gradient(circle,var(--w-quiet) 2.5px,transparent 3px) 0 50%/9px 8px repeat-x;opacity:.7}
+@media (prefers-reduced-motion:no-preference){.bub.typing::after{animation:typ 1s steps(3) infinite}@keyframes typ{0%{width:8px}50%{width:17px}100%{width:26px}}}
 </style>
 </head>
 <body>
 <div class="site">
   <div class="nav">
-    <div class="brand"><i></i>io</div>
+    <a class="brand" href="/" aria-label="io threads home"><i></i>io</a>
     <nav><a class="on" href="/iolin/">iolin</a><a href="/api.html">iot API</a><a href="/services.html">Enterprise</a><a class="acct" href="/app.html">Account</a></nav>
   </div>
   <div class="crumb"><span>iolin</span><span id="crumbState">Live in your browser</span></div>
@@ -234,7 +273,7 @@ body.full.stack .proj .l1{flex-wrap:wrap}
           <div class="proj">
             <div class="l1"><span class="dot" id="projDot"></span><b id="projName">Workspace</b><span id="projMeta">ready · 1 person · 1 agent</span></div>
             <div class="tabs"><div class="tabset">
-              <button class="tab on" data-v="live">◇ Live <span style="color:var(--green)" id="liveCount">● 1</span></button>
+              <button class="tab on" data-v="live">◇ Iot <span style="color:var(--green)" id="liveCount">● 1</span></button>
               <button class="tab" data-v="instruct">☰ Instruct <span class="badge hidden" id="instBadge" style="display:none">0</span></button>
               <button class="tab" data-v="projects">▦ Projects <span style="color:var(--w-dim)" id="projCount">0</span></button>
               <button class="tab" data-v="setup">⚙ Setup</button>
@@ -254,11 +293,17 @@ body.full.stack .proj .l1{flex-wrap:wrap}
             </div>
             <!-- instruct -->
             <div class="pane" id="p-instruct">
+              <div class="fbar"><button class="chip" id="fdrToggle" aria-expanded="true" aria-controls="fdr">Threads ▾</button><span id="fdrMeta"></span><span style="flex:1"></span><button class="chip" id="fdrNew">+ New thread</button></div>
+              <div class="fdr" id="fdr" aria-label="Your threads, Finder-style">
+                <div class="fc c1" role="listbox" aria-label="Thread groups"></div>
+                <div class="fc c2" role="listbox" aria-label="Threads"></div>
+                <div class="fc c3" aria-live="polite"></div>
+              </div>
               <div class="chat" id="chat"></div>
               <div class="compose"><textarea id="ask" placeholder="Ask your model. It runs on this device."></textarea><button class="wbtn pri" id="sendBtn">Send</button><button class="wbtn" id="stopGen" disabled>Stop</button></div>
             </div>
             <!-- projects -->
-            <div class="pane" id="p-projects"><div class="setup"><div class="row"><b style="font-size:15px">Sessions on this device</b><span style="flex:1"></span><button class="wbtn" id="newSess">New session</button></div><div class="plist" id="plist"></div></div></div>
+            <div class="pane" id="p-projects"><div class="zboard" id="zboard" aria-label="Projects board"><div class="bi note y" style="left:4%;top:8%;--r:-3deg" tabindex="0"><b>Today</b><p>Recheck the laptop after the update. Ask the team if the drift holds.</p><i>— you</i></div><div class="bi note p" style="left:26%;top:56%;--r:2.5deg" tabindex="0"><b>Idea</b><p>Gate v4 at 0.85, demo Friday?</p><i>— team</i></div><div class="bi ico" style="left:30%;top:8%" tabindex="0"><svg viewBox="0 0 40 32"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#6B8FD6"/><path d="M2 11h36v16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#8EAEF0"/></svg><span>drift-board/</span><em>mirrored · laptop</em></div><div class="bi ico" style="left:47%;top:12%" tabindex="0"><svg viewBox="0 0 30 36"><path d="M3 2h17l7 7v24a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="#E8ECF3"/><path d="M20 2v7h7" fill="#C9D2E0"/><rect x="6" y="14" width="16" height="2" rx="1" fill="#9DBBFF"/><rect x="6" y="19" width="12" height="2" rx="1" fill="#B8C2D6"/><rect x="6" y="24" width="14" height="2" rx="1" fill="#B8C2D6"/></svg><span>Gate plan v4</span><em>doc</em></div><div class="bi ico" style="left:63%;top:8%" tabindex="0"><svg viewBox="0 0 30 36"><path d="M3 2h17l7 7v24a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="#E8ECF3"/><path d="M20 2v7h7" fill="#C9D2E0"/><rect x="6" y="14" width="16" height="2" rx="1" fill="#7FC8A0"/><rect x="6" y="19" width="12" height="2" rx="1" fill="#B8C2D6"/><rect x="6" y="24" width="14" height="2" rx="1" fill="#B8C2D6"/></svg><span>GPU cost by job</span><em>sheet · live</em></div><div class="bi ico" style="left:80%;top:12%" tabindex="0"><svg viewBox="0 0 40 32"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#B98BE0"/><path d="M2 11h36v16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#D3B2FF"/></svg><span>Board read, Nov</span><em>deck · 12</em></div><div class="bi ico" style="left:52%;top:56%" tabindex="0"><svg viewBox="0 0 30 36"><path d="M3 2h17l7 7v24a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="#E8ECF3"/><path d="M20 2v7h7" fill="#C9D2E0"/><rect x="6" y="14" width="16" height="2" rx="1" fill="#C9A8FF"/><rect x="6" y="19" width="12" height="2" rx="1" fill="#B8C2D6"/><rect x="6" y="24" width="14" height="2" rx="1" fill="#B8C2D6"/></svg><span>drift-report.v3</span><em>PASS</em></div><div class="bi note g" style="left:70%;top:52%;--r:-2deg" tabindex="0"><b>Launch</b><p>☑ evals ☑ red team ☐ rollback drill</p><i>9 / 12</i></div><div class="bi ico" style="left:8%;top:62%" tabindex="0"><svg viewBox="0 0 40 32"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#3E9E86"/><path d="M2 11h36v16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#72E3CB"/></svg><span>datasets/</span><em>mirrored · 4 GB</em></div><span class="zb-hint">template board · drag anything</span></div><div class="setup" style="margin-top:16px"><div class="row"><b style="font-size:15px">Threads on this device</b><span style="flex:1"></span><button class="wbtn" id="newSess">New session</button></div><div class="plist" id="plist"></div></div></div>
             <!-- setup -->
             <div class="pane" id="p-setup"><div class="setup">
               <div class="kv" id="dev"></div>
@@ -569,30 +614,37 @@ async function loadModel() {
 async function stopModel() { if (engine) await engine.unload(); engine = null; loaded = null; $("bar").style.width = "0%"; renderAll(); ev(me(), "stop model"); }
 
 /* ---------- ask + receipt ---------- */
-async function ask(q, from, recap = false) {
-  if (!engine) { out(`no model running · type <span class="u-hl">model load</span>${gpuOk ? "" : " or <span class=\"u-hl\">demo on</span>"}`); return; }
-  if (busy) return out("busy · wait for the current reply"); busy = true; stop = false; thinking = true; $("stopGen").disabled = false; renderScene();
-  if (!recap) { cur.messages.push({role:"user", content:q}); if (cur.title === "New session") cur.title = q.slice(0, 40); }
-  renderChat(); const bub = addBubble("a", "");
-  const tl = from === "term" ? out("") : null; ev("iolin", recap ? "recap · working" : "answering · working");
-  const messages = [{role:"system", content:S.system}, ...cur.messages.map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
-  const started = iso(), t0 = performance.now(); let text = "", status = "completed", paint = 0;
-  try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), max_tokens:Number(S.max_tokens)});
-    for await (const ch of st) { if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; if (!paint) paint = requestAnimationFrame(() => { paint = 0; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }); }
-    if (paint) { cancelAnimationFrame(paint); paint = 0; } bub.firstChild.textContent = text; if (tl) tl.textContent = text;
-  } catch (e) { errors++; status = "failed"; text = text || "error: " + e.message; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }
-  const ms = Math.round(performance.now() - t0), run_id = crypto.randomUUID();
+async function signRun(sess, messages, text, status, started, ms, model = loaded, finished = iso()) {
+  const run_id = crypto.randomUUID();
   const body = { schema:"iothreads.receipt/0.1", receipt_type:"host-signed", alg:signer.alg, run_id, host_id:"browser:" + signer.key_id, agent_id:APP_ID,
-    session_id: cur.id, model_manifest:{model_id:loaded, runtime: loaded === "demo-engine" ? "demo-engine" : "webllm@0.2.85/webgpu", evidence_status:"declared"},
-    execution_mode: loaded === "demo-engine" ? "demo" : "local-browser", data_boundary:"prompt and reply stayed in this browser", policy_version:"web-p1",
+    session_id: sess.id, model_manifest:{model_id:model, runtime: model === "demo-engine" ? "demo-engine" : "webllm@0.2.85/webgpu", evidence_status:"declared"},
+    execution_mode: model === "demo-engine" ? "demo" : "local-browser", data_boundary:"prompt and reply stayed in this browser", policy_version:"web-p1",
     settings_digest: await sha(canonical({system:S.system, temperature:String(S.temperature), max_tokens:String(S.max_tokens)})),
     input_digest: await sha(canonical(messages)), output_digest: await sha(text), tool_events:[], action_receipts:[], status,
-    timestamps:{started, finished: iso(), duration_ms: String(ms), chars_out: String(text.length)},
+    timestamps:{started, finished, duration_ms: String(ms), chars_out: String(text.length)},
     evidence_status:{model_identity:"declared", output:"observed", tool_events:"none"},
     limits:"Signed by a key held in this browser. Proves this browser's key signed this record, not that the events occurred.", key_id:signer.key_id, signed_at: iso() };
   const r = {...body, signature: b64(await crypto.subtle.sign(signAlgo(signer.alg), signer.priv, enc.encode(canonical(body))))};
   await DB.set(run_id, r, "receipts"); receipts.push(r); verified[run_id] = await verify(r);
-  if (!recap) cur.messages.push({role:"assistant", content:text, run_id, ms, model:loaded});
+  return r;
+}
+async function ask(q, from, recap = false) {
+  if (!engine) { out(`no model running · type <span class="u-hl">model load</span>${gpuOk ? "" : " or <span class=\"u-hl\">demo on</span>"}`); return; }
+  if (busy) return out("busy · wait for the current reply"); busy = true; stop = false; thinking = true; $("stopGen").disabled = false; renderScene();
+  if (!recap) { cur.messages.push({role:"user", content:q}); if (cur.title === "New session") cur.title = q.slice(0, 40); }
+  renderChat(); let bub = addBubble("a", ""); bub.classList.add("typing");
+  const tl = from === "term" ? out("") : null; ev("iolin", recap ? "recap · working" : "answering · working");
+  const messages = [{role:"system", content:S.system}, ...cur.messages.map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
+  const started = iso(), t0 = performance.now(); let text = "", status = "completed", paint = 0;
+  try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), max_tokens:Number(S.max_tokens)});
+    for await (const ch of st) { if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; if (text) bub.classList.remove("typing"); if (!paint) paint = requestAnimationFrame(() => { paint = 0; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }); }
+    if (paint) { cancelAnimationFrame(paint); paint = 0; }
+    if (!text.trim()) text = status === "stopped" ? "(stopped before the reply started)" : loaded === "demo-engine" ? demoReply(q) : "(the model returned no text; try again or pick another model in Setup)";
+    bub.classList.remove("typing"); bub.firstChild.textContent = text; if (tl) tl.textContent = text;
+  } catch (e) { errors++; status = "failed"; text = text || "error: " + e.message; bub.classList.remove("typing"); bub.firstChild.textContent = text; if (tl) tl.textContent = text; }
+  const ms = Math.round(performance.now() - t0);
+  const r = await signRun(cur, messages, text, status, started, ms), run_id = r.run_id;
+  if (!recap) { cur.messages.push({role:"assistant", content:text, run_id, ms, model:loaded}); cur.updated = iso(); }
   await save(); busy = false; thinking = false; $("stopGen").disabled = true;
   out(`receipt <span class="u-hl">v${receipts.length}</span> ${run_id.slice(0,8)} signed · ${ms} ms · check ${verified[run_id] ? '<span class="u-ok">PASS</span>' : '<span class="u-bad">FAIL</span>'}`);
   ev("iolin", `receipt v${receipts.length} · check ${verified[run_id] ? "PASS" : "FAIL"}`, "m");
@@ -681,6 +733,71 @@ function renderChat() { $("chat").innerHTML = ""; if (!cur.messages.length) addB
 function renderProjects() { $("plist").innerHTML = sessions.slice().reverse().map(s => `<div data-id="${s.id}"><b>${esc(s.title)}</b><span>${s.messages.length} messages</span><span>${s.created.slice(0,10)}</span></div>`).join("");
   $("plist").querySelectorAll("div").forEach(d => d.onclick = async () => { cur = sessions.find(x => x.id === d.dataset.id); await save(); setView("instruct"); renderAll(); });
   $("projCount").textContent = sessions.length; }
+/* Finder-style thread list (Instruct) */
+let fGroup = "all", fOpen = true;
+try { const k = localStorage.getItem("iolin-fdr"); fOpen = k ? k !== "closed" : Math.min(innerWidth, screen.width || innerWidth) >= 900; } catch {}
+const runsIn = s => s.messages.filter(m => m.run_id).length;
+const lastMsg = s => s.messages.at(-1)?.content || "No messages yet";
+const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 1 ? "now" : m < 60 ? m + " min" : m < 1440 ? Math.round(m / 60) + " h" : Math.round(m / 1440) + " d"; };
+const lastAt = s => s.updated || s.created;
+const GROUPS = [["all","All threads","#8E96A4", () => true], ["today","Today","#9DBBFF", s => (lastAt(s) || "").slice(0,10) === new Date().toISOString().slice(0,10)],
+  ["signed","With receipts","#7FC8A0", s => runsIn(s) > 0], ["samples","Samples","#F0C46A", s => s.sample]];
+function renderFinder() {
+  const f = $("fdr"); if (!f) return; f.classList.toggle("closed", !fOpen); $("fdrToggle").textContent = fOpen ? "Threads ▾" : "Threads ▸"; $("fdrToggle").setAttribute("aria-expanded", fOpen);
+  $("fdrMeta").textContent = `${sessions.length} thread${sessions.length === 1 ? "" : "s"} · ${receipts.length} receipt${receipts.length === 1 ? "" : "s"}`;
+  const c1 = f.querySelector(".c1"), c2 = f.querySelector(".c2"), c3 = f.querySelector(".c3");
+  c1.innerHTML = '<p class="fh">Threads</p>' + GROUPS.map(([k, n, c, fn]) => `<button class="fi" role="option" data-g="${k}" aria-selected="${fGroup === k}" style="--c:${c}"><span class="d"></span>${n}<span class="n">${sessions.filter(fn).length}</span></button>`).join("");
+  c1.querySelectorAll(".fi").forEach(b => b.onclick = () => { fGroup = b.dataset.g; renderFinder(); });
+  const g = GROUPS.find(x => x[0] === fGroup) || GROUPS[0], list = sessions.filter(g[3]).sort((a, b) => lastAt(a) < lastAt(b) ? 1 : -1);
+  c2.innerHTML = list.length ? list.map(s => `<button class="fi" role="option" data-id="${s.id}" aria-selected="${s.id === cur.id}" style="--c:${runsIn(s) ? "#7FC8A0" : "#8E96A4"}"><span class="d"></span><span class="tx"><b>${esc(s.title)}</b><span>${esc(lastMsg(s).replace(/\s+/g, " ").slice(0, 90))}</span></span><span class="n">${ago(lastAt(s))}</span></button>`).join("")
+    : '<p class="fh" style="padding:10px 2px">No threads here yet.</p>';
+  c2.querySelectorAll(".fi").forEach(b => b.onclick = async () => { cur = sessions.find(x => x.id === b.dataset.id); await save(); renderAll(); if (view === "instruct") renderChat(); });
+  const n = runsIn(cur), st = thinking ? ["working", "#C9A8FF"] : n ? ["signed", "#7FC8A0"] : ["empty", "#8E96A4"];
+  c3.innerHTML = `<div class="dt-bc">Threads › ${esc(g[1])}</div><div class="dt-h"><b>${esc(cur.title)}</b><span class="dt-st" style="--c:${st[1]}">${st[0]}</span></div>
+    <dl class="dt-m"><dt>Started</dt><dd>${new Date(cur.created).toLocaleString(undefined, {month:"short", day:"numeric", hour:"2-digit", minute:"2-digit"})}</dd>
+    <dt>Messages</dt><dd>${cur.messages.length}</dd><dt>Receipts</dt><dd>${n} signed${n ? " · press Verify under Production" : ""}</dd>
+    <dt>Model</dt><dd>${esc(cur.messages.findLast?.(m => m.model)?.model || loaded || "none yet")}</dd></dl>
+    <div class="dt-a"><button class="chip" id="fdRecap"${cur.messages.length ? "" : " disabled"}>Recap</button><button class="chip" id="fdNew2">New thread</button></div>`;
+  $("fdRecap").onclick = () => run("recap"); $("fdNew2").onclick = () => run("sessions new");
+}
+function boardDrag() {
+  const B = $("zboard"); if (!B || B.dataset.drag) return; B.dataset.drag = 1;
+  B.querySelectorAll(".bi").forEach(el => { let d = null;
+    el.addEventListener("pointerdown", e => { const r = B.getBoundingClientRect(), k = r.width / B.offsetWidth || 1; d = {x: e.clientX, y: e.clientY, l: el.offsetLeft, t: el.offsetTop, k}; el.classList.add("drag"); el.setPointerCapture(e.pointerId); });
+    el.addEventListener("pointermove", e => { if (!d) return; const l = Math.max(0, Math.min(B.offsetWidth - el.offsetWidth, d.l + (e.clientX - d.x) / d.k)), t = Math.max(0, Math.min(B.offsetHeight - el.offsetHeight, d.t + (e.clientY - d.y) / d.k));
+      el.style.left = l + "px"; el.style.top = t + "px"; });
+    const end = () => { d = null; el.classList.remove("drag"); }; el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+    el.addEventListener("keydown", e => { const m = {ArrowLeft:[-12,0], ArrowRight:[12,0], ArrowUp:[0,-12], ArrowDown:[0,12]}[e.key]; if (!m) return; e.preventDefault();
+      el.style.left = Math.max(0, el.offsetLeft + m[0]) + "px"; el.style.top = Math.max(0, el.offsetTop + m[1]) + "px"; }); });
+}
+
+/* Sample threads for the demo: added once, only when this browser has no conversations of its own. */
+const SAMPLES = [
+  ["Does anything leave my device?", -26 * 60, [["What does iolin keep private? Does anything I type leave this device?", null]], 3180],
+  ["Release check: support-bot v4", -5 * 60, [["Run the release check on support-bot v4 against the 0.85 accuracy gate and the refusal-rate gate.",
+    "Release check · support-bot v4\n\n• Accuracy 0.88 on the 1,000-question test set (gate 0.85): PASS\n• Refusal rate 2.1% (gate ≤ 3%): PASS\n• Leakage: 0 test questions found in training notes: PASS\n• Drift vs v3 on last week's live sample: 4% worse on billing questions: ABSTAIN, needs a human look\n\nRecommendation: ship behind the flag to 10% of chats, recheck billing answers on Friday. Every run above has a signed receipt."]], 4610],
+  ["Recap: Monday team notes", -90, [["Summarise these notes: gate v4 at 0.85, demo Friday, laptop update broke the eval runner, Maya owns the rollback drill.",
+    "• Decided: gate v4 stays at 0.85 and the demo is Friday.\n• Broken: the eval runner on the laptop after the update; rerun the checks once it's fixed.\n• Owner: Maya runs the rollback drill before launch.\n• Open: who reviews the billing answers flagged in the release check."]], 2240],
+  ["Which model fits my laptop?", -35, [["Which model should I run on a 16 GB laptop?", null]], 1990],
+];
+async function seedSamples() {
+  if (!DEMO || await DB.get("samplesSeeded") || sessions.some(s => s.messages.length)) return;
+  const fresh = sessions.filter(s => !s.messages.length), made = [];
+  for (const [title, mins, turns, ms] of SAMPLES) {
+    const at = new Date(Date.now() + mins * 60000), sess = {id: crypto.randomUUID(), title, created: at.toISOString().replace(/\.\d{3}Z$/, "Z"), messages: [], sample: true};
+    for (const [q, a] of turns) {
+      sess.messages.push({role:"user", content:q});
+      const text = a || demoReply(q), msgs = [{role:"system", content:S.system}, ...sess.messages.map(m => ({role:m.role, content:m.content}))];
+      const fin = new Date(at.getTime() + ms).toISOString().replace(/\.\d{3}Z$/, "Z");
+      const r = await signRun(sess, msgs, text, "completed", sess.created, ms, "demo-engine", fin);
+      sess.messages.push({role:"assistant", content:text, run_id:r.run_id, ms, model:"demo-engine"}); sess.updated = fin;
+    }
+    made.push(sess);
+  }
+  sessions = [...made, ...fresh]; if (!sessions.includes(cur)) cur = sessions.at(-1);
+  await DB.set("samplesSeeded", true); await save();
+}
+
 function renderSetup() { $("dev").innerHTML = [["Mode", LIVE ? '<span class="u-ok">real model in this browser</span>' : `<span class="u-am">demo · pre-recorded replies</span> · <a href="${liveUrl()}" style="color:inherit">run a real model here (downloads ≈335 MB+)</a>`], ["Device", `${dev.name} · ${dev.browser}`], ["WebGPU", gpuOk ? '<span class="u-ok">available</span>' : '<span class="u-bad">not available</span> · type <span class="u-hl">demo on</span> to try the flow'],
   ["GPU", esc(dev.gpu)], ["Memory", esc(dev.mem)], ["Storage", esc(dev.store)], ["Signing", `${signer.alg} · key ${signer.key_id}`]].map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join("");
   $("sName").value = S.name; $("sTemp").value = S.temperature; $("sMax").value = S.max_tokens; $("sSys").value = S.system; }
@@ -748,7 +865,7 @@ function renderAll() {
   $("demoTag").style.display = DEMO ? "block" : "none";
   $("instBadge").style.display = unread ? "inline" : "none"; $("instBadge").textContent = unread;
   $("sendBtn").disabled = !engine; $("stopModel").disabled = !engine;
-  renderSide(); renderScene(); renderZones(); renderProjects(); renderSetup(); if (view === "instruct") renderChat(); fit();
+  renderSide(); renderScene(); renderZones(); renderProjects(); renderSetup(); renderFinder(); if (view === "instruct") renderChat(); fit();
 }
 function setView(v) { view = v; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.v === v));
   ["live","instruct","projects","setup"].forEach(k => $("p-" + k).classList.toggle("on", k === v));
@@ -813,6 +930,7 @@ async function tour(n) {
   await Promise.all(receipts.map(async r => { verified[r.run_id] = await verify(r); }));
   if (!sessions.length) sessions.push(newSession()); const cid = await DB.get("cur"); cur = sessions.find(s => s.id === cid) || sessions.at(-1);
   await probe(); await fillModels(); if (DEMO) { engine = demoEngine; loaded = "demo-engine"; }
+  try { await seedSamples(); } catch (e) { console.warn("iolin: sample threads skipped", e); }
   // App shell: opens instantly next time and works offline (sw.js; the page itself is always fetched fresh first).
   if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
   // Speed: fetch the model library while the page is idle; a returning visitor's cached model reloads without a download.
@@ -846,8 +964,10 @@ async function tour(n) {
   $("impFile").onchange = async e => { try { const d = JSON.parse(await e.target.files[0].text()); if (!String(d.app).startsWith("iolin-web")) throw new Error("not an iolin export");
       S = {...DEF, ...d.settings}; sessions = d.sessions || sessions; for (const r of d.receipts || []) { await DB.set(r.run_id, r, "receipts"); if (!receipts.some(x => x.run_id === r.run_id)) receipts.push(r); verified[r.run_id] = await verify(r, d.signing_public_key?.pub_b64 || signer.pub_b64); }
       cur = sessions.at(-1); await save(); renderAll(); out("imported workspace"); } catch (er) { out(`<span class="u-bad">import failed</span> ${esc(er.message)}`); } };
-  $("wipeBtn").onclick = async () => { if (DEMO || confirm("Erase settings, sessions, receipts and this browser's signing key?")) { await DB.clear(); location.reload(); } };
-  $("newSess").onclick = () => run("sessions new");
+  $("wipeBtn").onclick = async () => { if (DEMO || confirm("Erase settings, sessions, receipts and this browser's signing key?")) { await DB.clear(); await DB.set("samplesSeeded", true); location.reload(); } };
+  $("newSess").onclick = () => run("sessions new"); $("fdrNew").onclick = () => run("sessions new");
+  $("fdrToggle").onclick = () => { fOpen = !fOpen; try { localStorage.setItem("iolin-fdr", fOpen ? "open" : "closed"); } catch {} renderFinder(); };
+  boardDrag();
   $("startBtn").onclick = async () => { $("stage").scrollIntoView({behavior:"smooth"}); if (!(await DB.get("tourDone"))) tour(tourStep < 0 ? 0 : tourStep); else if (!engine) setView("setup"); else setView("instruct"); };
   $("fullBtn").onclick = () => { document.body.classList.add("full"); fit(); }; $("closeFs").onclick = () => { document.body.classList.remove("full"); fit(); };
   addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("full")) $("closeFs").click(); });

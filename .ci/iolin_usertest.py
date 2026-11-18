@@ -103,6 +103,25 @@ with sync_playwright() as p:
     o = cmd(pg, "ask hello", 2500); check("terminal", "ask on the real-model page with no model → explains, no crash", len(o.strip()) > 0 and not errs, o.replace("\n", " ")[:150])
     pg.goto(URL, wait_until="networkidle"); pg.wait_for_timeout(1200)
 
+    # 2b. Demo content: Iot tab, sample threads in the Finder list, board, every question answered, nav links
+    check("demo", "first tab is named Iot", pg.inner_text('.tab[data-v="live"]').split()[1] == "Iot", pg.inner_text('.tab[data-v="live"]'))
+    pg.click('.tab[data-v="instruct"]'); pg.wait_for_timeout(400)
+    if pg.get_attribute("#fdrToggle", "aria-expanded") != "true": pg.click("#fdrToggle"); pg.wait_for_timeout(200)
+    rows = pg.query_selector_all("#fdr .c2 .fi"); titles = [r.inner_text() for r in rows]
+    check("demo", "Finder lists the sample threads above the chat", len(rows) >= 4 and any("Release check" in t for t in titles)
+          and pg.evaluate("document.getElementById('fdr').getBoundingClientRect().bottom <= document.getElementById('chat').getBoundingClientRect().top + 1"), titles[:5])
+    rel = next((r for r in rows if "Release check" in r.inner_text()), None)
+    if rel: rel.click(); pg.wait_for_timeout(400)
+    check("demo", "clicking a thread opens it in the chat", "support-bot v4" in pg.inner_text("#chat") and "receipt" in pg.inner_text("#chat"), pg.inner_text("#chat")[:120])
+    pg.click("#fdrNew"); pg.wait_for_timeout(300); pg.fill("#ask", "help me"); pg.click("#sendBtn"); pg.wait_for_timeout(5000)
+    last = pg.query_selector_all("#chat .bub.a")[-1].inner_text().strip()
+    check("demo", "'help me' gets a non-empty reply with a receipt", len(last) > 40 and "receipt" in last, last[:120])
+    pg.click('.tab[data-v="projects"]'); pg.wait_for_timeout(300)
+    check("demo", "Projects board has template items", len(pg.query_selector_all("#zboard .bi")) >= 8, len(pg.query_selector_all("#zboard .bi")))
+    nav = {a.inner_text().strip(): a.get_attribute("href") for a in pg.query_selector_all(".nav a")}
+    check("links", "header nav goes to its pages, not home", nav.get("iot API") == "/api.html" and nav.get("Account") == "/app.html" and nav.get("Enterprise") not in (None, "/", "https://io-threads.com"), nav)
+    pg.click('.tab[data-v="live"]'); pg.wait_for_timeout(300)
+
     # 3. Panels and buttons
     pg.click('[data-t="out"]'); pg.wait_for_timeout(300); check("panels", "Output tab", pg.is_visible("#outPane"), "")
     pg.click('[data-t="term"]')
