@@ -162,7 +162,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   <div class="wrap">
     <a class="mark only" href="./" aria-label="io threads home"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a>
     <nav class="nav" aria-label="Main">
-      <a href="looop.html" data-looop>iolin</a>
+      <a href="iolin/" data-looop>iolin</a>
       <a href="sample-report.html">iot API</a>
       <a href="industries.html">Enterprise</a>
       <a class="login" href="login.html"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="5.5" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 14c.8-2.8 3-4 5.5-4s4.7 1.2 5.5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Log in</a>
@@ -303,11 +303,12 @@ iotAuth.gate("app.html").then(function(s){if(!s)return;
   iotAuth.sb.from("members").select("plan,status,role,usage_packs,overage").maybeSingle().then(function(r){return r.error?iotAuth.sb.from("members").select("plan,status,role").maybeSingle():r}).then(function(r){if(r.error){$("ap-plan").textContent="Plan unavailable"}if(r.data){usage(r.data);$("ap-plan").textContent=(NAMES[r.data.plan]||r.data.plan)+(r.data.status!=="active"?" · "+r.data.status.replace("_"," "):"")+(r.data.role==="admin"?" · Admin":"");if(r.data.role==="admin")loadAdmin()}});
   loadKey();
   $("ap-out").onclick=function(){iotAuth.signOut()};
+  var WELCOME=!!new URLSearchParams(location.search).get("welcome");   // new sign-up: go to the iolin tour after the password
   if(new URLSearchParams(location.search).get("setpw")){$("ap-pw-card").classList.add("ask");$("ap-pw-state").textContent="Set a password now. Next time you log in with your email and this password, no email needed.";$("ap-pw").focus();history.replaceState(null,"","app.html")}
   $("ap-pw-form").onsubmit=function(){var p=$("ap-pw").value;if(p.length<10){$("ap-pw-state").textContent="Use at least 10 characters.";return}
     $("ap-pw-state").textContent="Saving…";iotAuth.sb.auth.updateUser({password:p}).then(function(r){
       if(r.error){$("ap-pw-state").textContent=/reauth/i.test(r.error.message+(r.error.code||""))?"For your security, log out and log in again, then change your password.":/different|same/i.test(r.error.message)?"That's your current password. Pick a new one.":/least|short|weak/i.test(r.error.message)?"Use a longer password.":"Couldn't save it. Try again.";return}
-      $("ap-pw").value="";$("ap-pw-card").classList.remove("ask");$("ap-pw-state").textContent="Password saved. Next time, log in with your email and this password."}).catch(function(){$("ap-pw-state").textContent="Couldn't reach sign-in. Try again."})};
+      $("ap-pw").value="";$("ap-pw-card").classList.remove("ask");$("ap-pw-state").textContent="Password saved. Next time, log in with your email and this password."+(WELCOME?" Opening iolin…":"");if(WELCOME)setTimeout(function(){location.href="iolin/?welcome=1"},1200)}).catch(function(){$("ap-pw-state").textContent="Couldn't reach sign-in. Try again."})};
   $("ap-key-make").onclick=function(){call("create").then(function(r){if(r.key){key=r.key;$("ap-key-new").textContent=r.key;$("ap-key-new").hidden=false;$("ap-key-copy").hidden=false;$("ap-key-state").textContent="Here's your new key. It's shown once; any older key no longer works.";$("ap-key-revoke").hidden=false;$("ap-key-make").textContent="Replace key"}})};
   $("ap-key-copy").onclick=function(){navigator.clipboard.writeText(key).then(function(){$("ap-key-copy").textContent="Copied"})};
   $("ap-key-revoke").onclick=function(){call("revoke").then(function(){key=null;$("ap-key-new").hidden=true;$("ap-key-copy").hidden=true;loadKey()})};

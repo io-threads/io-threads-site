@@ -157,7 +157,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   <div class="wrap">
     <a class="mark only" href="./" aria-label="io threads home"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a>
     <nav class="nav" aria-label="Main">
-      <a href="looop.html" data-looop>iolin</a>
+      <a href="iolin/" data-looop>iolin</a>
       <a href="sample-report.html">iot API</a>
       <a href="industries.html">Enterprise</a>
       <a class="login" href="login.html" aria-current="page"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="5.5" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 14c.8-2.8 3-4 5.5-4s4.7 1.2 5.5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Log in</a>
@@ -240,7 +240,7 @@ $("lg-form").addEventListener("submit",function(ev){ev.preventDefault();var em=$
       location.replace(next)}).catch(function(){busy(false,"Couldn't reach sign-in. Check your connection and try again.")});
     return}
   busy(true,"Sending…");
-  iotAuth.sb.auth.signInWithOtp({email:em,options:{emailRedirectTo:location.origin+"/app.html?setpw=1",shouldCreateUser:mode==="up"}}).then(function(r){busy(false);
+  iotAuth.sb.auth.signInWithOtp({email:em,options:{emailRedirectTo:location.origin+"/app.html?setpw=1"+(mode==="up"?"&welcome=1":""),shouldCreateUser:mode==="up"}}).then(function(r){busy(false);
     if(r.error){say(/signups not allowed|not found|no user/i.test(r.error.message)?"There's no account for that email. Use Create account.":"We couldn't send the email just now. Try again in a few minutes.","email");return}
     say("Check "+em+" for your link. It signs you in, then you set a password.")}).catch(function(){busy(false,"Couldn't reach sign-in. Check your connection and try again.")});
 });
