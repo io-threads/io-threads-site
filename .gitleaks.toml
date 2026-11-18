@@ -1,0 +1,11 @@
+# Default gitleaks rules, plus one allowance: Supabase publishable keys are public by design
+# (data is protected by row-level security). Service-role and secret keys still fail the scan.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Supabase publishable keys"
+regexTarget = "match"
+regexes = ['''sb_publishable_[A-Za-z0-9_-]+''']
+# Pinned third-party bundles (minified library code, not ours).
+paths = ['''^vendor/''']

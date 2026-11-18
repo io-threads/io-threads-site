@@ -1,0 +1,7 @@
+# Weekly, grouped: one PR a week at most, so Dependabot doesn't burn Actions minutes.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: weekly }
+    groups: { actions: { patterns: ["*"] } }
