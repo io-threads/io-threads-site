@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Join io threads: plans</title>
-<meta name="description" content="io threads plans: a free account, Home Plus on iPhone, Team for one workflow on your own host, and Private for your servers or air-gapped.">
+<meta name="description" content="io threads plans: free, API plans Starter, Pro and Scale with usage packs, Home Plus on iPhone, Team on your own host, and Private for your servers.">
 <link rel="canonical" href="https://io-threads.com/join.html">
 <meta property="og:title" content="Join io threads">
 <meta property="og:description" content="io threads builds iolin: private AI on hardware you control that keeps a signed record of every run, so you can trace what your agents did.">
@@ -163,7 +163,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   <p class="label">Join</p>
   <div class="stack">
     <h1 id="h-proof" class="as-h2">Choose your plan.</h1>
-    <p>Start with a free account. Team and Private are contracted with us; Home Plus comes with the iPhone app.</p>
+    <p>Start with a free account. API plans are monthly, by card. Team and Private are contracted with us; Home Plus comes with the iPhone app.</p>
     <style>
     .ways{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp4)}
     @media (max-width:980px){.ways{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -253,11 +253,11 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     </style>
     <div class="ways">
       <article class="way lead">
-        <span class="who">iolin</span><h3>Free</h3>
-        <p class="for">Monthly findings, free.</p>
-        <ul class="opens"><li>iolin</li><li>MCP feed</li><li><span><a href="sample-report.html">API</a> · 60 calls/h</span></li><li class="qty off"><span class="ql">Archive</span><span class="qv"><output>—</output></span></li><li class="qty off"><span class="ql">Briefings</span><span class="qv"><output>—</output></span></li><li class="qty off"><span class="ql">Early findings</span><span class="qv"><output>—</output></span></li><li class="qty off"><span class="ql">Principal hrs</span><span class="qv"><output>—</output></span></li></ul>
+        <span class="who">→ Start here</span><h3>Free</h3>
+        <p class="for">Try the checks and the feeds.</p>
+        <ul class="opens"><li>iot API · 60 calls/hour, 1,000/day</li><li>Hosted MCP feed</li><li>Benchmarks feed</li></ul>
         <div class="price"><b>Free</b><span>no card needed</span></div>
-        <form class="join" id="join" novalidate><label for="join-email">Your email</label><input id="join-email" type="email" autocomplete="email" placeholder="you@company.com" required><button class="btn solid sm" type="submit">Subscribe</button></form>
+        <a class="btn solid" href="login.html?mode=signup">Create a free account</a>
       </article>
       <article class="way">
         <span class="who">→ iolin on iPhone</span><h3>Home Plus</h3>
@@ -284,6 +284,49 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
         <a class="btn line" href="mailto:team@io-threads.com?subject=Private%20infrastructure&amp;body=Company%3A%0A%0AWorkflow%20or%20claim%3A%0A%0AWho%20is%20asking%2C%20and%20by%20when%3A%0A">Talk to us</a>
       </article>
     </div>
+
+
+    <h2 id="h-api" class="as-h2" style="margin-top:var(--sp6)">API plans</h2>
+    <p>The iot API, the hosted MCP feed and the benchmarks feed, on one key. <a href="api.html">Read the API docs</a>.</p>
+    <div class="ways ways3">
+      <article class="way" data-plan="Builder" data-name="Starter">
+        <span class="who">→ One product</span><h3>Starter</h3>
+        <p class="for">Checks in CI for one product or agent.</p>
+        <ul class="opens"><li>iot API · 1,000 calls/day (about 30,000 a month)</li><li>Hosted MCP feed</li><li>Benchmarks feed</li><li>Usage packs available</li></ul>
+        <div class="price" data-m="$29.99"><b>$29.99</b><span>/ month</span></div>
+        <p class="extra" aria-live="polite"></p>
+        <a class="btn solid pay" data-plan="Builder" data-verb="Subscribe" href="#">Subscribe · $29.99/mo</a>
+        <div class="paybox" hidden><p class="pb-sum"></p><p class="pb-t" style="justify-content:flex-start">How would you like to pay?</p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Credit or debit card</button></div><p class="pb-t"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Secure checkout by Square · billed as Io Threads</p><button type="button" class="pb-x">Cancel</button></div>
+      </article>
+      <article class="way" data-plan="Buyer" data-name="Pro">
+        <span class="who">→ A team shipping agents</span><h3>Pro</h3>
+        <p class="for">Every release gated, every eval checked.</p>
+        <ul class="opens"><li>iot API · 10,000 calls/day (about 300,000 a month)</li><li>Hosted MCP feed</li><li>Benchmarks feed</li><li>Usage packs available</li></ul>
+        <div class="price" data-m="$79.99"><b>$79.99</b><span>/ month</span></div>
+        <p class="extra" aria-live="polite"></p>
+        <a class="btn solid pay" data-plan="Buyer" data-verb="Subscribe" href="#">Subscribe · $79.99/mo</a>
+        <div class="paybox" hidden><p class="pb-sum"></p><p class="pb-t" style="justify-content:flex-start">How would you like to pay?</p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Credit or debit card</button></div><p class="pb-t"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Secure checkout by Square · billed as Io Threads</p><button type="button" class="pb-x">Cancel</button></div>
+      </article>
+      <article class="way" data-plan="Partner" data-name="Scale">
+        <span class="who">→ High volume</span><h3>Scale</h3>
+        <p class="for">Checks on every run, across products.</p>
+        <ul class="opens"><li>iot API · 100,000 calls/day (about 3 million a month)</li><li>Hosted MCP feed</li><li>Benchmarks feed</li><li>Usage packs, then metered overage</li></ul>
+        <div class="price" data-m="$199"><b>$199</b><span>/ month</span></div>
+        <p class="extra" aria-live="polite"></p>
+        <a class="btn solid pay" data-plan="Partner" data-verb="Subscribe" href="#">Subscribe · $199/mo</a>
+        <div class="paybox" hidden><p class="pb-sum"></p><p class="pb-t" style="justify-content:flex-start">How would you like to pay?</p><div class="pb-m" role="group" aria-label="Choose how to pay"><button type="button" class="pm ap">Apple Pay</button><button type="button" class="pm gp">Google Pay</button><button type="button" class="pm cd">Credit or debit card</button></div><p class="pb-t"><svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><rect x="2" y="5.5" width="8" height="5.5" rx="1.2" fill="currentColor"/><path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>Secure checkout by Square · billed as Io Threads</p><button type="button" class="pb-x">Cancel</button></div>
+      </article>
+    </div>
+    <div class="usage">
+      <p class="label">Usage</p>
+      <table class="utab"><thead><tr><th scope="col">Add-on</th><th scope="col">Price</th><th scope="col">How</th></tr></thead><tbody>
+        <tr><td>Usage pack: +100,000 API calls a month</td><td>$10 / month each, up to 10</td><td>On any paid API plan. <a href="mailto:team@io-threads.com?subject=Usage%20packs&amp;body=Account%20email%3A%0A%0AHow%20many%20packs%3A%0A">Order by email</a>; invoiced monthly.</td></tr>
+        <tr><td>Metered overage: calls past your daily limit</td><td>$0.15 per 1,000 calls</td><td>Opens once all 10 packs are in use. Switch it on in <a href="app.html">your account</a>; invoiced monthly.</td></tr>
+        <tr><td>MCP feed</td><td>Included</td><td>Every plan. Each tool call counts as one API call.</td></tr>
+        <tr><td>iolin receipt storage: +10 GB</td><td>$5 / month</td><td>Opens when account sync ships; until then receipts stay in your browser.</td></tr>
+      </tbody></table>
+    </div>
+    <style>.ways3{grid-template-columns:repeat(3,minmax(0,1fr))}@media (max-width:980px){.ways3{grid-template-columns:minmax(0,1fr)}}.usage{display:grid;gap:var(--sp3);margin-top:var(--sp4)}.utab{width:100%;border-collapse:collapse;font:400 .95rem/1.4 var(--f-display)}.utab th,.utab td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top}.utab th{font:500 .78rem/1 var(--f-mono);color:var(--muted);letter-spacing:.06em}.utab a{color:inherit;text-underline-offset:3px}@media (max-width:640px){.utab thead{display:none}.utab tr{display:grid;padding:8px 0;border-bottom:1px solid var(--rule)}.utab td{border:0;padding:2px 0}}</style>
     
     <script src="pay-links.js"></script>
     <script src="square-pay.js"></script>
@@ -296,7 +339,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
           if(!box.hidden){close();return}
           document.querySelectorAll(".way.paying").forEach(function(c){c.querySelector(".paybox").hidden=true;c.classList.remove("paying");c.querySelector(".pay").setAttribute("aria-expanded","false")});
           var extra=card.querySelector(".extra").textContent.trim();
-          box.querySelector(".pb-sum").textContent=card.getAttribute("data-plan")+" · "+card.querySelector(".price b").textContent+card.querySelector(".price span").textContent.replace("/ ","/")+(extra?" "+extra:"");
+          box.querySelector(".pb-sum").textContent=(card.getAttribute("data-name")||card.getAttribute("data-plan"))+" · "+card.querySelector(".price b").textContent+card.querySelector(".price span").textContent.replace("/ ","/")+(extra?" "+extra:"");
           box.hidden=false;card.classList.add("paying");pay.setAttribute("aria-expanded","true");var ff=box.querySelector(".pm,input");if(ff)ff.focus({preventScroll:true});box.scrollIntoView({block:"nearest",behavior:"smooth"});
         });
         box.querySelectorAll(".pm").forEach(function(b){b.addEventListener("click",function(){window.location.assign(pay.href)})});
@@ -341,7 +384,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
           var ex=card.querySelector(".extra");ex.textContent=extra?("+ "+money(extra)+"/mo in extras, invoiced separately. "):"";if(extra&&((CHECKOUT[plan]||{})[period]||(SQUARE[plan]||{})[period])){var a=document.createElement("a");a.textContent="Request extras";a.href="mailto:team@io-threads.com?subject="+encodeURIComponent("Extras: "+plan)+"&body="+encodeURIComponent("Plan: "+plan+"\nExtras: "+lines.join(", ")+"\n");ex.appendChild(a)}
           var b=card.querySelector(".pay"),verb=b.getAttribute("data-verb"),url=(CHECKOUT[plan]||{})[period],sq=(SQUARE[plan]||{})[period];card.dataset.sq=sq||"";
           b.textContent=verb+" · "+base+(period==="m"?"/mo":"/yr")+(extra&&!(url||sq)?" + "+money(extra):"");
-          if(url){b.href=url}else if(sq){b.href=sq}else{b.href="mailto:team@io-threads.com?subject="+encodeURIComponent((verb==="Apply"?"Partner application: ":"Join: ")+plan+" ("+(period==="m"?"monthly":"yearly")+", "+base+(extra?" + "+money(extra)+"/mo extras":"")+")")+"&body="+encodeURIComponent("Name:\n\nCompany:\n\n"+(lines.length?"Extras requested: "+lines.join(", ")+"\n\n":"")+"What you ship, buy or check:\n")}
+          if(url){b.href=url}else if(sq){b.href=sq}else{b.href="mailto:team@io-threads.com?subject="+encodeURIComponent((verb==="Apply"?"Partner application: ":"Join: ")+(card.getAttribute("data-name")||plan)+" ("+(period==="m"?"monthly":"yearly")+", "+base+(extra?" + "+money(extra)+"/mo extras":"")+")")+"&body="+encodeURIComponent("Name:\n\nCompany:\n\n"+(lines.length?"Extras requested: "+lines.join(", ")+"\n\n":"")+"What you ship, buy or check:\n")}
         });
         btns.forEach(function(x){x.setAttribute("aria-pressed",String(x.getAttribute("data-p")===period))});
       }
@@ -354,25 +397,25 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     })();</script>
 
     <div class="mcp">
-      <div><p class="label">MCP feed · agent council</p><p>A council of agents that reports for you, not for vendors. Each finding is checked by the others before it reaches iolin and your own tools.</p>
+      <div><p class="label">Hosted MCP feed</p><p>The iot checks and the benchmarks feed as MCP tools for Claude, IDEs and your own agents. Listing tools is open; tool calls use your API key.</p>
         <ol class="mloop" aria-label="How a finding moves through the loop"><li>Diagnostic</li><li>Assessment</li><li>Versioned report</li><li>Monitoring</li><li>Recheck</li></ol>
-        <p class="fine">Read-only. No data is sent to us.</p></div>
+        <p class="fine">Read-only. Calls count against your plan. <a href="api.html#mcp">Connect it</a>.</p></div>
       <pre class="mcpcode" aria-label="Example MCP client configuration"><code>{
   "mcpServers": {
     "io-threads": {
-      "url": "<span class="slot">coming soon: in your account</span>"
+      "url": "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/mcp",
+      "headers": { "Authorization": "Bearer iot_…" }
     }
   }
 }</code></pre>
     </div>
     <style>.mloop{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px;counter-reset:ml}.mloop li{counter-increment:ml;font:400 .78rem/1 var(--f-mono);color:var(--ink);border:1px solid var(--rule);border-radius:999px;padding:6px 10px;background:var(--paper)}.mloop li::before{content:counter(ml) " ";color:var(--accent)}.mloop li+li{position:relative}.mcp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--sp5);align-items:center;border:1px solid var(--rule);border-radius:12px;padding:var(--sp5);background:var(--sheet)}.mcp>div{display:grid;gap:var(--sp2)}.mcpcode{margin:0;overflow-x:auto;font:400 .85rem/1.55 var(--f-mono);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:var(--sp4);color:var(--ink)}@media (max-width:760px){.mcp{grid-template-columns:minmax(0,1fr)}}</style>
-    <script>(function(){var f=document.getElementById("join");if(!f)return;f.addEventListener("submit",function(e){e.preventDefault();var v=document.getElementById("join-email").value.trim();location.href="mailto:team@io-threads.com?subject="+encodeURIComponent("Subscribe: iolin")+"&body="+encodeURIComponent("Please add me to iolin.\n\nEmail: "+v+"\n")})})();</script>
   </div>
 </section>
 </div>
 <footer class="site">
   <div><a class="mark" href="./"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a></div>
-  <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iot API</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
+  <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iot API</a><a href="api.html">API docs</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
   <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a><p>&copy; 2026 io threads</p></div>
 </footer>
 </main>

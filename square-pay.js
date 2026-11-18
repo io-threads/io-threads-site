@@ -107,7 +107,7 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
         if (!r.ok) { if (!r.keep) idem = key(); throw new Error(r.error || "That didn't go through. Nothing was charged."); }
         var mail = em.value.trim();
         if (!monthly) return done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + mail + ".");
-        done(box, "Welcome to " + o.plan + ".", r.invoiced
+        done(box, "Welcome to " + (o.name || o.plan) + ".", r.invoiced
           ? "First month paid. Square emails an invoice each month to " + mail + ", payable with Apple Pay, Google Pay or card."
           : "Your membership is active and billed monthly to this card. Square emails your receipt to " + mail + ".");
       }).catch(function (e) { if (e && e.unknown) pending = last; fail(e); });
@@ -137,9 +137,9 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
   }
 
   function monthly(card) {
-    var plan = card.getAttribute("data-plan");
-    checkout({ box: card.querySelector(".paybox"), pay: card.querySelector(".pay"), card: card, id: plan, monthly: true, plan: plan,
-      title: plan + " · $" + PRICES[plan] + "/month", amount: PRICES[plan], label: "io threads " + plan + " (first month)",
+    var plan = card.getAttribute("data-plan"), name = card.getAttribute("data-name") || plan;   // Builder/Buyer/Partner sell as Starter/Pro/Scale
+    checkout({ box: card.querySelector(".paybox"), pay: card.querySelector(".pay"), card: card, id: plan, monthly: true, plan: plan, name: name,
+      title: name + " · $" + PRICES[plan] + "/month", amount: PRICES[plan], label: "io threads " + name + " (first month)",
       cta: "Subscribe by card · $" + PRICES[plan] + "/mo", hosted: (links[plan] || {}).m || "",
       note: "Card: billed monthly. Apple Pay or Google Pay: first month now, then a monthly invoice by email. Cancel any time." });
   }
