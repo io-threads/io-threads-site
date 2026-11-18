@@ -1,10 +1,10 @@
 <!doctype html><html lang="en"><head>
 <script>/* site theme before first paint (footer toggle); Dawn (kraft) is the default */try{var t=null;try{t=localStorage.getItem("iot-site-theme")}catch(x){}if(t!=="twilight"&&t!=="dusk")t="dawn";var e=document.documentElement;if(t==="dusk")e.setAttribute("data-theme","dark");else{e.setAttribute("data-site",t);e.setAttribute("data-theme",t==="twilight"?"dark":"light")}}catch(x){}</script><meta charset="utf-8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%232a1416'/%3E%3Ccircle cx='256' cy='282' r='150' fill='none' stroke='%23E07A52' stroke-width='44'/%3E%3Cline x1='256' y1='58' x2='256' y2='108' stroke='%23E07A52' stroke-width='44' stroke-linecap='round'/%3E%3C/svg%3E"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="io threads builds iolin: private AI on hardware you control that keeps a signed record of every run, so you can show what your agents did.">
+<meta name="description" content="io threads builds iolin: private AI on hardware you control that keeps a signed record of every run, so you can trace what your agents did.">
 <link rel="canonical" href="https://io-threads.com/">
 <meta property="og:title" content="io threads: Private AI with a Signed Record">
-<meta property="og:description" content="io threads builds iolin: private AI on hardware you control that keeps a signed record of every run, so you can show what your agents did.">
+<meta property="og:description" content="io threads builds iolin: private AI on hardware you control that keeps a signed record of every run, so you can trace what your agents did.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://io-threads.com/">
 <meta property="og:site_name" content="io threads">
@@ -15,7 +15,7 @@
 <meta property="og:image:alt" content="io threads: your AI claim is only as good as the person who checked it. Verdict table showing PASS, FAIL and ABSTAIN.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="io threads: Private AI with a Signed Record">
-<meta name="twitter:description" content="io threads builds iolin: private AI on hardware you control that keeps a signed record of every run, so you can show what your agents did.">
+<meta name="twitter:description" content="io threads builds iolin: private AI on hardware you control that keeps a signed record of every run, so you can trace what your agents did.">
 <meta name="twitter:image" content="https://io-threads.com/assets/og-card.png">
 <meta name="theme-color" content="#141D2D">
 <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://io-threads.com/#org", "name": "io threads", "url": "https://io-threads.com/", "logo": "https://io-threads.com/assets/og-card.png", "email": "team@io-threads.com"}, {"@type": "WebSite", "@id": "https://io-threads.com/#site", "url": "https://io-threads.com/", "name": "io threads", "publisher": {"@id": "https://io-threads.com/#org"}}]}</script>
@@ -573,7 +573,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     </style>
     <p class="label steps-hd">The loop, step by step ↓</p>
     <ol class="steps">
-      <li class="stp" data-v="pass" data-name="Diagnostic" data-verdict="PASS · checks held 8/8"><span class="sn">Step 1 of 7</span><h3>Diagnostic</h3><p>One claim, 1–2 weeks of deep testing. It tells you which of the other six you need, if any.</p>
+      <li class="stp" data-v="pass" data-name="Diagnostic" data-verdict="PASS · checks held 8/8"><span class="sn">Step 1 of 7</span><h3>Diagnostic</h3><p>One claim, 1–2 weeks of deep testing. It tells you which other checks you need, if any.</p>
         <div class="ide" role="figure" aria-label="Report finding log: dx/claim.check" data-f="{&quot;name&quot;: &quot;ClaimCheck&quot;, &quot;v&quot;: &quot;PASS&quot;, &quot;items&quot;: [[&quot;CLAIM&quot;, null, &quot;\&quot;Answers product questions correctly\&quot; · src pricing-page@v3.1&quot;], [&quot;TEST&quot;, null, &quot;412 held-out questions · vendor never saw them&quot;], [&quot;TEST&quot;, null, &quot;adversarial: misspellings, two-part asks, discontinued SKUs&quot;], [&quot;RESULT&quot;, null, &quot;8/8 checks ran · 8 held&quot;]], &quot;board&quot;: &quot;Claim holds as written. Safe to quote with its version.&quot;, &quot;tab&quot;: &quot;dx/claim.check&quot;}"><div class="ide-bar"><i></i><i></i><i></i><span class="tab">dx/claim.check</span><label class="lang"><span class="sr">Show findings as</span><select><option value="log">Log</option><option value="swift">SwiftUI</option><option value="py">Python</option><option value="sh">Bash</option><option value="ts">TypeScript</option><option value="go">Go</option><option value="rs">Rust</option><option value="json">JSON</option><option value="yaml">YAML</option><option value="sql">SQL</option></select></label><span class="vb pass">PASS</span></div><ol class="ide-code"><li><span class="kw">CLAIM</span> <span class="str">&quot;Answers product questions correctly&quot;</span> · src pricing-page@v3.1</li><li><span class="kw">TEST</span>  <span class="num">412</span> held-out questions · vendor never saw them</li><li><span class="kw">TEST</span>  adversarial: misspellings, two-part asks, discontinued SKUs</li><li><span class="kw">RESULT</span> <span class="num">8/8</span> checks ran · <span class="ok">8 held</span></li><li class="board"><span class="cm">// Board read:</span> Claim holds as written. Safe to quote with its version.<span class="caret" aria-hidden="true"></span></li></ol></div>
         <span class="sv v pass">PASS · checks held 8/8</span></li>
       <li class="stp" data-v="pass" data-name="Eval audit" data-verdict="PASS · reproduced in range"><span class="sn">Step 2 of 7</span><h3>Eval audit</h3><p>We reproduce your accuracy number and its uncertainty, check test data for leaks, and find the worst-performing group.</p>
@@ -881,7 +881,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   <script>(function(){
     var f=document.querySelector(".fly"),s=document.getElementById("fly"),pop=document.getElementById("flypop");if(!s||!pop)return;
     var D=[
-      ["Diagnostic","One claim, 1–2 weeks of deep testing. It tells you which of the other six you need, if any.","PASS","The claim held up on the evidence we had.","dx"],
+      ["Diagnostic","One claim, 1–2 weeks of deep testing. It tells you which other checks you need, if any.","PASS","The claim held up on the evidence we had.","dx"],
       ["Eval audit","We reproduce your accuracy number and its uncertainty, check test data for leaks, and find the worst-performing group.","PASS","Number reproduced within its stated range.","ea"],
       ["Security","Adversarial tests of agents that call tools: actions outside a role, instructions hidden in tool results, data leaving through calls.","ABSTAIN","The test environment didn't cover every tool.","sec"],
       ["Hardware","Sensors, on-device models, firmware updates and rollback, and device-to-cloud security, checked across units and batches.","PASS","Rollback worked on every unit tested.","hw"],
