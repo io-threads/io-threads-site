@@ -230,6 +230,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <p class="big" id="op-mem-n">…</p>
       <div class="chips" id="op-mem-plans"></div>
       <p class="fine" id="op-mem-more"></p>
+      <p class="fine" id="op-overage"></p>
       <a class="btn line" href="app.html#ap-admin">Manage members</a>
     </section>
   </div>
@@ -300,7 +301,7 @@ function projects(siteRuns,lastProd,lastStage,L){L=L||{};var g=$("op-proj");g.te
   card("Production server",lastProd?(lastProd.verdict==="success"?"ok":"bad"):"",[lastProd?"release "+lastProd.ref+" "+lastProd.verdict+", "+ago(lastProd.created_at):"no release recorded yet","Supabase iothreads · Square live"],[["Supabase","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk"],["Deploy production",L.production],["Logs","https://supabase.com/dashboard/project/tckvatqkjfrvavleunzk/functions"]]);
   card("Staging",lastStage?(lastStage.verdict==="success"?"ok":"bad"):"",[lastStage?"deploy "+lastStage.ref+" "+lastStage.verdict+", "+ago(lastStage.created_at):"no deploy recorded yet","Supabase iothreads-staging · Square sandbox"],[["Supabase",L.stagingDashboard],["Deploys",L.stagingDeploys]]);
   card("Server code",null,["migrations, Edge Functions, engine suite","push to main = staging; tag + run = production"],[["Repo",L.serverRepo],["Releases (tags)",L.serverTags]]);
-  card("Payments · Square",null,["in-page checkout + 3 payment links","Builder, Buyer, Partner monthly; Lifetime closed to new sales"],[["Square dashboard","https://app.squareup.com/dashboard/"],["Join page","join.html"]]);
+  card("Payments · Square",null,["in-page checkout + 3 payment links","Starter, Pro, Scale monthly (Builder, Buyer, Partner in the database); Lifetime closed to new sales"],[["Square dashboard","https://app.squareup.com/dashboard/"],["Join page","join.html"]]);
   card("Merch · 10threads.store",null,["Shopify store"],[["Store","https://10threads.store/"]]);
 }
 
@@ -331,7 +332,8 @@ function load(){$("op-when").textContent="Checking…";live();
     var er=last&&last.run_url&&last.run_url.indexOf("https://github.com/")===0?last.run_url:(r.links||{}).engine;if(er){$("op-eng-run").href=er;$("op-eng-run").hidden=false}
     // Members
     var m=r.members;$("op-mem-n").textContent=m.total+" member"+(m.total===1?"":"s");$("op-mem-plans").textContent="";
-    ["Reader","Builder","Buyer","Partner","Lifetime"].forEach(function(p){if(m.plans[p])$("op-mem-plans").appendChild(el("span",p+" "+m.plans[p]))});
+    var NM={Reader:"Free",Builder:"Starter",Buyer:"Pro",Partner:"Scale",Lifetime:"Lifetime"};["Reader","Builder","Buyer","Partner","Lifetime"].forEach(function(p){if(m.plans[p])$("op-mem-plans").appendChild(el("span",NM[p]+" "+m.plans[p]))});
+if(r.overage){var o=r.overage;$("op-overage").textContent="Metered overage "+o.month+": "+o.calls.toLocaleString()+" calls from "+o.members+" member"+(o.members===1?"":"s")+" to invoice"+(o.rows&&o.rows.length?" ("+o.rows.slice(0,5).map(function(x){return x.email+" "+x.calls.toLocaleString()}).join(", ")+")":"")+"."}
     $("op-mem-more").textContent=r.activeKeys+" active API key"+(r.activeKeys===1?"":"s")+" · "+m.admins+" admin"+(m.admins===1?"":"s")+(m.notActive?" · "+m.notActive+" past due or cancelled":"");
     // Releases: server (recorded) + website publishes (GitHub)
     var rel=(r.releases||[]).map(function(x){return {where:x.env==="production"?"Production":"Staging",what:x.ref,ok:x.verdict==="success",res:x.verdict,at:x.created_at,url:x.run_url}});
