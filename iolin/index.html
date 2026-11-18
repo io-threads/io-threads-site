@@ -226,6 +226,74 @@ body.full.stack .fbar{margin-top:14px}body.full.stack .zboard{zoom:.6;height:620
 .snip{position:relative;margin-top:6px}.snip pre{margin:0;background:#0e1015;border:1px solid var(--w-line);border-radius:10px;padding:12px 70px 12px 14px;font:12.5px/1.5 var(--mono);color:#cfd3dc;overflow:auto;max-height:230px;white-space:pre}
 .snip .wbtn{position:absolute;top:8px;right:8px;padding:4px 10px;font-size:12px}
 body.full.stack .mlist,body.full.stack .tcards{grid-template-columns:minmax(0,1fr)}
+/* Setup hub: docs nav + sections */
+.setup.dh{max-width:1010px;display:grid;grid-template-columns:166px minmax(0,1fr);gap:30px;align-items:start}
+.dmain{min-width:0}
+.dnav{position:sticky;top:0;display:flex;flex-direction:column;gap:1px;padding:2px 0 10px;font-size:13.5px;z-index:4}
+.dnav .g{margin:14px 0 4px 10px;font:10.5px var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--w-dim)}.dnav .g:first-child{margin-top:2px}
+.dnav button{all:unset;box-sizing:border-box;cursor:pointer;padding:5px 10px;border-radius:7px;color:var(--w-quiet);white-space:nowrap}
+.dnav button:hover{color:var(--w-ink);background:#13151b}
+.dnav button[aria-current="true"]{color:var(--w-ink);background:var(--w-raise);box-shadow:inset 2px 0 0 #9DBBFF}
+.dnav button:focus-visible{outline:1.5px solid #9DBBFF;outline-offset:1px}
+.dsec{scroll-margin-top:8px}
+.dsec:first-child .sth{border-top:0;margin-top:0;padding-top:0}
+.dsec .sth{margin-top:30px}
+.dkick{margin:0 0 6px;font:11px var(--mono);letter-spacing:.09em;text-transform:uppercase;color:#9DBBFF}
+.dlead{color:var(--w-quiet);font-size:13.5px;line-height:1.55;margin:0 0 10px;max-width:70ch}
+.dsub{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:13.5px;font-weight:500;color:var(--w-ink);margin:18px 0 6px}.dsub span{font-size:12px;font-weight:400;color:var(--w-quiet);overflow-wrap:anywhere;min-width:0}
+.setup a.wbtn{text-decoration:none;display:inline-block}
+.setup textarea{width:100%;box-sizing:border-box;background:#13151b;border:1px solid var(--w-line);color:var(--w-ink);border-radius:9px;padding:8px 10px;font-family:inherit;font-size:13px;line-height:1.45;resize:vertical}
+.setup textarea.mono{font:12.5px/1.5 var(--mono)}
+.setup input:focus-visible,.setup select:focus-visible,.setup textarea:focus-visible,.setup .wbtn:focus-visible,.setup pre:focus-visible,.setup .chip:focus-visible,.setup a:focus-visible{outline:1.5px solid #9DBBFF;outline-offset:1px}
+.setup code{font:12.5px var(--mono);color:#C9D9FF}
+.qs{list-style:none;counter-reset:q;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qs li{counter-increment:q;position:relative;display:grid;gap:4px;align-content:start;border:1px solid var(--w-line);border-radius:12px;padding:12px 14px 6px 48px;background:#13151b;min-width:0}
+.qs li::before{content:counter(q);position:absolute;left:14px;top:11px;width:22px;height:22px;border-radius:50%;border:1px solid #9DBBFF;color:#9DBBFF;font:12px/22px var(--mono);text-align:center}
+.qs b{font-size:14px;font-weight:500}.qs .row{margin:4px 0}.qs .wbtn{padding:5px 11px;font-size:12.5px}
+.mlist.rec{max-height:none;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:4px}
+.bwrap{border:1px solid var(--w-line);border-radius:12px;overflow:auto;max-height:430px;background:#101217;margin-top:10px}
+.btab{width:100%;border-collapse:collapse;font-size:13px}
+.btab th{position:sticky;top:0;background:#101217;text-align:left;font:11px var(--mono);font-weight:400;color:var(--w-dim);padding:8px 10px;border-bottom:1px solid var(--w-line);white-space:nowrap}
+.btab td{padding:7px 10px;border-bottom:1px solid #1c1f27;vertical-align:top;color:#c9ccd4}.btab tr:last-child td{border-bottom:0}
+.btab .n{text-align:right;font-family:var(--mono);white-space:nowrap}.btab .rk{font-family:var(--mono);color:var(--w-dim)}
+.btab a{color:var(--w-ink)}.btab .nm{min-width:170px;overflow-wrap:anywhere}.btab .nm small{display:block;color:var(--w-quiet);font-size:11.5px}
+.btab .lib{margin-top:4px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}.btab .lib .mnote{font-size:11.5px}.btab code{font-size:12px}.btab .tags{display:flex;gap:4px;flex-wrap:wrap}
+.pcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pc{display:grid;gap:6px;align-content:start;border:1px solid var(--w-line);border-radius:10px;padding:10px 12px;background:#13151b;min-width:0}
+.pc p.mnote{margin:0}.pc .h{display:flex;gap:8px;align-items:center;min-width:0}.pc .h b{font-weight:500;font-size:14px}
+.pc dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1px 10px;margin:0;font:12px var(--mono)}.pc dt{color:var(--w-quiet)}.pc dd{margin:0;color:var(--w-ink)}
+.pc .sys{margin:0;font-size:12px;line-height:1.45;color:#c9ccd4;border-left:2px solid var(--w-line);padding-left:8px;overflow-wrap:anywhere}.pc .sys.keep{color:var(--w-dim)}
+.pc .wbtn{justify-self:start;padding:5px 12px;font-size:12.5px}.pc .wbtn[aria-pressed="true"]{border-color:#9DBBFF;color:#C9D9FF}
+.cfg{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px 12px;align-items:start;margin-top:8px;font-size:13px}
+.cfg>label,.cfg>.lbl{color:var(--w-quiet);padding-top:8px}.cfg .row{margin:0}.cfg .ro{font:12.5px var(--mono);color:#c9ccd4;padding-top:8px;overflow-wrap:anywhere}
+.tlist{display:grid;gap:6px;max-height:380px;overflow:auto;padding:2px}
+.trow{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--w-line);border-radius:10px;padding:7px 10px;background:#13151b;min-width:0}
+.trow .pin{all:unset;box-sizing:border-box;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;color:var(--w-dim);cursor:pointer}
+.trow .pin:hover{color:var(--w-ink);background:var(--w-raise)}.trow .pin[aria-pressed="true"]{color:#F0C46A}.trow .pin:focus-visible{outline:1.5px solid #9DBBFF}
+.trow .pin svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}.trow .pin[aria-pressed="true"] svg{fill:currentColor}
+.trow .tx{display:grid;gap:2px;min-width:0}.trow .tx b{font-weight:500;font-size:13.5px;display:flex;gap:8px;align-items:center;min-width:0}
+.trow .tx span.d{font-size:12px;color:var(--w-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .act{display:flex;gap:6px}.trow .act .wbtn{padding:4px 10px;font-size:12px}
+.mkt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mk{display:grid;gap:6px;align-content:start;border:1px solid var(--w-line);border-radius:12px;padding:12px 14px;background:#13151b;min-width:0}
+.mk .k{font:10.5px var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--c,#9DBBFF)}
+.mk .h{display:flex;gap:8px;align-items:center}.mk .h b{font-weight:500;font-size:14.5px}
+.mk p{margin:0;font-size:12.5px;color:var(--w-quiet);line-height:1.45}
+.mk ul{margin:0;padding-left:16px;font-size:12.5px;color:#c9ccd4;display:grid;gap:1px}.mk ul i{font-style:normal;color:var(--w-dim);font:11px var(--mono)}
+.mk .row{margin:2px 0 0}.mk .wbtn{padding:5px 12px;font-size:12.5px}
+.dfacts{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px 12px;margin:6px 0 0;font-size:13px}.dfacts dt{color:var(--w-quiet);padding-top:4px}.dfacts dd{margin:0;min-width:0;color:#c9ccd4;line-height:1.6;overflow-wrap:anywhere}
+.dfacts a,.dsec p a{color:var(--w-ink)}
+body.full.stack .setup.dh{grid-template-columns:minmax(0,1fr);gap:6px}
+body.full.stack .dnav{top:-48px;flex-direction:row;overflow-x:auto;gap:6px;margin:-48px -16px 4px;padding:10px 16px;background:var(--w-bg);border-bottom:1px solid var(--w-line);scrollbar-width:none}
+body.full.stack .dnav::-webkit-scrollbar{display:none}
+body.full.stack .dnav .g{display:none}
+body.full.stack .dnav button{flex:none;border:1px solid var(--w-line);border-radius:99px;padding:5px 12px;font-size:13px}
+body.full.stack .dnav button[aria-current="true"]{box-shadow:none;border-color:#9DBBFF}
+body.full.stack .qs,body.full.stack .pcards,body.full.stack .mkt{grid-template-columns:minmax(0,1fr)}
+body.full.stack .cfg,body.full.stack .dfacts{grid-template-columns:minmax(0,1fr);gap:4px}
+body.full.stack .cfg>label,body.full.stack .cfg>.lbl,body.full.stack .dfacts dt{padding-top:6px}
+body.full.stack .trow.mine{grid-template-columns:32px minmax(0,1fr)}body.full.stack .trow.mine .act{grid-column:2}
+body.full.stack .main:has(#p-setup.on){grid-template-rows:auto 640px 320px}
 body.full.stack .mdet dl{grid-template-columns:110px minmax(0,1fr)}
 .fbar{display:flex;align-items:center;gap:10px;max-width:980px;margin:0 auto 8px;color:var(--w-quiet);font-size:13px}
 .fdr{display:grid;grid-template-columns:170px minmax(0,1fr) minmax(0,1fr);height:230px;max-width:980px;margin:0 auto 16px;border:1px solid var(--w-line);border-radius:12px;background:#0e1015;overflow:hidden}
@@ -397,29 +465,129 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
             <!-- projects -->
             <div class="pane" id="p-projects"><div class="zboard" id="zboard" aria-label="Projects board"><div class="bi note y" style="left:4%;top:8%;--r:-3deg" tabindex="0"><b>Today</b><p>Recheck the laptop after the update. Ask the team if the drift holds.</p><i>— you</i></div><div class="bi note p" style="left:26%;top:56%;--r:2.5deg" tabindex="0"><b>Idea</b><p>Gate v4 at 0.85, demo Friday?</p><i>— team</i></div><div class="bi ico" style="left:30%;top:8%" tabindex="0"><svg viewBox="0 0 40 32"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#6B8FD6"/><path d="M2 11h36v16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#8EAEF0"/></svg><span>drift-board/</span><em>mirrored · laptop</em></div><div class="bi ico" style="left:47%;top:12%" tabindex="0"><svg viewBox="0 0 30 36"><path d="M3 2h17l7 7v24a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="#E8ECF3"/><path d="M20 2v7h7" fill="#C9D2E0"/><rect x="6" y="14" width="16" height="2" rx="1" fill="#9DBBFF"/><rect x="6" y="19" width="12" height="2" rx="1" fill="#B8C2D6"/><rect x="6" y="24" width="14" height="2" rx="1" fill="#B8C2D6"/></svg><span>Gate plan v4</span><em>doc</em></div><div class="bi ico" style="left:63%;top:8%" tabindex="0"><svg viewBox="0 0 30 36"><path d="M3 2h17l7 7v24a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="#E8ECF3"/><path d="M20 2v7h7" fill="#C9D2E0"/><rect x="6" y="14" width="16" height="2" rx="1" fill="#7FC8A0"/><rect x="6" y="19" width="12" height="2" rx="1" fill="#B8C2D6"/><rect x="6" y="24" width="14" height="2" rx="1" fill="#B8C2D6"/></svg><span>GPU cost by job</span><em>sheet · live</em></div><div class="bi ico" style="left:80%;top:12%" tabindex="0"><svg viewBox="0 0 40 32"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#B98BE0"/><path d="M2 11h36v16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#D3B2FF"/></svg><span>Board read, Nov</span><em>deck · 12</em></div><div class="bi ico" style="left:52%;top:56%" tabindex="0"><svg viewBox="0 0 30 36"><path d="M3 2h17l7 7v24a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" fill="#E8ECF3"/><path d="M20 2v7h7" fill="#C9D2E0"/><rect x="6" y="14" width="16" height="2" rx="1" fill="#C9A8FF"/><rect x="6" y="19" width="12" height="2" rx="1" fill="#B8C2D6"/><rect x="6" y="24" width="14" height="2" rx="1" fill="#B8C2D6"/></svg><span>drift-report.v3</span><em>PASS</em></div><div class="bi note g" style="left:70%;top:52%;--r:-2deg" tabindex="0"><b>Launch</b><p>☑ evals ☑ red team ☐ rollback drill</p><i>9 / 12</i></div><div class="bi ico" style="left:8%;top:62%" tabindex="0"><svg viewBox="0 0 40 32"><path d="M2 6a3 3 0 0 1 3-3h10l4 4h16a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#3E9E86"/><path d="M2 11h36v16a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z" fill="#72E3CB"/></svg><span>datasets/</span><em>mirrored · 4 GB</em></div><span class="zb-hint">template board · drag anything</span></div><div class="setup" style="margin-top:16px"><div class="row"><b style="font-size:15px">Threads on this device</b><span style="flex:1"></span><button class="wbtn" id="newSess">New session</button></div><div class="plist" id="plist"></div></div></div>
             <!-- setup -->
-            <div class="pane" id="p-setup"><div class="setup">
+            <!-- Setup is a developer hub: a docs-style section nav on the left, every section in one scroll on the right (the nav follows along). -->
+            <div class="pane" id="p-setup"><div class="setup dh">
+              <nav class="dnav" id="dnav" aria-label="Setup sections"></nav>
+              <div class="dmain">
+              <section class="dsec" id="sx-start" aria-labelledby="h-start">
+              <p class="dkick">Setup · developer hub</p>
+              <h3 class="sth" id="h-start">Quick start <span>about a minute</span></h3>
+              <p class="dlead">Pick a model, pick a preset, ask. Then connect your IDE or app. Everything in Setup is saved in this browser only.</p>
+              <ol class="qs">
+                <li><b>Pick a model that fits this device</b><span class="mnote" id="qs1"></span><div class="row"><button type="button" class="wbtn" data-qs="rec">See top 3</button><button type="button" class="wbtn" data-go="models">Library</button></div></li>
+                <li><b>Choose a preset</b><span class="mnote" id="qs2"></span><div class="row"><button type="button" class="wbtn" data-qs="balanced">Use Balanced</button><button type="button" class="wbtn" data-go="presets">All presets</button></div></li>
+                <li><b>Ask in Instruct</b><span class="mnote" id="qs3"></span><div class="row"><button type="button" class="wbtn pri" data-qs="start">Start the model</button><button type="button" class="wbtn" data-qs="instruct">Open Instruct</button></div></li>
+                <li><b>Connect your IDE or app</b><span class="mnote">The hosted iot API and MCP work today with a key. Serving your local model to apps is in the iolin app.</span><div class="row"><button type="button" class="wbtn" data-go="mcp">MCP</button><button type="button" class="wbtn" data-go="api">iot API</button><button type="button" class="wbtn" data-go="serve">Serve to apps</button></div></li>
+              </ol>
+              <h4 class="dsub" id="recHead">Recommended for this device <span id="recMeta"></span></h4>
+              <div class="mlist rec" id="qsRec" role="list" aria-label="Recommended models"></div>
+              <h4 class="dsub">This device</h4>
               <div class="kv" id="dev"></div>
+              </section>
+              <section class="dsec" id="sx-models" aria-label="Models">
               <h3 class="sth">Models <span id="mlMeta"></span></h3>
               <div class="mlbar"><input id="mlQ" type="search" placeholder="Search models, labs, licenses" aria-label="Search models"><select id="mlFilter" aria-label="Filter models"><option value="all">All models</option><option value="fits">Fits this device</option><option value="small">Under 2 GB</option><option value="permissive">Permissive license</option><option value="data">Training data published</option><option value="reasoning">Reasoning</option><option value="code">Code</option></select><select id="mlSort" aria-label="Sort models"><option value="fit">Best fit first</option><option value="size">Smallest first</option><option value="ctx">Longest context</option><option value="name">Name</option></select></div>
               <div class="mlist" id="mlist" role="listbox" aria-label="Model library"></div>
               <div class="mdet" id="mdet" aria-live="polite"></div>
               <select id="model" aria-label="Model" hidden></select>
-              <div class="row" style="margin-top:12px"><button class="wbtn pri" id="loadBtn">Download and start</button><button class="wbtn" id="stopModel">Stop</button><button class="wbtn" id="rmModel">Remove</button><span class="mnote" id="mlNote"></span></div>
+              <div class="row" style="margin-top:12px"><button class="wbtn pri" id="loadBtn">Download and start</button><button class="wbtn" id="stopModel">Stop</button><button class="wbtn" id="rmModel">Remove</button><button class="wbtn" id="cfgOpen">Edit config</button><span class="mnote" id="mlNote"></span></div>
               <div class="bar"><i id="bar"></i></div><div style="color:var(--w-quiet);font-size:12.5px" id="prog">Pick a model. It downloads once and runs on your GPU.</div>
+              </section>
+              <section class="dsec" id="sx-bench" aria-label="Benchmarks">
+              <h3 class="sth">Benchmarks <span id="bMeta"></span></h3>
+              <p class="dlead">The leaderboards where open models are ranked, from the iot benchmarks feed (Kaggle and Hugging Face, polled every 6 hours), in the feed's popularity order. iolin doesn't score models itself: open a leaderboard to see where a model places. A listing, not an endorsement.</p>
+              <div class="mlbar"><input id="bQ" type="search" placeholder="Search leaderboards or owners" aria-label="Search leaderboards"><select id="bSrc" aria-label="Source"></select><select id="bTier" aria-label="Tier"></select><select id="bTask" aria-label="Task"></select></div>
+              <div class="bwrap"><table class="btab"><thead><tr><th scope="col">#</th><th scope="col">Leaderboard</th><th scope="col">Tier</th><th scope="col">Tasks</th><th scope="col" class="n">Popularity</th></tr></thead><tbody id="bBody"></tbody></table></div>
+              <p class="mnote" id="bNote"></p>
+              </section>
+              <section class="dsec" id="sx-presets" aria-label="Presets">
               <h3 class="sth">Presets <span>how the model answers</span></h3>
-              <div class="row prs" id="presets" role="group" aria-label="Generation presets"></div>
+              <p class="dlead">Each card lists the exact values it sets. Apply changes the settings Instruct uses; a preset without a system prompt keeps yours.</p>
+              <div class="pcards" id="presets" role="group" aria-label="Generation presets"></div>
+              <h4 class="dsub">Current settings</h4>
               <div class="row"><label style="color:var(--w-quiet)" for="sName">Your name</label><input id="sName" style="width:140px"><label style="color:var(--w-quiet)" for="sTemp">Temp</label><input id="sTemp" type="number" step="0.1" min="0" max="1.5" style="width:70px"><label style="color:var(--w-quiet)" for="sTopP">Top p</label><input id="sTopP" type="number" step="0.05" min="0.05" max="1" style="width:76px"><label style="color:var(--w-quiet)" for="sMax">Max tokens</label><input id="sMax" type="number" step="64" min="64" max="4096" style="width:90px"><label style="color:var(--w-quiet)" for="sCtx">Context</label><select id="sCtx"><option value="2048">2K</option><option value="4096">4K</option><option value="8192">8K</option><option value="16384">16K</option></select></div>
               <div class="row"><select id="sysPreset" aria-label="Instructions preset"></select><input id="sSys" style="flex:1;min-width:200px" placeholder="Instructions for the assistant" aria-label="Instructions for the assistant"></div>
               <div class="mnote" id="tplInfo"></div>
+              </section>
+              <section class="dsec" id="sx-config" aria-label="Model configs">
+              <h3 class="sth">Model configs <span>saved per model, in this browser</span></h3>
+              <p class="dlead">Give each model its own system prompt and sampling. Save keeps it for that model; Apply makes Instruct use it now. Export the same values as JSON, an Ollama Modelfile or an LM Studio preset.</p>
+              <div class="cfg">
+                <label for="cfgModel">Model</label><div><select id="cfgModel"></select> <span class="mnote" id="cfgState"></span></div>
+                <label for="cfgSys">System prompt</label><textarea id="cfgSys" rows="3" spellcheck="false"></textarea>
+                <span class="lbl">Sampling</span><div class="row tight"><label class="ck">Temp <input id="cfgTemp" type="number" step="0.1" min="0" max="1.5" style="width:70px"></label><label class="ck">Top p <input id="cfgTopP" type="number" step="0.05" min="0.05" max="1" style="width:76px"></label><label class="ck">Max tokens <input id="cfgMax" type="number" step="64" min="64" max="4096" style="width:90px"></label><label class="ck">Context <select id="cfgCtx"></select></label></div>
+                <label for="cfgStop">Stop sequences</label><div><textarea id="cfgStop" rows="2" class="mono" spellcheck="false"></textarea><div class="mnote" id="cfgStopNote"></div></div>
+                <span class="lbl">Chat template</span><div class="ro" id="cfgTpl"></div>
+                <span class="lbl">Quantization</span><div class="ro" id="cfgQuant"></div>
+              </div>
+              <div class="row"><button type="button" class="wbtn pri" id="cfgSave">Save for this model</button><button type="button" class="wbtn" id="cfgApply">Apply now</button><button type="button" class="wbtn" id="cfgReset">Reset to current settings</button><span class="mnote" id="cfgMsg" aria-live="polite"></span></div>
+              <div class="sntabs" role="tablist" aria-label="Export as" id="cfgTabs"></div>
+              <div class="snip"><pre id="cfgOut" tabindex="0" aria-label="Exported config"></pre><button type="button" class="wbtn" id="cfgCopy">Copy</button></div>
+              <p class="mnote" id="cfgHow"></p>
+              </section>
+              <section class="dsec" id="sx-tpl" aria-label="Templates">
+              <h3 class="sth">Templates <span id="tplMeta"></span></h3>
+              <p class="dlead">A template prefills the ask box in Instruct: fill in the [brackets], then Send. Pin the ones you use; pinned templates show first under Threads › Samples.</p>
+              <div class="tlist" id="tplList" role="list" aria-label="Templates"></div>
+              <h4 class="dsub" id="myHead">New template <span>saved in this browser</span></h4>
+              <div class="cfg">
+                <label for="myName">Name</label><input id="myName" maxlength="60" placeholder="e.g. Standup notes">
+                <label for="myDesc">Description</label><input id="myDesc" maxlength="120" placeholder="One line on what it's for">
+                <label for="myPrompt">Prompt</label><textarea id="myPrompt" rows="4" maxlength="4000" placeholder="Standup notes: turn these notes into done, doing and blocked.&#10;Notes: [paste the notes]"></textarea>
+              </div>
+              <div class="row"><button type="button" class="wbtn pri" id="mySave">Save template</button><button type="button" class="wbtn" id="myCancel" hidden>Cancel</button><span class="mnote" id="myMsg" aria-live="polite"></span></div>
+              <h4 class="dsub">Import and export <span>your templates and pins, as JSON</span></h4>
+              <textarea id="tplJson" rows="3" class="mono" spellcheck="false" placeholder="Export fills this box. To import, paste templates JSON here (or choose a file), then Import." aria-label="Templates JSON"></textarea>
+              <div class="row"><button type="button" class="wbtn" id="tplExp">Export</button><button type="button" class="wbtn" id="tplImp">Import</button><button type="button" class="wbtn" id="tplFileBtn">Choose a file</button><input type="file" id="tplFile" accept="application/json,.json" hidden><span class="mnote" id="tplMsg" aria-live="polite"></span></div>
+              </section>
+              <section class="dsec" id="sx-market" aria-label="Marketplace">
+              <h3 class="sth">Marketplace <span class="pill">Curated by io threads · community submissions coming</span></h3>
+              <p class="dlead">Packs of templates and presets for common jobs. Add installs a pack in this browser: its templates join Templates and Threads › Samples, its presets join Presets. Remove takes them out again.</p>
+              <div class="mkt" id="mkt"></div>
+              <div class="row"><a class="wbtn" href="/contact.html">Submit a pack</a><span class="mnote">Send the job it does, its prompts and who it's for.</span></div>
+              </section>
+              <section class="dsec" id="sx-api" aria-label="iot API">
+              <h3 class="sth">iot API <span class="pill ok">hosted · works from anywhere</span></h3>
+              <p class="dlead">Checks that return PASS, FAIL or ABSTAIN with the evidence behind them, plus the open benchmarks feed. One key for the API and MCP. This page never asks for or stores your key.</p>
+              <dl class="dfacts"><dt>Base URL</dt><dd><code class="sbase">https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1</code></dd>
+                <dt>Auth</dt><dd><code class="sbase">Authorization: Bearer iot_…</code> Make a key on your <a href="/app.html">Account page</a>; it's shown once, so copy it then.</dd>
+                <dt>Limits</dt><dd>Free plan: 60 calls an hour, 1,000 a day. <code>/v1/benchmarks</code> is public and not counted; <code>/v1/me</code> isn't counted. Plan limits: <code>GET /v1/plans</code>.</dd>
+                <dt>Errors</dt><dd><code>401</code> no_key or bad_key · <code>429</code> limit (wait for Retry-After) · <code>400</code> bad_request (the message says which field)</dd></dl>
+              <h4 class="dsub">Endpoints <span>paths as in the full docs: /v1/me is https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/me</span></h4>
+              <div class="bwrap"><table class="btab"><thead><tr><th scope="col">Method</th><th scope="col">Path</th><th scope="col">Key</th><th scope="col">What it does</th></tr></thead><tbody id="apiEp"></tbody></table></div>
+              <h4 class="dsub">Examples</h4>
+              <div class="sntabs" role="tablist" aria-label="Example language" id="apiTabs"></div>
+              <div class="snip"><pre id="apiCode" tabindex="0" aria-label="API example"></pre><button type="button" class="wbtn" id="apiCopy">Copy</button></div>
+              <h4 class="dsub">Try it <span>public call, no key</span></h4>
+              <div class="row"><code class="sbase">GET /v1/benchmarks?limit=3&amp;sort=popular</code><button type="button" class="wbtn" id="apiTry">Send request</button><span class="mnote" id="apiRes" aria-live="polite"></span></div>
+              <div class="snip" id="apiOutBox" hidden><pre id="apiOut" tabindex="0" aria-label="Response"></pre></div>
+              <p class="mnote">Request fields, every check and every error code: <a href="/api.html">API and MCP docs</a>.</p>
+              </section>
+              <section class="dsec" id="sx-mcp" aria-label="MCP">
+              <h3 class="sth">MCP <span class="pill ok">hosted · Streamable HTTP</span></h3>
+              <p class="dlead">The iot checks as Model Context Protocol tools for agents and IDEs. Listing the tools is open; a tool call sends your key and counts like the API call it makes.</p>
+              <dl class="dfacts"><dt>URL</dt><dd><code class="sbase" id="mcpUrl">https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/mcp</code></dd>
+                <dt>Transport</dt><dd>Streamable HTTP, JSON answers</dd>
+                <dt>Auth</dt><dd><code class="sbase">Authorization: Bearer iot_…</code> Keep the key in an environment variable such as <code>IOT_KEY</code>.</dd></dl>
+              <div class="sntabs" role="tablist" aria-label="Connect from" id="mcpTabs"></div>
+              <div class="snip"><pre id="mcpCode" tabindex="0" aria-label="MCP config"></pre><button type="button" class="wbtn" id="mcpCopy">Copy</button></div>
+              <h4 class="dsub">Tools</h4>
+              <div class="bwrap"><table class="btab"><thead><tr><th scope="col">Tool</th><th scope="col">Endpoint</th><th scope="col">Key</th><th scope="col">What it does</th></tr></thead><tbody id="mcpTools"></tbody></table></div>
+              </section>
+              <section class="dsec" id="sx-serve" aria-label="Serve to apps">
               <h3 class="sth">Serve to apps <span class="pill am">in the iolin app</span></h3>
               <p class="mnote" style="margin:0 0 6px">Available in the iolin app; in this browser demo the endpoint is shown, not running. The app serves an OpenAI-compatible API, so scripts, IDEs and other apps on this machine or your network can call your local model.</p>
               <div class="row"><label style="color:var(--w-quiet)" for="srvHost">Host or IP</label><input id="srvHost" style="width:150px" spellcheck="false"><label style="color:var(--w-quiet)" for="srvPort">Port</label><input id="srvPort" type="number" min="1" max="65535" style="width:90px"><label class="ck"><input type="checkbox" id="srvKeyOn"> Require an API key</label></div>
               <div class="row"><code class="sbase" id="srvBase"></code><button class="wbtn" id="srvTest">Test connection</button><span class="mnote" id="srvRes" aria-live="polite"></span></div>
               <div class="sntabs" role="tablist" aria-label="Connect from" id="snTabs"></div>
               <div class="snip"><pre id="srvCode" tabindex="0" aria-label="Connection snippet"></pre><button class="wbtn" id="srvCopy">Copy</button></div>
+              </section>
+              <section class="dsec" id="sx-data" aria-label="Your data">
               <h3 class="sth">Your data</h3>
               <div class="row"><button class="wbtn" id="expBtn">Export my data</button><button class="wbtn" id="impBtn">Import</button><button class="wbtn" id="wipeBtn">Erase everything</button><input type="file" id="impFile" accept="application/json" style="display:none"></div>
               <p style="color:var(--w-dim);font-size:12.5px">Everything here is saved in this browser only. Model files come from Hugging Face the first time; model details link to each model's own card and license.</p>
+              </section>
+              </div>
             </div></div>
           </div>
 
@@ -894,7 +1062,7 @@ const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 60000); ret
 const lastAt = s => s.updated || s.created;
 const GROUPS = [["all","All threads","#8E96A4", () => true], ["today","Today","#9DBBFF", s => (lastAt(s) || "").slice(0,10) === new Date().toISOString().slice(0,10)],
   ["signed","With receipts","#7FC8A0", s => runsIn(s) > 0], ["samples","Samples","#F0C46A", s => s.sample]];
-const TPL_COUNT = () => TEMPLATES.length;
+const TPL_COUNT = () => allTpls().length;
 function renderFinder() {
   const f = $("fdr"); if (!f) return; f.classList.toggle("closed", !fOpen); $("fdrToggle").textContent = fOpen ? "Threads ▾" : "Threads ▸"; $("fdrToggle").setAttribute("aria-expanded", fOpen);
   $("fdrMeta").textContent = `${sessions.length} thread${sessions.length === 1 ? "" : "s"} · ${receipts.length} receipt${receipts.length === 1 ? "" : "s"}`;
@@ -904,7 +1072,7 @@ function renderFinder() {
   const g = GROUPS.find(x => x[0] === fGroup) || GROUPS[0], list = sessions.filter(g[3]).sort((a, b) => lastAt(a) < lastAt(b) ? 1 : -1);
   c2.innerHTML = list.length ? list.map(s => `<button class="fi" role="option" data-id="${s.id}" aria-selected="${s.id === cur.id}" style="--c:${runsIn(s) ? "#7FC8A0" : "#8E96A4"}"><span class="d"></span><span class="tx"><b>${esc(s.title)}</b><span>${esc(lastMsg(s).replace(/\s+/g, " ").slice(0, 90))}</span></span><span class="n">${ago(lastAt(s))}</span></button>`).join("")
     : '<p class="fh" style="padding:10px 2px">No threads here yet.</p>';
-  if (fGroup === "samples") c2.innerHTML += '<p class="fh" style="margin-top:10px">Templates</p>' + TEMPLATES.map(x => `<button class="fi" data-tpl="${x.id}" style="--c:#F0C46A"><span class="d"></span><span class="tx"><b>${esc(x.name)}</b><span>${esc(x.desc)}</span></span></button>`).join("");
+  if (fGroup === "samples") c2.innerHTML += '<p class="fh" style="margin-top:10px">Templates</p>' + tplOrdered().map(x => `<button class="fi" data-tpl="${esc(x.id)}" style="--c:${tplPins().includes(x.id) ? "#F0C46A" : x.src === "built-in" ? "#C9A86A" : "#9DBBFF"}"><span class="d"></span><span class="tx"><b>${tplPins().includes(x.id) ? "★ " : ""}${esc(x.name)}</b><span>${esc(x.desc)}</span></span></button>`).join("");
   c2.querySelectorAll(".fi[data-tpl]").forEach(b => b.onclick = () => useTemplate(b.dataset.tpl));
   c2.querySelectorAll(".fi[data-id]").forEach(b => b.onclick = async () => { cur = sessions.find(x => x.id === b.dataset.id); await save(); renderAll(); if (view === "instruct") renderChat(); });
   const n = runsIn(cur), st = thinking ? ["working", "#C9A8FF"] : n ? ["signed", "#7FC8A0"] : ["empty", "#8E96A4"];
@@ -984,7 +1152,7 @@ function renderSetup() { $("dev").innerHTML = [["Mode", LIVE ? '<span class="u-o
   ["GPU", esc(dev.gpu)], ["Memory", esc(dev.mem)], ["Storage", esc(dev.store)], ["Signing", `${signer.alg} · key ${signer.key_id}`]].map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join("");
   $("sName").value = S.name; $("sTemp").value = S.temperature; $("sMax").value = S.max_tokens; $("sSys").value = S.system;
   $("sTopP").value = S.top_p ?? 0.95; $("sCtx").value = String(S.ctx || 4096); $("srvHost").value = S.srvHost || "127.0.0.1"; $("srvPort").value = S.srvPort || 1234; $("srvKeyOn").checked = !!S.srvKeyOn;
-  renderPresets(); renderServer(); }
+  renderPresets(); renderServer(); renderDocs(); }
 
 /* ---------- render: live scene (isometric) ---------- */
 const ZONES = [["devices","Devices","#7aa2ff"],["files","Project files","#a3a9b8"],["runs","Builds · runs","#f5a524"],["agents","Agent sessions","#a78bfa"],["net","Networking","#34d399"]];
@@ -1066,7 +1234,7 @@ const TEMPLATES = [
    reply:"Returns: each customer's total spend in the last 30 days, highest first.\nHow heavy: one pass over orders; fine with an index on (created_at, customer_id).\nWhat could go wrong\n• Refunds aren't subtracted, so totals run high.\n• Time zones: 'last 30 days' uses the server's clock.\n• No LIMIT: it returns every customer."},
 ];
 const TPL_REPLIES = TEMPLATES.map(x => [new RegExp("^\\s*" + x.prompt.split(":")[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ":", "i"), x.reply]);
-function useTemplate(id) { const x = TEMPLATES.find(y => y.id === id); if (!x) return; if (view !== "instruct") setView("instruct");
+function useTemplate(id) { const x = allTpls().find(y => y.id === id); if (!x) return; if (view !== "instruct") setView("instruct");
   const a = $("ask"); a.value = x.prompt; a.focus({preventScroll:true}); const i = x.prompt.indexOf("["); if (i >= 0) a.setSelectionRange(i, x.prompt.indexOf("]", i) + 1); ev(me(), "template · " + x.name); }
 // Above the ask box: the newest threads, so recent work stays one tap away. Templates live under Threads › Samples.
 function renderTemplates() { const box = $("tpls"); if (!box || !cur) return; box.textContent = "";
@@ -1153,17 +1321,35 @@ async function hfLoad(repo) { hfStats[repo] = "loading…";
   const s = $("hfStat"); const m = CURATED.find(y => y[0] === mSel); if (s && m && (META[m[0]] || {}).repo === repo) s.textContent = hfStats[repo]; }
 
 /* ---------- Setup: presets ---------- */
-const PRESETS = [["Precise", {temperature:0.2, top_p:0.9, max_tokens:512, ctx:4096}], ["Balanced", {temperature:0.6, top_p:0.95, max_tokens:768, ctx:4096}],
-  ["Creative", {temperature:1.0, top_p:1, max_tokens:1024, ctx:4096}], ["Long context", {temperature:0.5, top_p:0.95, max_tokens:2048, ctx:16384}]];
+// [name, sampling, {system, note}]: a preset without a system prompt keeps the visitor's own.
+const PRESETS = [["Precise", {temperature:0.2, top_p:0.9, max_tokens:512, ctx:4096}, {note:"Facts and short answers."}], ["Balanced", {temperature:0.6, top_p:0.95, max_tokens:768, ctx:4096}, {note:"The default: everyday chat."}],
+  ["Creative", {temperature:1.0, top_p:1, max_tokens:1024, ctx:4096}, {note:"Looser wording, more variety."}], ["Long context", {temperature:0.5, top_p:0.95, max_tokens:2048, ctx:16384}, {note:"Long documents; needs more memory."}],
+  ["Code", {temperature:0.2, top_p:0.9, max_tokens:1024, ctx:8192}, {note:"Writing and fixing code.", system:"You write correct, minimal code. Show the code first, then one line on why. Say so when you're not sure an API exists."}],
+  ["Summarize", {temperature:0.3, top_p:0.9, max_tokens:512, ctx:8192}, {note:"Notes, docs, threads.", system:"Summarise in five short bullets and one open question. Use only what the text says."}],
+  ["Extract JSON", {temperature:0, top_p:1, max_tokens:768, ctx:4096}, {note:"Fields out of text, as JSON.", system:"Return only valid JSON with the fields asked for. Use null when a value isn't in the text. No prose."}],
+  ["Translate", {temperature:0.3, top_p:0.9, max_tokens:1024, ctx:4096}, {note:"Say the target language in your message.", system:"Translate faithfully into the language asked for. Keep names, numbers and formatting. Don't add or drop anything."}],
+  ["Reviewer (strict)", {temperature:0.2, top_p:0.9, max_tokens:1024, ctx:8192}, {note:"Reviews of code, docs and plans.", system:"You review work for bugs, risks and missing tests. Most important first. No praise, no filler."}],
+  ["Brainstorm", {temperature:1.1, top_p:0.98, max_tokens:1024, ctx:4096}, {note:"Many ideas, then a short pick.", system:"Give ten distinct ideas, one line each. Then mark the two most worth testing and say why."}],
+  ["Low memory", {temperature:0.6, top_p:0.95, max_tokens:384, ctx:2048}, {note:"Phones and small GPUs: short context and replies."}],
+  ["Repeatable eval", {temperature:0, top_p:1, max_tokens:512, ctx:4096}, {note:"Temperature 0: the model takes its most likely word each step, so reruns stay as close as the runtime allows.", system:"Answer exactly what is asked, with no preamble. If the answer isn't known, say \"unknown\"."}]];
 const SYS_PRESETS = [["Concise assistant", "You are a concise, honest assistant. If unsure, say so."],
   ["Release gatekeeper", "You decide PASS, FAIL or ABSTAIN. Never pass a gate without its evidence. Give one line of evidence per gate."],
   ["Strict reviewer", "You review work for bugs, risks and missing tests. Most important first. No praise, no filler."],
   ["Privacy officer", "You map personal data: what is collected, where it goes, who can see it, how long it stays. Flag every third party."],
   ["Plain-words writer", "You write short, plain replies a customer can read in 20 seconds. No jargon."]];
-function renderPresets() { const box = $("presets"); if (!box) return; box.innerHTML = "";
-  for (const [n, v] of PRESETS) { const b = document.createElement("button"); b.type = "button"; b.textContent = n; b.dataset.preset = n;
-    b.setAttribute("aria-pressed", String(Object.entries(v).every(([k, val]) => Number(S[k]) === val)));
-    b.onclick = async () => { Object.assign(S, v, {preset:n}); await save(); renderAll(); out(`preset <span class="u-hl">${esc(n)}</span> · temp ${v.temperature} · top_p ${v.top_p} · max ${v.max_tokens} · context ${ctxK(v.ctx)}`); }; box.appendChild(b); }
+const myPresets = () => Array.isArray(S.myPresets) ? S.myPresets : (S.myPresets = []);
+const allPresets = () => [...PRESETS.map(([name, v, x = {}]) => ({name, v, system:x.system, note:x.note, src:""})), ...myPresets().map(p => ({...p, src:packName(p.pack)}))];
+async function applyPreset(p) { const v = p.v; Object.assign(S, v, {preset:p.name}); if (p.system != null) S.system = p.system; await save(); renderAll();
+  out(`preset <span class="u-hl">${esc(p.name)}</span> · temp ${v.temperature} · top_p ${v.top_p} · max ${v.max_tokens} · context ${ctxK(v.ctx)}${p.system != null ? " · system prompt set" : ""}`); }
+function renderPresets() { const box = $("presets"); if (!box) return; const fk = keepFocus(box); box.textContent = "";
+  for (const p of allPresets()) { const v = p.v, on = Object.entries(v).every(([k, val]) => Number(S[k]) === val) && (p.system == null || S.system === p.system);
+    const c = el("div", "pc"), h = el("div", "h"); h.append(el("b", "", p.name)); if (p.src) h.append(el("span", "pill", p.src)); c.append(h);
+    if (p.note) c.append(el("p", "mnote", p.note));
+    const dl = el("dl"); [["temp", v.temperature], ["top_p", v.top_p], ["max tokens", v.max_tokens], ["context", ctxK(v.ctx) + " tokens"]].forEach(([k, x]) => dl.append(el("dt", "", k), el("dd", "", String(x)))); c.append(dl);
+    c.append(el("p", "sys" + (p.system == null ? " keep" : ""), p.system == null ? "System prompt: keeps yours" : "System: " + p.system));
+    const b = el("button", "wbtn", on ? "Applied" : "Apply"); b.type = "button"; b.dataset.preset = p.name; b.dataset.k = "pr:" + p.name; b.setAttribute("aria-pressed", String(on));
+    b.setAttribute("aria-label", (on ? "Applied: " : "Apply ") + p.name); b.onclick = () => applyPreset(p); c.append(b); box.append(c); }
+  fk();
   const sp = $("sysPreset"); if (sp && !sp.options.length) { sp.appendChild(new Option("Instructions preset…", "")); SYS_PRESETS.forEach(([n]) => sp.appendChild(new Option(n, n))); }
   if (sp) sp.value = (SYS_PRESETS.find(([, t]) => t === S.system) || [""])[0]; }
 
@@ -1198,6 +1384,275 @@ async function srvTest() { const base = srvBase(), res = $("srvRes"); res.classN
     res.textContent = `${e && e.name === "TimeoutError" ? "No answer within 3 s." : "Couldn't connect."} ${why}`; res.className = "mnote u-am"; }
 }
 
+/* ---------- Setup: developer hub ---------- */
+// One scroll, docs-style: the nav jumps to a section and follows the scroll; the last section is remembered.
+// Feed and pack text is set with textContent (el()), never as HTML.
+const DOCS = [["start", "Quick start", "Get started"], ["models", "Models", "Models"], ["bench", "Benchmarks"], ["presets", "Presets"], ["config", "Model configs"],
+  ["tpl", "Templates", "Build"], ["market", "Marketplace"], ["api", "iot API", "Connect"], ["mcp", "MCP"], ["serve", "Serve to apps"], ["data", "Your data", "Data"]];
+let docSec = "start", docClick = null, docClickAt = 0, docInit = false;
+try { const k = localStorage.getItem("iolin-setup-sec"); if (DOCS.some(d => d[0] === k)) docSec = k; } catch {}
+const keepFocus = box => { const k = box.contains(document.activeElement) ? document.activeElement.dataset.k : null;
+  return () => { if (k) [...box.querySelectorAll("[data-k]")].find(e => e.dataset.k === k)?.focus({preventScroll:true}); }; };
+const secTop = e => { const pane = $("p-setup"); let y = 0; for (let x = e; x && x !== pane; x = x.offsetParent) y += x.offsetTop; return y; };
+const navPad = () => document.body.classList.contains("stack") ? $("dnav").offsetHeight + 8 : 8;
+function renderDocNav() { const n = $("dnav"); if (!n) return;
+  if (!n.children.length) for (const [id, name, grp] of DOCS) { if (grp) n.appendChild(el("p", "g", grp));
+    const b = el("button", "", name); b.type = "button"; b.dataset.sec = id; b.onclick = () => goSec(id); n.appendChild(b); }
+  n.querySelectorAll("button").forEach(b => { const on = b.dataset.sec === docSec; b.setAttribute("aria-current", String(on));
+    if (on && document.body.classList.contains("stack") && (b.offsetLeft < n.scrollLeft || b.offsetLeft + b.offsetWidth > n.scrollLeft + n.clientWidth)) n.scrollLeft = b.offsetLeft - 16; }); }
+function setSec(id) { if (id === docSec) return; docSec = id; try { localStorage.setItem("iolin-setup-sec", id); } catch {} renderDocNav(); }
+function goSec(id, smooth = true) { const e = $("sx-" + id), pane = $("p-setup"); if (!e) return; docClick = id; docClickAt = Date.now(); setSec(id); renderDocNav();
+  pane.scrollTo({top: Math.max(0, secTop(e) - navPad()), behavior: smooth && !matchMedia("(prefers-reduced-motion: reduce)").matches ? "smooth" : "auto"}); }
+function spySec() { const pane = $("p-setup"); if (!pane.classList.contains("on")) return;
+  if (docClick && Date.now() - docClickAt < 1500) return setSec(docClick);   // a nav jump is still scrolling: keep the target lit
+  const y = pane.scrollTop + navPad() + 40; let c = DOCS[0][0];
+  for (const [id] of DOCS) { const e = $("sx-" + id); if (e && secTop(e) <= y) c = id; }
+  if (docClick && pane.scrollTop + pane.clientHeight >= pane.scrollHeight - 4) c = docClick;   // at the bottom a short last section can't reach the top
+  setSec(c); }
+
+/* quick start */
+function recModels() { const fits = CURATED.filter(m => m[3] <= tier).sort((a, b) => gbOf(b) - gbOf(a)), rest = CURATED.filter(m => m[3] > tier).sort((a, b) => a[3] - b[3] || gbOf(a) - gbOf(b));
+  return [...fits, ...rest].slice(0, 3); }
+async function pickModel(id, go = true) { mSel = id; $("model").value = id; S.model = id; await save(); renderModels(); renderQuick(); if (go) goSec("models"); }
+function renderQuick() { const box = $("qsRec"); if (!box) return; const fk = keepFocus(box); box.textContent = "";
+  const sel = CURATED.find(m => m[0] === (mSel || $("model").value)) || CURATED[0];
+  $("qs1").textContent = `Selected: ${sel[1]} (${fitOf(sel)[1]}). The top 3 below are the largest that fit, from the library's memory estimate.`;
+  $("qs2").textContent = `Now: ${S.preset || "custom"} · temp ${S.temperature} · top_p ${S.top_p ?? 0.95} · max ${S.max_tokens} · context ${ctxK(Number(S.ctx) || 4096)}`;
+  $("qs3").textContent = engine ? `Running: ${loaded === "demo-engine" ? "demo engine (pre-recorded replies)" : loaded}. Ask in Instruct.` : DEMO ? "Start runs the demo engine: pre-recorded replies, nothing downloads." : "Start downloads the model once, then it runs on your GPU.";
+  $("recMeta").textContent = `${dev.name || "this device"} · ${dev.mem || "memory not reported"}${gpuOk ? "" : " · no WebGPU in this browser"}`;
+  for (const m of recModels()) { const x = META[m[0]] || {}, [fc, ft, need] = fitOf(m);
+    const b = el("button", "mc"); b.type = "button"; b.setAttribute("role", "listitem"); b.dataset.k = "rec:" + m[0]; b.setAttribute("aria-selected", String(m[0] === mSel));
+    const h = el("div", "h"); h.append(el("b", "", m[1]), el("span", "", m[2])); const tg = el("div", "tg"); tg.append(el("span", "pill " + fc, ft), el("span", "pill", `≈${need} GB`));
+    b.append(h, el("div", "s", `${x.lab || ""} · ${ctxK(x.ctx || 0)} context · ${(x.tasks || []).join(", ")}`), tg);
+    b.setAttribute("aria-label", `${m[1]}, ${ft}; open it in the library`); b.onclick = () => pickModel(m[0]); box.appendChild(b); }
+  fk(); }
+
+/* benchmarks: a ranked view of the feed (or its snapshot); only the feed's own numbers */
+const BSRC = {huggingface:"Hugging Face", kaggle:"Kaggle"};
+const famRe = f => new RegExp("(^|[^a-z])" + f.replace(/[^a-z0-9]/g, ""), "i");
+function benchModels(i) { const hay = i.name + " " + i.owner; return CURATED.filter(m => { const f = (META[m[0]] || {}).family; return f && famRe(f).test(hay); }); }
+function fillSel(sel, opts, label) { const v = sel.value; sel.textContent = ""; sel.appendChild(new Option(label, "")); opts.forEach(([k, n]) => sel.appendChild(new Option(n, k))); sel.value = opts.some(o => o[0] === v) ? v : ""; }
+function renderBench() { const body = $("bBody"); if (!body) return; const fk = keepFocus(body), b = bench || BENCH_SNAPSHOT, items = b.items || [];
+  fillSel($("bSrc"), [...new Set(items.map(i => i.source))].filter(Boolean).map(k => [k, BSRC[k] || k]), "All sources");
+  fillSel($("bTier"), [...new Set(items.map(i => i.tier))].filter(Boolean).map(k => [k, k]), "All tiers");
+  fillSel($("bTask"), [...new Set(items.flatMap(i => i.tags.filter(t => t.startsWith("eval:"))))].sort().map(k => [k, k.slice(5)]), "All tasks");
+  const q = ($("bQ").value || "").trim().toLowerCase(), src = $("bSrc").value, tr = $("bTier").value, tk = $("bTask").value;
+  const l = items.filter(i => (!q || (i.name + " " + i.owner).toLowerCase().includes(q)) && (!src || i.source === src) && (!tr || i.tier === tr) && (!tk || i.tags.includes(tk)))
+    .sort((a, c) => (c.popularity || 0) - (a.popularity || 0));
+  body.textContent = "";
+  l.forEach((i, n) => { const r = el("tr"); r.append(el("td", "rk", String(n + 1)));
+    const nm = el("td", "nm"); nm.append(link(i.url, i.name), el("small", "", `${i.owner} · ${BSRC[i.source] || i.source}`)); r.append(nm);
+    r.append(el("td")); r.lastChild.append(el("span", "pill " + (i.tier === "lab" ? "ok" : i.tier === "community" ? "" : "am"), i.tier || "?"));
+    const tg = el("td"), tw = el("div", "tags"); i.tags.filter(t => t.startsWith("eval:")).forEach(t => tw.append(el("span", "pill", t.slice(5)))); tg.append(tw); r.append(tg);
+    r.append(el("td", "n", i.popularity ? i.popularity.toLocaleString() : "—"));
+    const ms = benchModels(i);
+    if (ms.length) { const fam = (META[ms[0][0]] || {}).family, c = el("button", "chip", ms.length === 1 ? ms[0][1] : `${fam} · ${ms.length} models`); c.type = "button"; c.dataset.k = "bm:" + i.url;
+      c.setAttribute("aria-label", `Show ${ms.length === 1 ? ms[0][1] : ms.length + " " + fam + " models"} in the library`);
+      c.onclick = () => { if (ms.length === 1) return pickModel(ms[0][0]); $("mlQ").value = fam; renderModels(); goSec("models"); };
+      const lw = el("div", "lib"); lw.append(el("span", "mnote", "in the library "), c); nm.append(lw); }
+    body.append(r); });
+  if (!l.length) { const r = el("tr"), d = el("td", "mnote", "No leaderboard matches. Clear the search or a filter."); d.colSpan = 5; r.append(d); body.append(r); }
+  const pol = Object.entries(b.polled || {}).map(([k, v]) => `${BSRC[k] || k} ${String(v).slice(0, 10)}`).join(", ");
+  $("bMeta").textContent = `${l.length} of ${items.length} shown`;
+  $("bNote").textContent = `${b.live ? `Live from the iot benchmarks feed (${(b.total || items.length).toLocaleString()} listed, top ${items.length} by popularity fetched)` : "Offline snapshot of the iot benchmarks feed (the live feed didn't answer)"} · polled ${pol || "date not given"}. Popularity is the number the feed reports for each leaderboard. Names are third-party text.`;
+  fk(); }
+
+/* model configs: per model, saved with the settings */
+const STOPS = {chatml:"<|im_end|>", llama3:"<|eot_id|>", phi3:"<|end|>", gemma:"<end_of_turn>", mistral:"</s>", r1:"<｜end▁of▁sentence｜>"};
+const OLLAMA = {"Qwen3-0.6B-q4f16_1-MLC":"qwen3:0.6b", "Llama-3.2-1B-Instruct-q4f16_1-MLC":"llama3.2:1b", "Llama-3.2-3B-Instruct-q4f16_1-MLC":"llama3.2:3b", "Llama-3.1-8B-Instruct-q4f16_1-MLC":"llama3.1:8b",
+  "Qwen2.5-1.5B-Instruct-q4f16_1-MLC":"qwen2.5:1.5b", "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC":"qwen2.5-coder:1.5b", "SmolLM2-1.7B-Instruct-q4f16_1-MLC":"smollm2:1.7b", "gemma-2-2b-it-q4f16_1-MLC":"gemma2:2b",
+  "Phi-3.5-mini-instruct-q4f16_1-MLC":"phi3.5", "Mistral-7B-Instruct-v0.3-q4f16_1-MLC":"mistral:7b", "Qwen2.5-7B-Instruct-q4f16_1-MLC":"qwen2.5:7b", "DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC":"deepseek-r1:7b"};
+const CFG_TABS = ["JSON", "Ollama Modelfile", "LM Studio preset"];
+let cfgId = null, cfgTab = "JSON";
+const cfgStore = () => S.mcfg && typeof S.mcfg === "object" && !Array.isArray(S.mcfg) ? S.mcfg : (S.mcfg = {});
+const cfgNow = () => ({system:S.system || "", temperature:Number(S.temperature), top_p:Number(S.top_p ?? 0.95), max_tokens:Number(S.max_tokens), ctx:Number(S.ctx) || 4096, stop:[]});
+function cfgFill(id) { if (!CURATED.some(m => m[0] === id)) id = CURATED[0][0]; cfgId = id; const m = CURATED.find(y => y[0] === id) || CURATED[0], x = META[m[0]] || {}, saved = cfgStore()[id], c = saved || cfgNow();
+  $("cfgModel").value = id; $("cfgSys").value = c.system; $("cfgTemp").value = c.temperature; $("cfgTopP").value = c.top_p; $("cfgMax").value = c.max_tokens;
+  const cs = $("cfgCtx"); cs.textContent = ""; [2048, 4096, 8192, 16384, 32768, 131072].filter(n => n <= (x.ctx || 8192)).forEach(n => cs.appendChild(new Option(ctxK(n), n)));
+  cs.value = String([...cs.options].some(o => Number(o.value) === c.ctx) ? c.ctx : 4096); $("cfgStop").value = (c.stop || []).join("\n");
+  $("cfgStop").placeholder = "One per line. The chat template already stops at " + (STOPS[x.tpl] || "its end token");
+  $("cfgStopNote").textContent = "Used by the exports and the iolin app; this browser demo stops at the chat template's end token.";
+  $("cfgTpl").textContent = (TPLS[x.tpl] || "from the model card") + " · read-only, from the library";
+  $("cfgQuant").textContent = `This browser: 4-bit weights (q4f16_1, MLC build), download ${m[2]}. Ollama and LM Studio use GGUF builds; a Q4_K_M build is about the same size.`;
+  $("cfgState").textContent = saved ? "saved for this model" : "not saved yet · showing your current settings"; $("cfgMsg").textContent = ""; renderCfgOut(); }
+function cfgRead() { const c = {system:$("cfgSys").value.slice(0, 2000), temperature:Number($("cfgTemp").value), top_p:Number($("cfgTopP").value), max_tokens:Number($("cfgMax").value),
+  ctx:Number($("cfgCtx").value), stop:$("cfgStop").value.split("\n").map(v => v.trim()).filter(Boolean).slice(0, 8).map(v => v.slice(0, 40))};
+  const err = !Number.isFinite(c.temperature) || c.temperature < 0 || c.temperature > 1.5 ? "Temperature must be from 0 to 1.5."
+    : !Number.isFinite(c.top_p) || c.top_p <= 0 || c.top_p > 1 ? "Top p must be above 0 and at most 1."
+    : !Number.isInteger(c.max_tokens) || c.max_tokens < 64 || c.max_tokens > 4096 ? "Max tokens must be a whole number from 64 to 4096." : "";
+  return [c, err]; }
+function cfgExport(c, tab) { const m = CURATED.find(y => y[0] === cfgId) || CURATED[0], x = META[m[0]] || {}, stops = c.stop.length ? c.stop : [STOPS[x.tpl]].filter(Boolean);
+  if (tab === "JSON") return JSON.stringify({model:m[1], id:m[0], repo:x.repo, chat_template:x.tpl, quantization:"q4f16_1 (MLC) in the browser", system:c.system,
+    temperature:c.temperature, top_p:c.top_p, max_tokens:c.max_tokens, context:c.ctx, stop:c.stop}, null, 2);
+  if (tab === "Ollama Modelfile") return [`# Modelfile · ${m[1]} · exported from iolin`, `# FROM is the Ollama library tag for this model (check it on ollama.com/library), or a path to your own GGUF file.`,
+    `FROM ${OLLAMA[m[0]] || x.repo}`, `PARAMETER temperature ${c.temperature}`, `PARAMETER top_p ${c.top_p}`, `PARAMETER num_predict ${c.max_tokens}`, `PARAMETER num_ctx ${c.ctx}`,
+    ...c.stop.map(v => `PARAMETER stop ${JSON.stringify(v)}`), ...(c.system ? [`SYSTEM """${c.system.replace(/"""/g, '" " "')}"""`] : []),
+    `# The library build carries its own chat template, so TEMPLATE isn't set here.`, `# ollama create iolin-${slug(m)} -f Modelfile && ollama run iolin-${slug(m)}`].join("\n");
+  return JSON.stringify({name:`iolin · ${m[1]}`, operation:{fields:[{key:"llm.prediction.systemPrompt", value:c.system}, {key:"llm.prediction.temperature", value:c.temperature},
+    {key:"llm.prediction.topPSampling", value:{checked:true, value:c.top_p}}, {key:"llm.prediction.maxPredictedTokens", value:{checked:true, value:c.max_tokens}},
+    {key:"llm.prediction.stopStrings", value:stops}]}, load:{fields:[{key:"llm.load.contextLength", value:c.ctx}]}}, null, 2); }
+function renderCfgOut() { const t = $("cfgTabs"); if (!t) return;
+  if (!t.children.length) CFG_TABS.forEach(k => { const b = el("button", "", k); b.type = "button"; b.setAttribute("role", "tab"); b.dataset.k = k; b.onclick = () => { cfgTab = k; renderCfgOut(); }; t.appendChild(b); });
+  t.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.k === cfgTab)));
+  const [c, err] = cfgRead(); $("cfgOut").textContent = err ? "Fix the values above to export: " + err : cfgExport(c, cfgTab);
+  $("cfgHow").textContent = {"JSON":"Plain JSON with every value; good for your own scripts or a repo.", "Ollama Modelfile":"Save as Modelfile, then run the two commands at the bottom.",
+    "LM Studio preset":"LM Studio 0.3 preset format: save as iolin.preset.json and import it from the preset menu in LM Studio's chat sidebar. Stop strings default to the chat template's end token."}[cfgTab]; }
+async function cfgSave() { const [c, err] = cfgRead(); if (err) return cfgMsg(err, "u-am"); cfgStore()[cfgId] = c; await save();
+  $("cfgState").textContent = "saved for this model"; cfgMsg(`Saved for ${(CURATED.find(y => y[0] === cfgId) || [, ""])[1]}.`, "u-ok"); }
+async function cfgApply() { const [c, err] = cfgRead(); if (err) return cfgMsg(err, "u-am");
+  Object.assign(S, {system:c.system, temperature:c.temperature, top_p:c.top_p, max_tokens:c.max_tokens, ctx:Math.min(c.ctx, 16384), preset:"custom"});
+  mSel = cfgId; $("model").value = cfgId; S.model = cfgId; await save(); renderAll(); renderModels();
+  cfgMsg(`Applied: Instruct now uses these settings${c.ctx > 16384 ? " (this browser runs up to 16K context)" : ""}.`, "u-ok"); out(`model config applied · <span class="u-hl">${esc(cfgId)}</span>`); }
+function cfgMsg(t, cls) { const m = $("cfgMsg"); m.textContent = t; m.className = "mnote " + cls; }
+async function copyFrom(btn, src) { const t = src.value ?? src.textContent; try { await navigator.clipboard.writeText(t); btn.textContent = "Copied"; }
+  catch { if (src.select) src.select(); else { const r = document.createRange(); r.selectNodeContents(src); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); } btn.textContent = "Selected"; }
+  clearTimeout(btn._t); btn._t = setTimeout(() => (btn.textContent = btn.dataset.label || "Copy"), 1600); }
+
+/* templates: pins, my templates, packs */
+const tplPins = () => Array.isArray(S.tplPins) ? S.tplPins : (S.tplPins = []);
+const myTpls = () => Array.isArray(S.myTpls) ? S.myTpls : (S.myTpls = []);
+const allTpls = () => [...TEMPLATES.map(x => ({...x, src:"built-in"})), ...myTpls().map(x => ({...x, src:x.pack ? packName(x.pack) : "mine"}))];
+const tplOrdered = () => { const p = tplPins(), a = allTpls(); return [...p.map(id => a.find(x => x.id === id)).filter(Boolean), ...a.filter(x => !p.includes(x.id))]; };
+const STAR = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.6l2.3 4.7 5.1.7-3.7 3.6.9 5.1L10 14.3l-4.6 2.4.9-5.1L2.6 8l5.1-.7z"/></svg>';
+let myEdit = null;
+function renderTplList() { const box = $("tplList"); if (!box) return; const fk = keepFocus(box), pins = tplPins(), l = tplOrdered(); box.textContent = "";
+  $("tplMeta").textContent = `${l.length} templates · ${pins.filter(id => l.some(x => x.id === id)).length} pinned · ${myTpls().filter(x => !x.pack).length} yours`;
+  for (const x of l) { const on = pins.includes(x.id), r = el("div", "trow" + (x.src === "mine" ? " mine" : "")); r.setAttribute("role", "listitem");
+    const pb = el("button", "pin"); pb.type = "button"; pb.innerHTML = STAR; pb.dataset.k = "pin:" + x.id; pb.setAttribute("aria-pressed", String(on)); pb.setAttribute("aria-label", (on ? "Unpin " : "Pin ") + x.name); pb.title = on ? "Unpin" : "Pin to the top of Threads › Samples";
+    pb.onclick = async () => { const p = tplPins(), i = p.indexOf(x.id); if (i >= 0) p.splice(i, 1); else p.unshift(x.id); await save(); renderTplList(); renderFinder(); };
+    const tx = el("div", "tx"), b = el("b", "", x.name); b.append(el("span", "pill" + (x.src === "mine" ? " ok" : ""), x.src)); tx.append(b, el("span", "d", x.desc || x.prompt.split("\n")[0]));
+    const act = el("div", "act"), use = el("button", "wbtn", "Use"); use.type = "button"; use.dataset.k = "use:" + x.id; use.setAttribute("aria-label", "Use " + x.name + " in Instruct"); use.onclick = () => useTemplate(x.id); act.append(use);
+    if (x.src === "mine") { const ed = el("button", "wbtn", "Edit"), del = el("button", "wbtn", "Delete"); ed.type = del.type = "button"; ed.dataset.k = "ed:" + x.id; del.dataset.k = "del:" + x.id;
+      ed.setAttribute("aria-label", "Edit " + x.name); del.setAttribute("aria-label", "Delete " + x.name);
+      ed.onclick = () => { myEdit = x.id; $("myName").value = x.name; $("myDesc").value = x.desc || ""; $("myPrompt").value = x.prompt; $("myHead").firstChild.textContent = "Edit template "; $("mySave").textContent = "Save changes"; $("myCancel").hidden = false; $("myName").focus(); };
+      del.onclick = async () => { S.myTpls = myTpls().filter(y => y.id !== x.id); S.tplPins = tplPins().filter(id => id !== x.id); if (myEdit === x.id) myReset(); await save(); renderTplList(); renderFinder(); myMsg(`Deleted ${x.name}.`, "u-ok"); };
+      act.append(ed, del); }
+    r.append(pb, tx, act); box.append(r); }
+  fk(); }
+function myMsg(t, cls) { const m = $("myMsg"); m.textContent = t; m.className = "mnote " + cls; }
+function myReset() { myEdit = null; $("myName").value = $("myDesc").value = $("myPrompt").value = ""; $("myHead").firstChild.textContent = "New template "; $("mySave").textContent = "Save template"; $("myCancel").hidden = true; }
+const newTplId = () => "my-" + [...crypto.getRandomValues(new Uint8Array(5))].map(b => b.toString(16).padStart(2, "0")).join("");
+async function mySave() { const name = $("myName").value.trim().slice(0, 60), desc = $("myDesc").value.trim().slice(0, 120), prompt = $("myPrompt").value.trim().slice(0, 4000);
+  if (!name || !prompt) return myMsg("A template needs a name and a prompt.", "u-am");
+  if (myEdit) { const x = myTpls().find(y => y.id === myEdit); if (x) Object.assign(x, {name, desc, prompt}); } else myTpls().push({id:newTplId(), name, desc, prompt});
+  await save(); myMsg(myEdit ? `Saved changes to ${name}.` : `Saved ${name}. It's under Threads › Samples; pin it to put it first.`, "u-ok"); myReset(); renderTplList(); renderFinder(); }
+function tplExport() { const j = {app:APP_ID, kind:"templates", exported:iso(), pinned:tplPins().slice(), templates:myTpls().filter(x => !x.pack).map(({name, desc, prompt}) => ({name, desc, prompt}))};
+  $("tplJson").value = JSON.stringify(j, null, 2); copyFrom($("tplExp"), $("tplJson")); tplMsg(`Exported ${j.templates.length} templates and ${j.pinned.length} pins.`, "u-ok"); }
+async function tplImport(text) { let j; try { j = JSON.parse(text); } catch { return tplMsg("That isn't valid JSON.", "u-am"); }
+  const list = Array.isArray(j) ? j : Array.isArray(j?.templates) ? j.templates : null; if (!list) return tplMsg("Expected a list of templates, or {templates: [...]}.", "u-am");
+  let n = 0; for (const t of list.slice(0, 200)) { const name = String(t?.name || "").trim().slice(0, 60), prompt = String(t?.prompt || "").trim().slice(0, 4000);
+    if (!name || !prompt || myTpls().some(y => !y.pack && y.name === name && y.prompt === prompt)) continue; myTpls().push({id:newTplId(), name, desc:String(t.desc || "").trim().slice(0, 120), prompt}); n++; }
+  const ids = new Set(allTpls().map(x => x.id)); let pn = 0; for (const id of (Array.isArray(j?.pinned) ? j.pinned : []).map(String)) if (ids.has(id) && !tplPins().includes(id)) { tplPins().push(id); pn++; }
+  await save(); renderTplList(); renderFinder(); tplMsg(`Imported ${n} template${n === 1 ? "" : "s"}${pn ? ` and ${pn} pin${pn === 1 ? "" : "s"}` : ""}.`, n || pn ? "u-ok" : "u-am"); }
+function tplMsg(t, cls) { const m = $("tplMsg"); m.textContent = t; m.className = "mnote " + cls; }
+
+/* marketplace: curated packs, installed locally */
+const PACKS = [
+  {id:"release", name:"Release & QA", c:"#7FC8A0", desc:"Triage failing tests, write release notes, plan a rollback.", templates:[
+    ["Regression triage", "Real bugs, flaky tests, test changes", "Regression triage: sort these failing tests into real bugs, flaky tests and test changes, most urgent first.\nFailures: [paste the failing test output]"],
+    ["Release notes", "New, Fixed, Changed, for users", "Release notes: write short release notes for users from these changes, grouped as New, Fixed and Changed.\nChanges: [paste the commit list or PR titles]"],
+    ["Rollback plan", "Steps back, and how you'll know", "Rollback plan: write the steps to roll back this release and how we'll know it worked.\nRelease: [what is shipping]\nDepends on: [databases, flags, services]"]],
+   presets:[["QA strict", {temperature:0.1, top_p:0.9, max_tokens:1024, ctx:8192}, "You check releases. Name the evidence for every claim; say ABSTAIN when the evidence is missing."]]},
+  {id:"privacy", name:"Privacy & compliance", c:"#C9A8FF", desc:"Map personal data, check retention, question vendors.", templates:[
+    ["Data map", "Each personal field, where it lives", "Data map: for this feature, list each personal-data field, where it's stored, who can read it and when it's deleted.\nFeature: [describe it]"],
+    ["Retention review", "Rules vs what's actually stored", "Retention review: compare these retention rules with what we actually store and flag the gaps.\nRules: [paste the policy]\nStores: [databases, logs, backups]"],
+    ["Vendor questions", "What to ask before sharing data", "Vendor questions: list what to ask this vendor about data handling before we send them anything.\nVendor: [name and what they'd receive]"]],
+   presets:[["Privacy officer", {temperature:0.2, top_p:0.9, max_tokens:1024, ctx:8192}, "You map personal data: what is collected, where it goes, who can see it, how long it stays. Flag every third party."]]},
+  {id:"eng", name:"Engineering", c:"#9DBBFF", desc:"Tests, error explanations and design reviews.", templates:[
+    ["Write tests", "Edge cases and failure paths", "Write tests: write unit tests for this function, covering edge cases and failure paths.\nLanguage and framework: [e.g. Python, pytest]\nCode: [paste the function]"],
+    ["Explain an error", "Meaning, likely cause, first check", "Explain an error: say what this error means, the likely cause and the first thing to check.\nError: [paste the stack trace]"],
+    ["Design review", "Risks, open questions, simpler options", "Design review: list the risks, open questions and simpler options for this design.\nDesign: [paste the doc or outline]"]],
+   presets:[["Pair programmer", {temperature:0.3, top_p:0.9, max_tokens:1536, ctx:8192}, "You are a careful pair programmer. Ask before assuming an API exists. Prefer small, tested changes."]]},
+  {id:"support", name:"Support", c:"#F0C46A", desc:"Triage tickets, tighten macros, hand over cleanly.", templates:[
+    ["Ticket triage", "Area, urgency, first reply", "Ticket triage: label each ticket with product area and urgency, and suggest a first reply.\nTickets: [paste the tickets]"],
+    ["Macro rewrite", "Shorter and plainer, no lost steps", "Macro rewrite: rewrite this support macro to be shorter and plainer without losing a step.\nMacro: [paste it]"],
+    ["Escalation note", "Known, tried, needed", "Escalation note: write a handover with what's known, what's been tried and what's needed next.\nCase: [paste the thread]"]],
+   presets:[["Support voice", {temperature:0.5, top_p:0.95, max_tokens:512, ctx:4096}, "You write short, plain replies a customer can read in 20 seconds. No jargon."]]},
+  {id:"research", name:"Research", c:"#72E3CB", desc:"Summarise papers, compare sources, plan experiments.", templates:[
+    ["Paper summary", "Question, method, result, limits", "Paper summary: give the question, method, main result, limits and one thing to check.\nPaper: [paste the abstract or text]"],
+    ["Compare sources", "Agree, conflict, missing", "Compare sources: list where these sources agree, where they conflict and what neither covers.\nSources: [paste the excerpts]"],
+    ["Experiment plan", "Hypothesis, metric, sample size", "Experiment plan: write the hypothesis, the metric, the sample size needed and what result would change our mind.\nIdea: [describe it]"]],
+   presets:[["Careful researcher", {temperature:0.4, top_p:0.95, max_tokens:1024, ctx:16384}, "Keep what the sources say apart from your own inference. Quote the line you rely on."]]},
+  {id:"data", name:"Data", c:"#F2A07B", desc:"Schemas, clean-up plans and SQL from plain questions.", templates:[
+    ["Schema from sample", "Columns, types and checks", "Schema from sample: propose column names, types and checks for this data.\nSample rows: [paste about 10 rows]"],
+    ["Clean-up plan", "Quality problems and fixes", "Clean-up plan: list the data quality problems in this sample and a fix for each.\nSample: [paste the rows]"],
+    ["Write SQL", "A query, step by step", "Write SQL: write a query that answers this question and explain each step.\nTables: [paste the schema]\nQuestion: [what you want to know]"]],
+   presets:[["Extract fields", {temperature:0, top_p:1, max_tokens:768, ctx:4096}, "Return only JSON with the fields asked for. Use null when a value is missing."]]}];
+const packName = id => (PACKS.find(p => p.id === id) || {}).name || "";
+const packOn = id => (Array.isArray(S.packs) ? S.packs : []).includes(id);
+async function packSet(p, install) { S.packs = (Array.isArray(S.packs) ? S.packs : []).filter(x => x !== p.id);
+  S.myTpls = myTpls().filter(x => x.pack !== p.id); S.myPresets = myPresets().filter(x => x.pack !== p.id);
+  if (install) { S.packs.push(p.id); p.templates.forEach(([name, desc, prompt], i) => myTpls().push({id:`pk-${p.id}-${i}`, name, desc, prompt, pack:p.id}));
+    p.presets.forEach(([name, v, system]) => myPresets().push({name, v, system, pack:p.id})); }
+  const ids = new Set(allTpls().map(x => x.id)); S.tplPins = tplPins().filter(id => ids.has(id));
+  await save(); renderMarket(); renderTplList(); renderPresets(); renderFinder(); }
+function renderMarket() { const box = $("mkt"); if (!box) return; const fk = keepFocus(box); box.textContent = "";
+  for (const p of PACKS) { const on = packOn(p.id), c = el("div", "mk"); c.style.setProperty("--c", p.c);
+    const h = el("div", "h"); h.append(el("b", "", p.name)); if (on) h.append(el("span", "pill ok", "added"));
+    const ul = el("ul"); p.templates.forEach(([n]) => { const li = el("li", "", n + " "); li.append(el("i", "", "template")); ul.append(li); });
+    p.presets.forEach(([n]) => { const li = el("li", "", n + " "); li.append(el("i", "", "preset")); ul.append(li); });
+    const row = el("div", "row"), b = el("button", "wbtn" + (on ? "" : " pri"), on ? "Remove" : "Add"); b.type = "button"; b.dataset.k = "pk:" + p.id; b.dataset.pack = p.id;
+    b.setAttribute("aria-label", (on ? "Remove " : "Add ") + p.name + " pack"); b.onclick = async () => { const was = packOn(p.id); await packSet(p, !was); out(`pack <span class="u-hl">${esc(p.name)}</span> ${was ? "removed" : "added · its templates are under Threads › Samples"}`); };
+    row.append(b, el("span", "mnote", `${p.templates.length} templates · ${p.presets.length} preset`));
+    c.append(el("span", "k", "Pack"), h, el("p", "", p.desc), ul, row); box.append(c); }
+  fk(); }
+
+/* iot API + MCP docs (endpoints and tools as documented on /api.html) */
+const API_BASE = "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1", MCP_URL = API_BASE + "/mcp";
+const API_EP = [["GET", "/v1", "no", "Lists the endpoints"], ["GET", "/v1/health", "no", "Is the API up"], ["GET", "/v1/plans", "no", "Plans and their call limits"], ["GET", "/v1/checks", "no", "The checks you can run"],
+  ["GET", "/v1/me", "yes", "Your key, plan and usage"], ["GET", "/v1/benchmarks", "no", "Open leaderboards from Kaggle and Hugging Face; q, source, tier, tag, sort (popular or recent), limit (up to 100), offset"],
+  ["POST", "/v1/mcp", "per tool", "The MCP feed (Streamable HTTP)"], ["POST", "/v1/pretrain/checks", "yes", "Before training: leakage, duplicates, labels, coverage, personal data"],
+  ["POST", "/v1/intratrain/checkpoints", "yes", "During training: a checkpoint against its history"], ["POST", "/v1/forwardtrain/gates", "yes", "Before release: go/no-go against written thresholds"]];
+const MCP_TOOLS = [["iot_plans", "/v1/plans", "no", "Plans and limits"], ["iot_me", "/v1/me", "yes", "Your key, plan and usage"], ["iot_benchmarks", "/v1/benchmarks", "no", "Find benchmarks and leaderboards"],
+  ["iot_pretrain_checks", "/v1/pretrain/checks", "yes", "Data checks before training"], ["iot_intratrain_checkpoint", "/v1/intratrain/checkpoints", "yes", "Is training still improving"],
+  ["iot_forwardtrain_gates", "/v1/forwardtrain/gates", "yes", "Release go/no-go"]];
+const API_SNIP = {
+  "curl": `# Public, no key: the five most popular leaderboards\ncurl "${API_BASE}/benchmarks?limit=5&sort=popular"\n\n# With your key (make one on io-threads.com/app.html)\nexport IOT_KEY=iot_...\ncurl ${API_BASE}/me \\\n  -H "Authorization: Bearer $IOT_KEY"`,
+  "Python": `# pip install requests\nimport os, requests\n\nBASE = "${API_BASE}"\n\nr = requests.get(f"{BASE}/benchmarks", params={"limit": 5, "sort": "popular"}, timeout=10)\nfor b in r.json()["items"]:\n    print(b["popularity"], b["name"], b["url"])\n\nme = requests.get(f"{BASE}/me", headers={"Authorization": f"Bearer {os.environ['IOT_KEY']}"}, timeout=10)\nprint(me.status_code, me.json())`,
+  "JavaScript": `const BASE = "${API_BASE}";\n\nconst r = await fetch(\`\${BASE}/benchmarks?limit=5&sort=popular\`);\nconst { items, polled } = await r.json();\nfor (const b of items) console.log(b.popularity, b.name, b.url);\n\n// Keyed calls: keep the key on a server or in your shell, never in a web page\nconst me = await fetch(\`\${BASE}/me\`, { headers: { Authorization: \`Bearer \${process.env.IOT_KEY}\` } });\nconsole.log(me.status, await me.json());`};
+const MCP_SNIP = {
+  "Claude Code": `export IOT_KEY=iot_...\nclaude mcp add --transport http iot \\\n  ${MCP_URL} \\\n  --header "Authorization: Bearer $IOT_KEY"\nclaude mcp list`,
+  "Cursor": `// .cursor/mcp.json (this project) or ~/.cursor/mcp.json (everywhere)\n{\n  "mcpServers": {\n    "iot": {\n      "url": "${MCP_URL}",\n      "headers": { "Authorization": "Bearer \${env:IOT_KEY}" }\n    }\n  }\n}`,
+  "VS Code": `// .vscode/mcp.json · VS Code asks for the key once and stores it\n{\n  "inputs": [\n    { "type": "promptString", "id": "iot-key", "description": "iot API key", "password": true }\n  ],\n  "servers": {\n    "iot": {\n      "type": "http",\n      "url": "${MCP_URL}",\n      "headers": { "Authorization": "Bearer \${input:iot-key}" }\n    }\n  }\n}`,
+  "Zed": `// ~/.config/zed/settings.json\n{\n  "context_servers": {\n    "iot": {\n      "url": "${MCP_URL}",\n      "headers": { "Authorization": "Bearer iot_..." }\n    }\n  }\n}`,
+  "Windsurf / other": `// Windsurf: ~/.codeium/windsurf/mcp_config.json (uses "serverUrl")\n// Most other clients: the same block with "url"\n{\n  "mcpServers": {\n    "iot": {\n      "serverUrl": "${MCP_URL}",\n      "headers": { "Authorization": "Bearer iot_..." }\n    }\n  }\n}\n\n// A client that only runs local (stdio) servers can bridge with mcp-remote:\n// npx mcp-remote ${MCP_URL} --header "Authorization: Bearer \${IOT_KEY}"`};
+let apiTab = "curl", mcpTab = "Claude Code";
+function snipTabs(box, keys, curK, set) { if (!box.children.length) keys.forEach(k => { const b = el("button", "", k); b.type = "button"; b.setAttribute("role", "tab"); b.dataset.k = k; b.onclick = () => set(k); box.appendChild(b); });
+  box.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.k === curK))); }
+function renderApi() { snipTabs($("apiTabs"), Object.keys(API_SNIP), apiTab, k => { apiTab = k; renderApi(); }); $("apiCode").textContent = API_SNIP[apiTab];
+  snipTabs($("mcpTabs"), Object.keys(MCP_SNIP), mcpTab, k => { mcpTab = k; renderApi(); }); $("mcpCode").textContent = MCP_SNIP[mcpTab];
+  const rows = (id, list) => { const b = $(id); if (b.children.length) return; for (const [a, p, k, d] of list) { const r = el("tr"), c1 = el("td"); c1.append(el("code", "", a));
+    const c2 = el("td"); c2.append(el("code", "", p)); r.append(c1, c2, el("td", "", k), el("td", "", d)); b.append(r); } };
+  rows("apiEp", API_EP); rows("mcpTools", MCP_TOOLS); }
+async function apiTry() { const res = $("apiRes"), u = API_BASE + "/benchmarks?limit=3&sort=popular"; res.className = "mnote"; res.textContent = "Sending…"; $("apiTry").disabled = true;
+  try { const t0 = performance.now(), r = await fetch(u, {signal: AbortSignal.timeout(6000)}), j = await r.json().catch(() => ({}));
+    res.textContent = `HTTP ${r.status} · ${Math.round(performance.now() - t0)} ms · ${Number(j.total) || 0} listed`; res.className = "mnote " + (r.ok ? "u-ok" : "u-am");
+    const slim = {total:j.total, polled:j.polled, items:(j.items || []).slice(0, 3).map(i => ({name:String(i.name || ""), owner:String(i.owner || ""), source:String(i.source || ""), tier:String(i.tier || ""), popularity:Number(i.popularity) || 0, url:String(i.url || "")})), note:j.note};
+    $("apiOut").textContent = JSON.stringify(slim, null, 2); $("apiOutBox").hidden = false; }
+  catch (e) { res.textContent = `${e && e.name === "TimeoutError" ? "No answer within 6 s" : "Couldn't reach the API"} from this browser. The same request works from a terminal: curl "${u}"`; res.className = "mnote u-am"; }
+  $("apiTry").disabled = false; }
+
+function initDocs() { docInit = true;
+  const pane = $("p-setup"); pane.addEventListener("scroll", spySec, {passive:true});
+  ["wheel", "touchstart", "keydown"].forEach(t => pane.addEventListener(t, () => { docClick = null; }, {passive:true}));
+  pane.querySelectorAll("[data-go]").forEach(b => b.onclick = () => goSec(b.dataset.go));
+  pane.querySelectorAll("[data-qs]").forEach(b => b.onclick = async () => { const a = b.dataset.qs;
+    if (a === "rec") { $("recHead").scrollIntoView({block:"nearest"}); $("qsRec").querySelector("button")?.focus({preventScroll:true}); }
+    else if (a === "balanced") applyPreset(allPresets().find(p => p.name === "Balanced"));
+    else if (a === "start") { if (!engine) $("loadBtn").click(); else setView("instruct"); }
+    else if (a === "instruct") setView("instruct"); });
+  ["bQ", "bSrc", "bTier", "bTask"].forEach(id => $(id).addEventListener("input", renderBench));
+  const cm = $("cfgModel"); CURATED.forEach(m => cm.appendChild(new Option(m[1], m[0]))); cm.onchange = () => cfgFill(cm.value);
+  ["cfgSys", "cfgTemp", "cfgTopP", "cfgMax", "cfgCtx", "cfgStop"].forEach(id => $(id).addEventListener("input", renderCfgOut));
+  $("cfgSave").onclick = cfgSave; $("cfgApply").onclick = cfgApply; $("cfgReset").onclick = async () => { delete cfgStore()[cfgId]; await save(); cfgFill(cfgId); cfgMsg("Back to your current settings; nothing saved for this model.", "u-ok"); };
+  $("cfgCopy").onclick = () => copyFrom($("cfgCopy"), $("cfgOut")); $("cfgOpen").onclick = () => { cfgFill(mSel); goSec("config"); };
+  $("mySave").onclick = mySave; $("myCancel").onclick = () => { myReset(); myMsg("", ""); };
+  $("tplExp").dataset.label = "Export"; $("tplExp").onclick = tplExport; $("tplImp").onclick = () => $("tplJson").value.trim() ? tplImport($("tplJson").value) : tplMsg("Paste templates JSON in the box first, or choose a file.", "u-am");
+  $("tplFileBtn").onclick = () => $("tplFile").click(); $("tplFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; const t = await f.text(); $("tplJson").value = t; await tplImport(t); e.target.value = ""; };
+  $("apiCopy").onclick = () => copyFrom($("apiCopy"), $("apiCode")); $("mcpCopy").onclick = () => copyFrom($("mcpCopy"), $("mcpCode")); $("apiTry").onclick = apiTry;
+  renderApi(); renderBench(); cfgFill(mSel || S.model || CURATED[0][0]); }
+function renderDocs() { if (!$("dnav")) return; if (!docInit) initDocs(); renderDocNav(); renderQuick(); renderTplList(); renderMarket(); }
+
 function renderAll() {
   const name = me(), init = (S.name || "you").slice(0,1).toUpperCase();
   $("tUser").textContent = name.toLowerCase(); $("pUser").textContent = name.toLowerCase(); $("tModel").textContent = loaded ? loaded.split("-").slice(0,3).join(" ") : "no model";
@@ -1218,7 +1673,7 @@ function renderAll() {
 }
 function setView(v) { view = v; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.v === v));
   ["live","instruct","projects","setup"].forEach(k => $("p-" + k).classList.toggle("on", k === v));
-  $("vhead").style.display = v === "live" ? "flex" : "none"; if (v === "instruct") { unread = 0; renderChat(); } if (v === "setup") loadBench().then(renderModelDetail); renderAll(); }
+  $("vhead").style.display = v === "live" ? "flex" : "none"; if (v === "instruct") { unread = 0; renderChat(); } if (v === "setup") { loadBench().then(() => { renderModelDetail(); renderBench(); }); requestAnimationFrame(() => goSec(docSec, false)); } renderAll(); }
 
 
 /* ---------- first-run tour (docked inside the window, works scaled and stacked) ---------- */
