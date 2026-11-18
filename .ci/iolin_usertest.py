@@ -1,6 +1,6 @@
-# Run: python3 .ci/iolin_usertest.py [url] [out-dir]   (default url = live site; headless Chromium has no WebGPU, so it uses demo mode)
+# Run: python3 .ci/iolin_usertest.py [url] [out-dir]   (default url = live site; the page defaults to the demo; ?live=1 opts in to a real model)
 """User test of io-threads.com/iolin/ as a new visitor ("Riley Test"). Headless Chromium has no WebGPU,
-so real-model paths are checked for a graceful fallback and everything else runs in demo mode."""
+so real-model paths (?live=1) are checked for a graceful fallback; the default page is the demo (pre-recorded replies, no download)."""
 import json, sys, pathlib, re
 from playwright.sync_api import sync_playwright
 
@@ -26,6 +26,7 @@ with sync_playwright() as p:
     pg = ctx.new_page(); errs = []
     pg.on("pageerror", lambda e: errs.append(str(e)[:150]))
     pg.on("dialog", lambda d: d.accept())
+    NET = []; pg.on("request", lambda r: NET.append(r.url))
 
     # 1. First visit: the tour
     pg.goto(URL + "?welcome=1", wait_until="networkidle"); pg.wait_for_timeout(1500)
@@ -36,6 +37,7 @@ with sync_playwright() as p:
     pg.keyboard.press("Enter"); pg.wait_for_timeout(1200)
     check("tour", "typed name shows in the window", pg.text_content("#tUser") == "riley test", pg.text_content("#tUser") or "")
     coach = pg.inner_text("#coach") if pg.query_selector("#coach") else ""
+    check("demo", "default page is the demo: no model-CDN request, pre-recorded label", not [u for u in NET if any(h in u for h in ("esm.run", "huggingface.co", "cdn.jsdelivr.net"))] and "pre-recorded" in pg.inner_text("#crumbState"), [u for u in NET if "io-threads" not in u and "127.0.0.1" not in u][:3])
     check("tour", "step 2 device check explains no WebGPU and offers demo", re.search(r"demo", coach, re.I) and pg.query_selector("#tDemo, #tDemo2"), coach.replace("\n", " ")[:150])
     pg.click("#tDemo" if pg.query_selector("#tDemo") else "#tDemo2"); pg.wait_for_timeout(1500)
     q = pg.input_value("#tQ") if pg.query_selector("#tQ") else ""
@@ -95,9 +97,11 @@ with sync_playwright() as p:
     check("data", "export downloads iolin-workspace.json", dl.value.suggested_filename == "iolin-workspace.json", dl.value.suggested_filename)
     check("data", "export has sessions + receipts + public key", "receipt" in exs.lower() and "public" in exs.lower(), list(ex)[:8])
     check("data", "export contains no private key", not re.search(r'"(d|privateKey|private_key|pkcs8)"\s*:', exs), "")
-    o = cmd(pg, "demo off"); check("terminal", "demo off", "off" in o.lower(), o.strip()[:100])
-    o = cmd(pg, "ask hello", 2500); check("terminal", "ask with demo off and no model → explains, no crash", len(o.strip()) > 0 and not errs, o.replace("\n", " ")[:150])
-    cmd(pg, "demo on")
+    # The default page is the demo; "demo off" opens the real-model opt-in (?live=1) instead of leaving a dead terminal.
+    cmd(pg, "demo off", 2500); pg.wait_for_load_state("networkidle")
+    check("terminal", "demo off opens the real-model page (?live=1)", "live=1" in pg.url, pg.url)
+    o = cmd(pg, "ask hello", 2500); check("terminal", "ask on the real-model page with no model → explains, no crash", len(o.strip()) > 0 and not errs, o.replace("\n", " ")[:150])
+    pg.goto(URL, wait_until="networkidle"); pg.wait_for_timeout(1200)
 
     # 3. Panels and buttons
     pg.click('[data-t="out"]'); pg.wait_for_timeout(300); check("panels", "Output tab", pg.is_visible("#outPane"), "")
