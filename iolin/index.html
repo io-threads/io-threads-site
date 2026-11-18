@@ -679,11 +679,13 @@ function coach(step, html) { const c = $("coach"); c.style.display = "block";
 async function endTour(done = true) { tourStep = -1; $("coach").style.display = "none"; hl(null); if (done) await DB.set("tourDone", true); }
 async function tour(n) {
   tourStep = n; if (view !== "live") setView("live");
+  // On a phone the scaled-down window makes the tour too small to type in, so the tour runs full screen.
+  if (innerWidth < 900 && !document.body.classList.contains("full")) { document.body.classList.add("full"); fit(); }
   const skip = `<button class="skip" id="tSkip">Skip tour</button>`;
   const bind = () => { const k = $("tSkip"); if (k) k.onclick = () => { endTour(true); out("tour skipped · type <span class=\"u-hl\">tour</span> to replay"); }; };
   if (n === 0) { hl(null); coach(1, `<h4>Welcome to iolin${S.name ? ", " + esc(S.name) : ""}.</h4><p>A private AI that runs on this device. Two minutes and you'll have your own model running, with proof of every answer.</p>
       <div class="row"><input id="tName" placeholder="What should we call you?" value="${esc(S.name)}"><button class="wbtn pri" id="tGo">Start</button>${skip}</div>`);
-    bind(); $("tName").onkeydown = e => e.key === "Enter" && $("tGo").click();
+    bind(); $("tName").onkeydown = e => { if (e.key === "Enter") $("tGo").click(); };
     $("tGo").onclick = async () => { const v = $("tName").value.trim(); if (v) { S.name = v; await save(); renderAll(); } tour(1); }; return; }
   if (n === 1) { hl("sFlag");
     if (gpuOk) { const ml = await modelList(), sg = S.model ? suggested(ml) : ml[0];
@@ -704,7 +706,7 @@ async function tour(n) {
   if (n === 3) { hl("termPane"); const qq = "What can you help me with, and does anything I type leave this device?";
     coach(3, `<h4>Ask your first question.</h4><p>It runs ${loaded === "demo-engine" ? "in demo mode" : "on your " + esc(dev.name)}. Watch the terminal: the reply streams in, then a receipt is signed.</p>
       <div class="row"><input id="tQ" value="${esc(qq)}"><button class="wbtn pri" id="tAsk">Ask</button>${skip}</div>`); bind();
-    $("tQ").onkeydown = e => e.key === "Enter" && $("tAsk").click();
+    $("tQ").onkeydown = e => { if (e.key === "Enter") $("tAsk").click(); };
     $("tAsk").onclick = async () => { const v = $("tQ").value.trim() || qq; $("tAsk").disabled = true; echo("ask " + v); await ask(v, "term"); if (tourStep === 3) tour(4); }; return; }
   if (n === 4) { hl("vers"); coach(4, `<h4>Check the proof.</h4><p>That answer got a signed receipt (left, under Production). Verify it, then edit one word and watch the check fail.</p>
       <div class="row"><button class="wbtn pri" id="tVer">Verify</button><button class="wbtn" id="tTam" disabled>Edit one word</button>${skip}</div>`); bind();

@@ -30,12 +30,18 @@ with sync_playwright() as p:
     # 1. First visit: the tour
     pg.goto(URL + "?welcome=1", wait_until="networkidle"); pg.wait_for_timeout(1500)
     check("tour", "step 1 welcome shows on first visit", pg.is_visible("#tName"), "")
-    pg.fill("#tName", "Riley Test"); pg.click("#tGo"); pg.wait_for_timeout(1200)
+    # Real keystrokes, not fill(): fill() skips key events, which hid a bug that blocked typing here.
+    pg.click("#tName"); pg.keyboard.type("Riley Test")
+    check("tour", "name box accepts typed keys", pg.input_value("#tName") == "Riley Test", pg.input_value("#tName"))
+    pg.keyboard.press("Enter"); pg.wait_for_timeout(1200)
+    check("tour", "typed name shows in the window", pg.text_content("#tUser") == "riley test", pg.text_content("#tUser") or "")
     coach = pg.inner_text("#coach") if pg.query_selector("#coach") else ""
     check("tour", "step 2 device check explains no WebGPU and offers demo", re.search(r"demo", coach, re.I) and pg.query_selector("#tDemo, #tDemo2"), coach.replace("\n", " ")[:150])
     pg.click("#tDemo" if pg.query_selector("#tDemo") else "#tDemo2"); pg.wait_for_timeout(1500)
     q = pg.input_value("#tQ") if pg.query_selector("#tQ") else ""
     check("tour", "step 4 question pre-filled", "leave this device" in q, q)
+    pg.click("#tQ"); pg.keyboard.type("?")
+    check("tour", "question box accepts typed keys", len(pg.input_value("#tQ")) == len(q) + 1, pg.input_value("#tQ"))
     pg.click("#tAsk"); pg.wait_for_timeout(5000)
     pg.wait_for_selector("#tVer:not([disabled])", timeout=15000)
     pg.click("#tVer"); pg.wait_for_timeout(1500)
