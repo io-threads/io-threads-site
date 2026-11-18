@@ -322,7 +322,8 @@ addEventListener("resize",function(){if(!$("op-body").hidden)preview()});
 function adm(body){return iotAuth.session().then(function(s){if(!s){location.replace("login.html?next=ops.html");throw 0}return fetch(FN+"/admin",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+s.access_token},body:JSON.stringify(body)})}).then(function(r){return r.json()})}
 function load(){$("op-when").textContent="Checking…";live();
   var gh=fetch("https://api.github.com/repos/"+SITE_REPO+"/actions/runs?per_page=6",{cache:"no-store"}).then(function(r){return r.ok?r.json():{workflow_runs:[]}}).then(function(d){return d.workflow_runs||[]},function(){return []});
-  Promise.all([adm({action:"ops"}),gh]).then(function(res){var r=res[0],site=res[1];
+  // The site repo is private: the server reads its publishes (siteRuns); the public fetch is the fallback.
+  Promise.all([adm({action:"ops"}),gh]).then(function(res){var r=res[0],site=(res[0].siteRuns&&res[0].siteRuns.length)?res[0].siteRuns:res[1];
     if(!r.ok){if(r.code==="aal2_required"){$("op-2fa").hidden=false;$("op-body").hidden=true;$("op-when").textContent="";return}if(r.error==="Admins only."){$("op-deny").hidden=false;$("op-body").hidden=true;$("op-when").textContent=""}else $("op-when").textContent=r.error||"Couldn't load ops.";return}
     $("op-body").hidden=false;preview();
     // Engine suite
