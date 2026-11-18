@@ -247,6 +247,12 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <p class="fine">Send it as <code>Authorization: Bearer $IOT_KEY</code>. We keep only a fingerprint, so copy it when it's shown. It works on the iot API and the hosted MCP feed; see <a href="api.html">the API docs</a>.</p>
       <div id="ap-use" hidden><p id="ap-use-state" aria-live="polite"></p><button class="btn line" type="button" id="ap-over" hidden></button><p class="fine">Usage packs add 100,000 calls a month each, invoiced; order them at team@io-threads.com. With all 10 in use you can switch on metered overage, billed per 1,000 calls past your daily limit and invoiced monthly. Prices are on <a href="join.html#h-api">the join page</a>.</p></div>
     </section>
+    <section class="ap-card" aria-labelledby="ap-h-sub" id="ap-sub" hidden>
+      <p class="ap-k">Plan</p>
+      <h2 id="ap-h-sub">Your subscription</h2>
+      <p id="ap-sub-state" aria-live="polite">It renews monthly. Cancel any time: you keep your plan until the end of the paid month, and nothing renews after that.</p>
+      <div class="ap-row"><button class="btn line" type="button" id="ap-sub-cancel">Cancel subscription</button></div>
+    </section>
     <section class="ap-card" aria-labelledby="ap-h-pw" id="ap-pw-card">
       <p class="ap-k">Sign-in</p>
       <h2 id="ap-h-pw">Password</h2>
@@ -257,6 +263,18 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <p class="fine" id="ap-pw-state" aria-live="polite">At least 10 characters. You'll use it with your email to log in.</p>
     </section>
   </div>
+  <section class="ap-card" id="ap-mfa" aria-labelledby="ap-h-mfa" hidden>
+    <p class="ap-k">Admin</p>
+    <h2 id="ap-h-mfa">Two-step sign-in</h2>
+    <p id="ap-mfa-state" aria-live="polite">Checking…</p>
+    <img id="ap-mfa-qr" alt="QR code to add io threads to your authenticator app" width="180" height="180" hidden>
+    <p class="fine" id="ap-mfa-secret" hidden></p>
+    <form class="ap-pwf" id="ap-mfa-form" action="javascript:void 0" novalidate hidden>
+      <label for="ap-mfa-code">6-digit code<input id="ap-mfa-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}"></label>
+      <button class="btn solid" type="submit">Verify</button>
+    </form>
+    <button class="btn solid" type="button" id="ap-mfa-start" hidden>Set up two-step sign-in</button>
+  </section>
   <section class="ap-card ap-adm" id="ap-admin" aria-labelledby="ap-h-admin" hidden>
     <p class="ap-k">Admin</p>
     <h2 id="ap-h-admin">Members</h2>
@@ -300,7 +318,7 @@ iotAuth.gate("app.html").then(function(s){if(!s)return;
     $("ap-use-state").textContent=(d.usage_packs||0)+" of 10 usage packs in use. Metered overage is "+(d.overage?"on":"off")+".";
     var b=$("ap-over");b.hidden=!(d.usage_packs===10&&d.status==="active");b.textContent=d.overage?"Switch overage off":"Switch on metered overage";
     b.onclick=function(){b.disabled=true;iotAuth.sb.rpc("iot_set_overage",{p_on:!d.overage}).then(function(r){b.disabled=false;var x=r.data&&r.data[0];if(r.error||!x||!x.ok){$("ap-use-state").textContent=(x&&x.error)||"Couldn't change overage. Try again.";return}d.overage=x.overage;usage(d)})}}
-  iotAuth.sb.from("members").select("plan,status,role,usage_packs,overage").maybeSingle().then(function(r){return r.error?iotAuth.sb.from("members").select("plan,status,role").maybeSingle():r}).then(function(r){if(r.error){$("ap-plan").textContent="Plan unavailable"}if(r.data){usage(r.data);$("ap-plan").textContent=(NAMES[r.data.plan]||r.data.plan)+(r.data.status!=="active"?" · "+r.data.status.replace("_"," "):"")+(r.data.role==="admin"?" · Admin":"");if(r.data.role==="admin")loadAdmin()}});
+  iotAuth.sb.from("members").select("plan,status,role,usage_packs,overage").maybeSingle().then(function(r){return r.error?iotAuth.sb.from("members").select("plan,status,role").maybeSingle():r}).then(function(r){if(r.error){$("ap-plan").textContent="Plan unavailable"}if(r.data){usage(r.data);$("ap-plan").textContent=(NAMES[r.data.plan]||r.data.plan)+(r.data.status!=="active"?" · "+r.data.status.replace("_"," "):"")+(r.data.role==="admin"?" · Admin":"");sub(r.data);if(r.data.role==="admin"){mfa();loadAdmin()}}});
   loadKey();
   $("ap-out").onclick=function(){iotAuth.signOut()};
   var WELCOME=!!new URLSearchParams(location.search).get("welcome");   // new sign-up: go to the iolin tour after the password
@@ -316,12 +334,43 @@ iotAuth.gate("app.html").then(function(s){if(!s)return;
 var NAMES={Reader:"Free",Builder:"Starter",Buyer:"Pro",Partner:"Scale",Lifetime:"Lifetime"};
 // Admin card: the role shown here only decides whether to try; the admin function re-checks it on every call.
 function adm(body){return iotAuth.session().then(function(s){if(!s){location.replace("login.html?next=app.html");throw 0}return fetch(iotAuth.fn+"/admin",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+s.access_token},body:JSON.stringify(body)})}).then(function(r){return r.json()}).catch(function(){return {ok:false,error:"Couldn't reach the admin service. Try again."}})}
-function loadAdmin(msg){adm({action:"overview"}).then(function(r){if(!r.ok){if(r.error==="Admins only.")return;$("ap-admin").hidden=false;$("ap-adm-state").textContent=r.error;return}
+function loadAdmin(msg){adm({action:"overview"}).then(function(r){if(!r.ok){if(r.error==="Admins only.")return;if(r.code==="aal2_required"){$("ap-admin").hidden=true;mfa();return}$("ap-admin").hidden=false;$("ap-adm-state").textContent=r.error;return}
   $("ap-admin").hidden=false;var tb=$("ap-adm-rows");tb.textContent="";
   r.members.forEach(function(m){var tr=document.createElement("tr");[m.email,m.email_verified_at?"yes":(m.email_verified_at===undefined?"":"no"),(NAMES[m.plan]||m.plan)+(m.usage_packs?" +"+m.usage_packs+" packs":"")+(m.overage?" · overage":""),m.status.replace("_"," "),m.role,new Date(m.created_at).toLocaleDateString()].forEach(function(v){var td=document.createElement("td");td.textContent=v;tr.appendChild(td)});tr.onclick=function(){$("ap-adm-email").value=m.email;$("ap-adm-plan").value=m.plan;$("ap-adm-status").value=m.status};tb.appendChild(tr)});
   $("ap-adm-state").textContent=(msg?msg+" ":"")+r.total+" member"+(r.total===1?"":"s")+(r.total>r.members.length?" (showing the newest "+r.members.length+")":"")+", "+r.activeKeys+" active API key"+(r.activeKeys===1?"":"s")+". Tap a row to edit it."})}
 $("ap-adm-form").onsubmit=function(){$("ap-adm-state").textContent="Saving…";adm({action:"set_plan",email:$("ap-adm-email").value,plan:$("ap-adm-plan").value,status:$("ap-adm-status").value,verified:$("ap-adm-verified").checked}).then(function(r){if(!r.ok){$("ap-adm-state").textContent=r.error||"Something went wrong.";return}loadAdmin(r.member.email+" is now "+(NAMES[r.member.plan]||r.member.plan)+" ("+r.member.status.replace("_"," ")+").")})};
 $("ap-adm-packs").onsubmit=function(){$("ap-adm-state").textContent="Saving…";adm({action:"set_packs",email:$("ap-adm-email").value,packs:parseInt($("ap-adm-npacks").value,10)}).then(function(r){if(!r.ok){$("ap-adm-state").textContent=r.error||"Something went wrong.";return}loadAdmin(r.member.email+" now has "+r.member.usage_packs+" usage pack"+(r.member.usage_packs===1?"":"s")+".")})};
+// Self-serve cancel (cancel-plan function): ends renewal at the close of the paid period. Two taps, no browser dialog.
+function sub(d){var paid=["Builder","Buyer","Partner"].indexOf(d.plan)>=0&&d.status==="active",b=$("ap-sub-cancel"),armed=false;$("ap-sub").hidden=!paid;if(!paid)return;
+  b.onclick=function(){if(!armed){armed=true;b.textContent="Tap again to cancel";$("ap-sub-state").textContent="Cancel your "+(NAMES[d.plan]||d.plan)+" plan? You keep it until the end of the paid month.";return}
+    b.disabled=true;$("ap-sub-state").textContent="Cancelling…";
+    iotAuth.session().then(function(s){if(!s){location.replace("login.html?next=app.html");throw 0}return fetch(iotAuth.fn+"/cancel-plan",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+s.access_token},body:"{}"})}).then(function(r){return r.json()}).then(function(r){
+      var c=r&&r.cancelled&&r.cancelled[0];
+      if(r&&r.ok&&c){$("ap-sub-state").textContent="Cancelled. You keep "+(NAMES[c.plan]||c.plan)+(c.access_until?" until "+new Date(c.access_until).toLocaleDateString():" until the end of the paid month")+". Nothing renews after that.";b.hidden=true;return}
+      b.disabled=false;armed=false;b.textContent="Cancel subscription";$("ap-sub-state").textContent=(r&&r.error)||"Couldn't cancel. Try again, or email team@io-threads.com."}).catch(function(){b.disabled=false;armed=false;b.textContent="Cancel subscription";$("ap-sub-state").textContent="Couldn't reach the server. Try again, or email team@io-threads.com."})}}
+// Two-step sign-in (TOTP) for admins. The admin function decides whether it's required; this card sets it up or asks for the code.
+var mfaId=null;
+function mfaSay(t){$("ap-mfa-state").textContent=t}
+function mfa(){var A=iotAuth.sb.auth.mfa;$("ap-mfa").hidden=false;
+  Promise.all([A.getAuthenticatorAssuranceLevel(),A.listFactors()]).then(function(r){var lvl=r[0].data||{},f=(r[1].data&&r[1].data.totp)||[];
+    $("ap-mfa-qr").hidden=true;$("ap-mfa-secret").hidden=true;$("ap-mfa-start").hidden=true;$("ap-mfa-form").hidden=true;
+    if(r[0].error||r[1].error){mfaSay("Couldn't check two-step sign-in. Reload the page.");return}
+    if(f.length&&lvl.currentLevel==="aal2"){mfaSay("Two-step sign-in is on for this session.");return}
+    if(f.length){mfaId=f[0].id;mfaSay("Enter the 6-digit code from your authenticator app to open the admin tools.");$("ap-mfa-form").hidden=false;$("ap-mfa-code").focus();return}
+    mfaSay("Protect the admin tools with two-step sign-in. Set it up once with an authenticator app (1Password, Google Authenticator, Authy).");$("ap-mfa-start").hidden=false})}
+$("ap-mfa-start").onclick=function(){var A=iotAuth.sb.auth.mfa,b=this;b.disabled=true;mfaSay("Setting up…");
+  // Clear any half-finished setup first, so a retry doesn't hit the name of an unverified factor.
+  A.listFactors().then(function(r){var stale=((r.data&&r.data.all)||[]).filter(function(x){return x.factor_type==="totp"&&x.status!=="verified"});
+    return Promise.all(stale.map(function(x){return A.unenroll({factorId:x.id})}))}).then(function(){return A.enroll({factorType:"totp",friendlyName:"io threads admin"})}).then(function(r){b.disabled=false;
+    if(r.error||!r.data||!r.data.totp){mfaSay("Couldn't start setup. Try again.");return}
+    var qr=String(r.data.totp.qr_code||"");mfaId=r.data.id;b.hidden=true;
+    if(qr.indexOf("data:image/svg+xml")===0){$("ap-mfa-qr").src=qr;$("ap-mfa-qr").hidden=false}
+    $("ap-mfa-secret").textContent="Can't scan? Enter this key in the app: "+r.data.totp.secret;$("ap-mfa-secret").hidden=false;
+    mfaSay("Scan the code with your authenticator app, then enter the 6-digit code it shows.");$("ap-mfa-form").hidden=false;$("ap-mfa-code").focus()}).catch(function(){b.disabled=false;mfaSay("Couldn't reach sign-in. Try again.")})};
+$("ap-mfa-form").onsubmit=function(){var c=$("ap-mfa-code").value.replace(/\s/g,"");if(!/^[0-9]{6}$/.test(c)){mfaSay("Enter the 6 digits from your app.");return}
+  mfaSay("Checking…");iotAuth.sb.auth.mfa.challengeAndVerify({factorId:mfaId,code:c}).then(function(r){$("ap-mfa-code").value="";
+    if(r.error){mfaSay(/invalid|expired/i.test(r.error.message)?"That code didn't match. Wait for the next one and try again.":"Couldn't check the code. Try again.");return}
+    mfa();loadAdmin("Two-step sign-in is on.")}).catch(function(){mfaSay("Couldn't reach sign-in. Try again.")})};
 function loadKey(){iotAuth.sb.from("api_keys").select("prefix,created_at").is("revoked_at",null).order("created_at",{ascending:false}).limit(1).then(function(r){if(r.error){$("ap-key-state").textContent="Couldn't load your key. Reload the page.";return}var k=r.data&&r.data[0];
   $("ap-key-state").textContent=k?"Active key "+k.prefix+"… created "+new Date(k.created_at).toLocaleDateString()+".":"You don't have a key yet. Free is 60 calls an hour, 1,000 a day.";
   $("ap-key-make").textContent=k?"Replace key":"Create key";$("ap-key-revoke").hidden=!k})}

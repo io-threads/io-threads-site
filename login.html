@@ -201,7 +201,9 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     <label for="lg-email">Email<input id="lg-email" type="email" autocomplete="email" placeholder="you@company.com" required></label>
     <label for="lg-pw" id="lg-pw-row">Password<span class="lg-pw"><input id="lg-pw" type="password" autocomplete="current-password" required><button type="button" class="lg-show" id="lg-show" aria-pressed="false">Show</button></span></label>
     <label class="lg-keep"><input type="checkbox" id="lg-keep" checked> Keep me signed in on this device</label>
+    <div id="lg-captcha" hidden></div>
     <button class="btn solid" type="submit" id="lg-go">Log in</button>
+    <div id="lg-code-row" hidden><label for="lg-code">Or enter the 8-digit code from the email<input id="lg-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" pattern="[0-9]{8}"></label><button class="btn line" type="button" id="lg-code-go">Use code</button></div>
     <p class="fine" id="lg-note" aria-live="polite">Sign-in needs JavaScript. Email <a href="mailto:team@io-threads.com">team@io-threads.com</a> for help.</p>
     <p class="fine lg-help"><button type="button" class="lg-link" id="lg-forgot">Forgot your password?</button></p>
     <p class="or">or</p>
@@ -222,27 +224,43 @@ iotAuth.user().then(function(u){if(u)location.replace(next)});
 var TEXT={in:["Log in",q.get("next")?"Log in to open that page.":""],
   up:["Email me a sign-up link","New here? We'll email you a link to create your free account. After that you log in with a password."],
   reset:["Email me a link","We'll email you a link to get back in. Then set a new password on your account page."]};
-function setMode(m){mode=m;$("lg-t-in").setAttribute("aria-selected",m!=="up");$("lg-t-up").setAttribute("aria-selected",m==="up");
+function setMode(m){mode=m;$("lg-code-row").hidden=true;$("lg-t-in").setAttribute("aria-selected",m!=="up");$("lg-t-up").setAttribute("aria-selected",m==="up");
   $("lg-pw-row").hidden=m!=="in";$("lg-forgot").parentNode.hidden=m!=="in";go.textContent=TEXT[m][0];say(TEXT[m][1])}
 $("lg-t-in").onclick=function(){setMode("in")};$("lg-t-up").onclick=function(){setMode("up")};$("lg-forgot").onclick=function(){setMode("reset")};
 setMode(q.get("mode")==="signup"?"up":"in");
 if(err)say(/expired/.test(err)?"That link expired or was already used. Ask for a new one.":"That link didn't work. Ask for a new one.");
 $("lg-show").onclick=function(){var on=pw.type==="password";pw.type=on?"text":"password";this.textContent=on?"Hide":"Show";this.setAttribute("aria-pressed",on)};
 function busy(on,t){go.disabled=on;if(t)say(t)}
+// CAPTCHA (Cloudflare Turnstile) only when a site key is configured in auth.js; each token works once.
+var CK=iotAuth.captchaKey,ctoken=null;
+if(CK){window.iotTs=function(){window.turnstile.render("#lg-captcha",{sitekey:CK,callback:function(t){ctoken=t},"expired-callback":function(){ctoken=null},"error-callback":function(){ctoken=null}})};
+  $("lg-captcha").hidden=false;var ts=document.createElement("script");ts.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=iotTs";ts.async=true;document.head.appendChild(ts)}
+// Wait (up to 15 s) for the check to finish before sending; Turnstile usually passes without a click.
+function withToken(fn){if(!CK||ctoken)return fn();var n=0;busy(true,"Checking you're not a bot…");var t=setInterval(function(){
+  if(ctoken){clearInterval(t);busy(false);fn()}else if(++n>60){clearInterval(t);busy(false,"Complete the check above the button, then try again.")}},250)}
+function used(){ctoken=null;try{if(CK&&window.turnstile)window.turnstile.reset("#lg-captcha")}catch(e){}}
+var sentTo=null,sentMode=null;
+$("lg-code").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();$("lg-code-go").click()}});
+$("lg-code-go").onclick=function(){var c=$("lg-code").value.replace(/\s/g,"");if(!sentTo){return}if(!/^[0-9]{8}$/.test(c)){say("Enter the 8 digits from the email.");return}
+  busy(true,"Checking the code…");iotAuth.sb.auth.verifyOtp({email:sentTo,token:c,type:"email"}).then(function(r){busy(false);
+    if(r.error){say(/expired|invalid/i.test(r.error.message)?"That code didn't work or has expired. Ask for a new email.":"Couldn't check the code. Try again.");return}
+    location.replace("app.html?setpw=1"+(sentMode==="up"?"&welcome=1":""))}).catch(function(){busy(false,"Couldn't reach sign-in. Check your connection and try again.")})};
 $("lg-form").addEventListener("submit",function(ev){ev.preventDefault();var em=$("lg-email").value.trim();
   if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){say("Enter a valid email.","email");$("lg-email").focus();return}
   iotAuth.remember($("lg-keep").checked);
   if(mode==="in"){
     if(!pw.value){say("Enter your password.","pw");pw.focus();return}
-    busy(true,"Signing in…");
-    iotAuth.sb.auth.signInWithPassword({email:em,password:pw.value}).then(function(r){busy(false);
+    withToken(function(){busy(true,"Signing in…");
+    iotAuth.sb.auth.signInWithPassword({email:em,password:pw.value,options:CK?{captchaToken:ctoken}:undefined}).then(function(r){busy(false);used();
       if(r.error){say(/invalid login/i.test(r.error.message)?"Email or password is wrong. No password yet? Use \u201cForgot your password?\u201d to get in.":/rate|too many/i.test(r.error.message)?"Too many tries. Wait a minute and try again.":"Couldn't sign you in. Try again.","pw");return}
-      location.replace(next)}).catch(function(){busy(false,"Couldn't reach sign-in. Check your connection and try again.")});
+      location.replace(next)}).catch(function(){busy(false,"Couldn't reach sign-in. Check your connection and try again.")})});
     return}
-  busy(true,"Sending…");
-  iotAuth.sb.auth.signInWithOtp({email:em,options:{emailRedirectTo:location.origin+"/app.html?setpw=1"+(mode==="up"?"&welcome=1":""),shouldCreateUser:mode==="up"}}).then(function(r){busy(false);
+  withToken(function(){busy(true,"Sending…");
+  var o={emailRedirectTo:location.origin+"/app.html?setpw=1"+(mode==="up"?"&welcome=1":""),shouldCreateUser:mode==="up"};if(CK)o.captchaToken=ctoken;
+  iotAuth.sb.auth.signInWithOtp({email:em,options:o}).then(function(r){busy(false);used();
     if(r.error){say(/signups not allowed|not found|no user/i.test(r.error.message)?"There's no account for that email. Use Create account.":"We couldn't send the email just now. Try again in a few minutes.","email");return}
-    say("Check "+em+" for your link. It signs you in, then you set a password.")}).catch(function(){busy(false,"Couldn't reach sign-in. Check your connection and try again.")});
+    sentTo=em;sentMode=mode;$("lg-code-row").hidden=false;
+    say("Check "+em+" for your link or 8-digit code. Either signs you in, then you set a password.")}).catch(function(){busy(false,"Couldn't reach sign-in. Check your connection and try again.")})});
 });
 })();</script>
 <div class="band">

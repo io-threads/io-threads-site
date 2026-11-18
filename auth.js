@@ -3,6 +3,11 @@
 (function () {
   var URL = "https://tckvatqkjfrvavleunzk.supabase.co", KEY = "sb_publishable_q1qGRS3znQOnod-6whZONg_OrhNQVwJ";
   var GATED = ["app.html", "looop.html", "ops.html"];
+  // Cloudflare Turnstile site key (public). Empty = no CAPTCHA widget. Production key: 0x4AAAAAAGGUVG4dTO_J01Xe.
+  // It goes live in the same release that turns CAPTCHA on in Supabase production (secret in the Keychain,
+  // "turnstile-secret"); a key here without that, or that without a key here, refuses sign-ins.
+  // The e2e scripts swap in Cloudflare's always-pass test key for staging.
+  var CAPTCHA_SITE_KEY = "";
 
   // Unhide a gated page and say what went wrong (used when sign-in can't load at all).
   function fail(msg) {
@@ -46,6 +51,7 @@
     sb: sb,
     fn: URL + "/functions/v1",
     linkError: linkError,
+    captchaKey: CAPTCHA_SITE_KEY,
     session: function () { return sb.auth.getSession().then(function (r) { return r.data.session; }); },
     // Server-checked: resolves to the user only when the saved session is genuine.
     user: function () { return sb.auth.getUser().then(function (r) { return r.error ? null : r.data.user; }, function () { return null; }); },

@@ -207,6 +207,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     <div><p class="label">Admin</p><h1>Ops</h1></div>
     <div class="op-meta"><span id="op-when">Checking…</span><button class="btn line" type="button" id="op-refresh">Refresh</button><a class="btn line" href="app.html">Account</a></div>
   </div>
+  <p id="op-2fa" role="alert" hidden>The ops console needs two-step sign-in. <a href="app.html">Set up two-step sign-in on Account</a>, or enter your code there, then come back.</p>
   <p id="op-deny" role="alert" hidden>This page is for io threads admins. <a href="app.html">Back to your account</a>.</p>
   <div id="op-body" hidden>
   <section class="op-card" aria-labelledby="op-h-live">
@@ -318,7 +319,7 @@ function adm(body){return iotAuth.session().then(function(s){if(!s){location.rep
 function load(){$("op-when").textContent="Checking…";live();
   var gh=fetch("https://api.github.com/repos/"+SITE_REPO+"/actions/runs?per_page=6",{cache:"no-store"}).then(function(r){return r.ok?r.json():{workflow_runs:[]}}).then(function(d){return d.workflow_runs||[]},function(){return []});
   Promise.all([adm({action:"ops"}),gh]).then(function(res){var r=res[0],site=res[1];
-    if(!r.ok){if(r.error==="Admins only."){$("op-deny").hidden=false;$("op-body").hidden=true;$("op-when").textContent=""}else $("op-when").textContent=r.error||"Couldn't load ops.";return}
+    if(!r.ok){if(r.code==="aal2_required"){$("op-2fa").hidden=false;$("op-body").hidden=true;$("op-when").textContent="";return}if(r.error==="Admins only."){$("op-deny").hidden=false;$("op-body").hidden=true;$("op-when").textContent=""}else $("op-when").textContent=r.error||"Couldn't load ops.";return}
     $("op-body").hidden=false;preview();
     // Engine suite
     var e=r.engine||[],last=e[0];
