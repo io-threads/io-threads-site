@@ -708,7 +708,7 @@ section.free2{border-bottom:1px solid var(--rule)}
       function store(){try{localStorage.setItem("iot-hosts",JSON.stringify(mine))}catch(x){}}
       function kind(n){n=n.toLowerCase();if(/lmstudio|ollama|local/.test(n))return["lmstudio","local"];if(/mcp|agent/.test(n))return["agents","mcp"];if(/api/.test(n))return["api","api"];return["tailscale","tailscale"]}
       var ready=[],sel=null;
-      function ip(h){if(h.t==="lmstudio")return"127.0.0.1:1234";if(h.t==="frontier")return"api · tls";if(h.t==="agents")return"mcp · stdio";if(h.t==="api")return"api.io-threads.com";var x=0;for(var i=0;i<h.n.length;i++)x=(x*31+h.n.charCodeAt(i))>>>0;return"100."+(64+x%64)+"."+((x>>>6)%256)+"."+(1+(x>>>14)%254)}
+      function ip(h){if(h.t==="lmstudio")return"127.0.0.1:1234";if(h.t==="frontier")return"api · tls";if(h.t==="agents")return"mcp · stdio";if(h.t==="api")return"iot api · tls";var x=0;for(var i=0;i<h.n.length;i++)x=(x*31+h.n.charCodeAt(i))>>>0;return"100."+(64+x%64)+"."+((x>>>6)%256)+"."+(1+(x>>>14)%254)}
       function pub(){document.dispatchEvent(new CustomEvent("iot-hosts",{detail:{hosts:ready.map(function(h){return{n:h.n,t:h.t,ip:ip(h)}}),sel:sel&&sel.n}}))}
       function chip(h,user,delay){
         var b=document.createElement("button");b.type="button";b.className="hc dep new";b.setAttribute("aria-label",h.n+", "+h.k);
@@ -943,7 +943,7 @@ section.free2{border-bottom:1px solid var(--rule)}
       function show(lines){out.innerHTML=lines.map(function(l){return "<li>"+l+"</li>"}).join("");$("ws-st-l").textContent="Ln "+lines.length+", Col 1"}
       function log(html){var d=document.createElement("div");d.innerHTML=html;term.appendChild(d);term.scrollTop=term.scrollHeight}
       function reqView(){var s=S.filter(function(x){return x[0]===svc.value})[0];
-        show([C("### "+s[1]),K("POST")+" https://api.io-threads.com/v1/checks",K("Authorization")+": Bearer "+Sx("$IOT_KEY").replace(/&quot;/g,""),K("Content-Type")+": application/json","","{",'  '+Sx("service")+": "+Sx(s[0])+",",'  '+Sx("target")+": "+Sx(T[tgt.value])+",",'  '+Sx("claim")+": "+Sx(claim.value.trim()),"}"])}
+        show([C("### "+s[1]),K("POST")+" https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/checks",K("Authorization")+": Bearer "+Sx("$IOT_KEY").replace(/&quot;/g,""),K("Content-Type")+": application/json","","{",'  '+Sx("service")+": "+Sx(s[0])+",",'  '+Sx("target")+": "+Sx(T[tgt.value])+",",'  '+Sx("claim")+": "+Sx(claim.value.trim()),"}"])}
       function planView(){if(!last){show([C("// plan.json is written after the first request"),"{}"]);return}show(last)}
       function setTab(t){tab=t;tabs.forEach(function(b){var on=b.getAttribute("data-tab")===t;b.classList.toggle("on",on);if(b.getAttribute("role")==="tab")b.setAttribute("aria-selected",String(on))});$("ws-crumb").textContent=t==="req"?"check.http":"plan.json";form.style.display=t==="req"?"":"none";t==="req"?reqView():planView()}
       tabs.forEach(function(b){b.addEventListener("click",function(){setTab(b.getAttribute("data-tab"))})});

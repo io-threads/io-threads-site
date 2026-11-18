@@ -211,8 +211,8 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <li><b>Two environments.</b> Every change deploys to a separate staging project first. Production takes only a tagged commit that already passed staging.</li>
       <li><b>Tests on every release:</b> offline payment and logic tests, then end-to-end tests against the live staging service (real accounts, real keys, limits, revocation, sign-in and admin), run again on production after it ships.</li>
       <li><b>Review before production.</b> Each server change gets a written adversarial security review, and findings are fixed before release.</li>
-      <li><b>Live checks every three hours</b> from four separate clients (Python, Node, Rust and C++) plus a real browser, including HTTPS expiry dates.</li>
-      <li><b>Code hosting:</b> a GitHub organisation with a verified domain, secret scanning and push protection on the public site, and dependency alerts on both repositories. Deploy credentials live only in GitHub and Supabase secret stores.</li>
+      <li><b>Live checks after every deploy and on a three-hour schedule</b> from four separate clients (Python, Node, Rust and C++) plus a real browser, including HTTPS expiry dates.</li>
+      <li><b>Code hosting:</b> a GitHub organisation where every repository runs a secret scan on each change, with dependency alerts and actions pinned to exact versions. Deploy credentials live only in GitHub and Supabase secret stores.</li>
     </ul>
   </div>
 </section>
@@ -230,7 +230,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
         <tr><td>Square</td><td>Payments</td><td>Name, email, card details, payment records</td><td>US</td></tr>
         <tr><td>Google Workspace</td><td>Email to and from team@io-threads.com</td><td>Email you send us</td><td>US</td></tr>
         <tr><td>GitHub</td><td>Website hosting, code</td><td>Standard web request logs</td><td>US</td></tr>
-        <tr><td>Cloudflare</td><td>Bot check on sign-in (Turnstile), being added</td><td>Browser signals for the check, IP address</td><td>Global network</td></tr>
+        <tr><td>Cloudflare</td><td>Bot check on sign-in (Turnstile)</td><td>Browser signals for the check, IP address</td><td>Global network</td></tr>
         <tr><td>Shopify</td><td>Merch store (10threads.store) only</td><td>Orders placed there</td><td>US / Canada</td></tr>
       </tbody>
     </table>
