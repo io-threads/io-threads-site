@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#d8c6a5">
+<meta name="description" content="iolin by io threads. One shared terminal for everything you run, with a private AI that runs on your own device.">
+<title>iolin · io threads</title>
+<meta property="og:title" content="iolin · a private AI that runs in your browser">
+<meta property="og:description" content="Your own model, on your own device, with a signed record of every run. By io threads.">
+<meta property="og:url" content="https://io-threads.com/iolin/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111217'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e4572e' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+:root{
+  --site:#d8c6a5;--site-ink:#2a2620;--site-quiet:#6b6253;--site-line:rgba(42,38,32,.18);
+  --w-bg:#111217;--w-panel:#15171d;--w-raise:#1b1e26;--w-line:#262a34;--w-ink:#dfe2e8;--w-quiet:#8a90a0;--w-dim:#5d6372;
+  --purple:#a78bfa;--green:#34d399;--amber:#f5a524;--red:#f87171;--cyan:#67e8f9;--blue:#7aa2ff;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;background:var(--site);color:var(--site-ink);
+  background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.18),transparent 40%);}
+a{color:inherit}
+/* ---------- site chrome ---------- */
+.site{max-width:1180px;margin:0 auto;padding:18px 20px 40px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-size:20px}.brand i{width:30px;height:30px;border-radius:50%;border:1.5px solid #9b5a3c;display:inline-block}
+.nav nav{display:flex;gap:18px;align-items:center;font-size:15px;color:var(--site-quiet)}
+.nav nav .on{color:var(--site-ink);text-decoration:underline;text-underline-offset:6px}
+.acct{border:1px solid var(--site-line);border-radius:8px;padding:6px 12px;color:var(--site-ink)}
+.crumb{display:flex;justify-content:space-between;color:var(--site-quiet);font-size:14px;margin:26px 0 8px;padding-bottom:8px;border-bottom:1px solid var(--site-line)}
+h1{font-weight:300;font-size:clamp(34px,5.4vw,60px);line-height:1.05;letter-spacing:-1.5px;margin:18px 0 12px}
+h1 b{font-weight:400}
+.lede{font-size:clamp(16px,2vw,20px);max-width:760px;margin:0 0 22px;color:#3b352c}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+.btn{font:inherit;border:none;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer;background:var(--site-ink);color:var(--site)}
+.btn.ghost{background:transparent;color:var(--site-ink);border:1px solid var(--site-line)}
+.feats{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:22px}
+.feat{border-top:2px solid var(--site-ink);padding-top:8px}.feat small{color:var(--site-quiet)}.feat h3{font-weight:400;font-size:20px;margin:4px 0}.feat p{margin:0;color:#4b4438}
+@media (max-width:760px){.feats{grid-template-columns:1fr 1fr}.nav nav a:not(.on):not(.acct){display:none}}
+.privacy{font-size:12.5px;color:var(--site-quiet);margin-top:22px;line-height:1.6}
+
+/* ---------- window: designed at 1140 x 1510, scaled to fit ---------- */
+.stage{position:relative;width:100%}
+.win{position:absolute;left:0;top:0;width:1140px;height:1510px;transform-origin:0 0;background:var(--w-bg);color:var(--w-ink);
+  border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.4);display:grid;
+  grid-template-rows:46px 1fr 32px;font-size:13px}
+.win *::-webkit-scrollbar{width:6px;height:6px}.win *::-webkit-scrollbar-thumb{background:#2a2e38;border-radius:9px}
+.titlebar{display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--w-line);background:#0f1015}
+.lights{display:flex;gap:8px}.lights i{width:12px;height:12px;border-radius:50%;background:#ec6a5e}.lights i:nth-child(2){background:#f4bf4f}.lights i:nth-child(3){background:#61c554}
+.tpath{color:var(--w-quiet);font-size:14px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tpath b{color:var(--w-ink);font-weight:500}
+.presence{display:flex;align-items:center;gap:8px;color:var(--w-quiet)}#avs{display:flex;padding-left:6px}
+.av{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#14151a;margin-left:-6px;border:2px solid #0f1015}
+.body{display:grid;grid-template-columns:320px 1fr;min-height:0}
+/* sidebar */
+.side{border-right:1px solid var(--w-line);background:var(--w-panel);overflow:auto;padding:14px 16px}
+.sh{display:flex;justify-content:space-between;color:var(--w-quiet);font-size:13px;margin:14px 0 6px}.sh span:last-child{color:var(--w-dim);font-size:12px}
+.sh:first-child{margin-top:2px}
+.tree{font-size:14px;line-height:1.85;user-select:none}
+.tree div{cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:6px;padding:0 6px}
+.tree div:hover{background:var(--w-raise)}.tree .d1{padding-left:22px}.tree .d2{padding-left:48px;color:#c9ccd4}.tree .f{color:#aab0bd}
+.tree .car{display:inline-block;width:14px;color:var(--w-dim);font-size:10px}
+.sess{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:13.5px;cursor:pointer}
+.sess:hover,.sess.on{background:var(--w-raise)}.sess .t{flex:0 0 auto}.sess .n{color:var(--w-quiet);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font:12px var(--mono);border:1px solid var(--w-line);border-radius:6px;padding:1px 8px;color:var(--w-ink);background:transparent;cursor:pointer}
+.chip:hover{border-color:var(--w-quiet)}
+.prod{border:1px solid var(--w-line);border-radius:12px;padding:12px;background:#13151b}
+.prod .top{display:flex;justify-content:space-between;align-items:center}.prod .top b{font-size:18px;font-weight:500}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:middle}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.stat{border:1px solid var(--w-line);border-radius:8px;padding:6px 8px;min-height:60px}.stat b{display:block;font-size:20px;font-weight:400}.stat span{font-size:11px;color:var(--w-quiet);line-height:1.2;display:block}
+.stat.red b{color:var(--red)}.stat.flag{display:flex;align-items:center;gap:6px;color:var(--w-quiet)}.stat.flag.warn{color:var(--red)}.stat.flag.ok{color:var(--green)}
+.spark{height:46px;margin:12px 2px 2px;position:relative}
+.agents{border:1px solid var(--w-line);border-radius:8px;padding:8px 10px;margin-top:10px;font-size:12.5px}.agents div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.vers div{display:grid;grid-template-columns:34px 1fr auto 18px;gap:6px;align-items:center;font-size:13px;padding:6px 4px;cursor:pointer;border-radius:6px}
+.vers div:hover{background:var(--w-raise)}.vers .n{color:var(--w-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pass{color:var(--green);font:12px var(--mono)}.abst{color:var(--amber);font:12px var(--mono)}.fail{color:var(--red);font:12px var(--mono)}
+.tasks div{display:grid;grid-template-columns:64px 1fr auto;gap:6px;font:13.5px var(--mono);padding:6px 4px}.tasks .k{color:#f2a07b}.tasks .v{color:#c9ccd4;font-family:inherit}
+/* main */
+.main{display:grid;grid-template-rows:auto 1fr 300px;min-width:0;min-height:0}
+.proj{padding:12px 16px 10px;border-bottom:1px solid var(--w-line)}
+.proj .l1{display:flex;align-items:center;gap:10px}.proj .l1 b{font-size:18px;font-weight:500}.proj .l1 span{color:var(--w-quiet)}
+.tabs{display:flex;justify-content:flex-end;margin-top:8px}
+.tabset{display:flex;gap:4px;border:1px solid var(--w-line);border-radius:10px;padding:4px;background:#13151b}
+.tab{white-space:nowrap;font:inherit;font-size:14px;color:var(--w-quiet);background:transparent;border:none;border-radius:8px;padding:5px 12px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.tab.on{background:var(--w-raise);color:var(--w-ink)}.badge{background:var(--amber);color:#111;border-radius:99px;font-size:11px;font-weight:700;padding:0 6px}
+.view{position:relative;min-height:0;overflow:hidden}
+.vhead{position:absolute;left:16px;right:16px;top:10px;display:flex;justify-content:space-between;color:var(--w-quiet);font-size:13.5px;z-index:2;pointer-events:none}
+.vhead b{color:var(--w-ink);font-weight:500}
+.zones{position:absolute;right:16px;top:44px;border:1px solid var(--w-line);background:rgba(21,23,29,.92);border-radius:12px;padding:6px;z-index:3;font-size:14px}
+.zones div{padding:6px 12px;border-radius:8px;cursor:pointer;color:var(--w-quiet);display:flex;align-items:center;gap:8px}.zones div.on{background:var(--w-raise);color:var(--w-ink)}
+.zones i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.events{position:absolute;right:16px;bottom:44px;text-align:right;font:12.5px var(--mono);color:var(--w-quiet);z-index:2;line-height:1.7}
+.events b{color:var(--purple);font-weight:500}.events b.m{color:var(--green)}
+.zsel{position:absolute;left:16px;bottom:10px;z-index:3;border:1px solid var(--w-line);background:#13151b;color:var(--w-ink);border-radius:99px;padding:5px 14px;font:inherit;font-size:13.5px}
+#scene{position:absolute;inset:0;width:100%;height:100%}
+.pane{position:absolute;inset:0;padding:48px 16px 14px;overflow:auto;display:none}.pane.on{display:block}
+/* instruct */
+.chat{display:flex;flex-direction:column;gap:10px;max-width:760px;margin:0 auto}
+.bub{padding:10px 12px;border-radius:12px;white-space:pre-wrap;word-wrap:break-word;max-width:86%;font-size:14px;line-height:1.5}
+.bub.u{align-self:flex-end;background:#2b2f3a}.bub.a{align-self:flex-start;background:#181b22;border:1px solid var(--w-line)}
+.bub small{display:block;color:var(--w-dim);font:11.5px var(--mono);margin-top:6px}
+.compose{display:flex;gap:8px;max-width:760px;margin:12px auto 0}
+.compose textarea{flex:1;min-height:44px;max-height:140px;resize:vertical;background:#13151b;border:1px solid var(--w-line);border-radius:10px;color:var(--w-ink);font:14px/1.4 inherit;padding:10px}
+.wbtn{font:inherit;font-size:13.5px;border:1px solid var(--w-line);background:var(--w-raise);color:var(--w-ink);border-radius:9px;padding:8px 14px;cursor:pointer}
+.wbtn.pri{background:var(--purple);border-color:var(--purple);color:#14101f;font-weight:600}.wbtn:disabled{opacity:.4;cursor:default}
+.setup{max-width:760px;margin:0 auto}
+.setup .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.setup select,.setup input{background:#13151b;border:1px solid var(--w-line);color:var(--w-ink);border-radius:9px;padding:8px 10px;font:inherit;font-size:13.5px}
+.kv{display:grid;grid-template-columns:120px 1fr;gap:4px 12px;font-size:13.5px;color:#c9ccd4}.kv span:nth-child(odd){color:var(--w-quiet)}
+.bar{height:6px;background:#1f2330;border-radius:99px;overflow:hidden;margin:10px 0 4px}.bar i{display:block;height:100%;width:0;background:var(--purple);transition:width .2s}
+.plist div{display:grid;grid-template-columns:1fr auto auto;gap:12px;padding:10px 12px;border:1px solid var(--w-line);border-radius:10px;margin-bottom:8px;cursor:pointer}
+.plist div:hover{border-color:var(--w-quiet)}.plist span{color:var(--w-quiet)}
+/* terminal */
+.term{border-top:1px solid var(--w-line);display:grid;grid-template-rows:34px 1fr;min-height:0;background:#101116}
+.ttabs{display:flex;gap:4px;align-items:center;padding:0 10px}
+.ttab{font:inherit;font-size:13.5px;color:var(--w-quiet);background:transparent;border:none;border-radius:7px;padding:4px 10px;cursor:pointer}.ttab.on{background:var(--w-raise);color:var(--w-ink)}
+.tbody{overflow:auto;padding:6px 16px 12px;font:14px/1.75 var(--mono);color:#c7cbd3}
+.tbody .ln{white-space:pre-wrap;word-break:break-word}.tbody .o{padding-left:24px;color:#98a0ae}
+.u-pj{color:var(--purple)}.u-ag{color:var(--blue)}.u-ok{color:var(--green)}.u-hl{color:#f2a07b}.u-bad{color:var(--red)}.u-am{color:var(--amber)}
+.prompt{display:flex;gap:8px;align-items:center}.prompt input{flex:1;background:transparent;border:none;outline:none;color:var(--w-ink);font:inherit;caret-color:var(--w-ink)}
+#outPane{display:none}
+/* status bar */
+.status{display:flex;gap:18px;align-items:center;padding:0 14px;border-top:1px solid var(--w-line);color:var(--w-quiet);font-size:12.5px;background:#0f1015;white-space:nowrap;overflow:hidden}
+.status .br{background:var(--w-raise);border-radius:6px;padding:2px 8px;color:var(--w-ink)}
+.status .g{color:var(--green)}
+/* full-screen mode */
+body.full{overflow:hidden}
+body.full .stage{position:fixed;inset:0;z-index:50;background:#0b0c10;overflow:auto}
+.closefs{display:none}body.full .closefs{display:block;position:fixed;right:12px;top:12px;z-index:60}
+/* stacked layout for narrow full-screen */
+body.full.stack .win{position:relative;transform:none!important;width:100%;height:auto;border-radius:0;grid-template-rows:auto auto auto}
+body.full.stack .body{grid-template-columns:minmax(0,1fr)}body.full.stack .win{grid-template-columns:minmax(0,1fr)}body.full.stack .main{grid-template-columns:minmax(0,1fr)}
+body.full.stack .side{order:2;border-right:none;border-top:1px solid var(--w-line)}
+body.full.stack .main{grid-template-rows:auto 420px 320px}
+body.full.stack .stage{height:100%!important}
+body.full.stack .body>*,body.full.stack .main>*{min-width:0}
+body.full.stack .win{overflow-x:hidden}
+body.full.stack .titlebar{padding-right:84px}
+body.full.stack .tabs{justify-content:flex-start;overflow-x:auto}
+body.full.stack .tabset{flex-wrap:nowrap}
+body.full.stack .zones{display:none}
+body.full.stack .vhead span:last-child{display:none}
+body.full.stack .events{bottom:48px;font-size:11px}
+body.full.stack .tbody{font-size:13px}
+body.full.stack .proj .l1{flex-wrap:wrap}
+.coach{position:absolute;left:16px;top:44px;width:min(440px,calc(100% - 32px));z-index:8;background:#171a22;border:1px solid #3a3f4d;border-radius:14px;padding:16px 18px;box-shadow:0 18px 50px rgba(0,0,0,.55);color:var(--w-ink)}
+.coach .step{font:12px var(--mono);color:var(--purple);letter-spacing:.5px}
+.coach h4{margin:4px 0 6px;font-size:18px;font-weight:600}
+.coach p{margin:0 0 10px;color:#c3c7d0;font-size:14px;line-height:1.5}
+.coach .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.coach input{background:#101217;border:1px solid var(--w-line);color:var(--w-ink);border-radius:9px;padding:8px 10px;font:inherit;font-size:14px;flex:1;min-width:140px}
+.coach .skip{background:none;border:none;color:var(--w-dim);font:inherit;font-size:13px;cursor:pointer;margin-left:auto}
+.coach .dots{display:flex;gap:5px;margin-top:12px}.coach .dots i{width:18px;height:3px;border-radius:2px;background:#2a2e38}.coach .dots i.on{background:var(--purple)}
+.coach .bar{margin:6px 0}
+.hl{outline:2px solid var(--purple)!important;outline-offset:3px;border-radius:10px;transition:outline-color .3s}
+.demo{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--amber);color:#111;font-size:12px;font-weight:700;border-radius:99px;padding:2px 10px;z-index:5}
+</style>
+</head>
+<body>
+<div class="site">
+  <div class="nav">
+    <div class="brand"><i></i>io</div>
+    <nav><a class="on" href="#">iolin</a><a href="https://io-threads.com">iot API</a><a href="https://io-threads.com">Enterprise</a><a class="acct" href="https://io-threads.com">Account</a></nav>
+  </div>
+  <div class="crumb"><span>iolin</span><span id="crumbState">Live in your browser</span></div>
+  <h1><b>iolin.</b> One shared terminal<br>for everything you run.</h1>
+  <p class="lede">Run commands, talk to a private model and keep signed records of every run, all on your own device, with the full history you can see and replay.</p>
+  <div class="ctas">
+    <button class="btn" id="startBtn">Start your session</button>
+    <button class="btn ghost" id="fullBtn">Open full screen</button>
+  </div>
+
+  <div class="stage" id="stage">
+    <button class="btn closefs" id="closeFs">Close</button>
+    <div class="win" id="win">
+      <div class="titlebar">
+        <div class="lights"><i></i><i></i><i></i></div>
+        <div class="tpath">iolin · <span id="tUser">you</span>/workspace/<b id="tModel">no model</b> · private session</div>
+        <div class="presence"><span id="avs"></span><span id="here">1 here</span></div>
+      </div>
+
+      <div class="body">
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="side">
+          <div class="sh"><span>Workspace</span><span id="wsMeta">local · v0</span></div>
+          <div class="tree" id="tree"></div>
+
+          <div class="sh"><span>Agent sessions</span><span id="sessCount"></span></div>
+          <div id="sessions"></div>
+
+          <div class="sh"><span>Production</span><span id="prodMeta">idle</span></div>
+          <div class="prod">
+            <div class="top"><b id="pv">v1</b><span style="color:var(--w-quiet)"><span class="dot" id="pdot"></span><span id="pstate">waiting</span> · <span id="ppct">0%</span></span></div>
+            <div class="grid3">
+              <div class="stat"><b id="sRuns">0</b><span>Agent<br>calls</span></div>
+              <div class="stat"><b id="sErr">0</b><span>Errors</span></div>
+              <div class="stat" id="sFailBox"><b id="sFail">0</b><span>Failed<br>checks</span></div>
+              <div class="stat"><b id="sSkills">0/12</b><span>Skills used</span></div>
+              <div class="stat"><b id="sSess">0/0</b><span>Agent<br>sessions</span></div>
+              <div class="stat flag" id="sFlag"><span class="dot" style="background:var(--w-dim)"></span><span id="sFlagT">Idle</span></div>
+            </div>
+            <svg class="spark" id="spark" viewBox="0 0 270 46" preserveAspectRatio="none"></svg>
+            <div class="agents"><div style="color:var(--w-quiet)">Agents on <span id="pv2">v1</span></div><div id="agentLine"><span class="dot" style="background:var(--purple)"></span><b>iolin</b> <span style="color:var(--w-quiet)">waiting for a model</span></div></div>
+          </div>
+          <div class="vers" id="vers"></div>
+
+          <div class="sh"><span>Tasks</span><span>status</span></div>
+          <div class="tasks" id="tasks"></div>
+        </aside>
+
+        <!-- ================= MAIN ================= -->
+        <section class="main">
+          <div class="proj">
+            <div class="l1"><span class="dot" id="projDot"></span><b id="projName">Workspace</b><span id="projMeta">ready · 1 person · 1 agent</span></div>
+            <div class="tabs"><div class="tabset">
+              <button class="tab on" data-v="live">◇ Live <span style="color:var(--green)" id="liveCount">● 1</span></button>
+              <button class="tab" data-v="instruct">☰ Instruct <span class="badge hidden" id="instBadge" style="display:none">0</span></button>
+              <button class="tab" data-v="projects">▦ Projects <span style="color:var(--w-dim)" id="projCount">0</span></button>
+              <button class="tab" data-v="setup">⚙ Setup</button>
+            </div></div>
+          </div>
+
+          <div class="view" id="view">
+            <div class="vhead" id="vhead"><span><span class="dot"></span><b id="vTitle">live space</b> · <span id="vAgents" style="color:var(--purple)">● iolin</span></span><span>click a zone to zoom</span></div>
+            <div id="demoTag" class="demo" style="display:none">DEMO · canned replies</div>
+            <div class="coach" id="coach" style="display:none"></div>
+            <!-- live -->
+            <div class="pane on" id="p-live" style="padding:0">
+              <svg id="scene" viewBox="0 0 780 520" preserveAspectRatio="xMidYMid meet"></svg>
+              <div class="zones" id="zones"></div>
+              <div class="events" id="events"></div>
+              <select class="zsel" id="zsel"></select>
+            </div>
+            <!-- instruct -->
+            <div class="pane" id="p-instruct">
+              <div class="chat" id="chat"></div>
+              <div class="compose"><textarea id="ask" placeholder="Ask your model. It runs on this device."></textarea><button class="wbtn pri" id="sendBtn">Send</button><button class="wbtn" id="stopGen" disabled>Stop</button></div>
+            </div>
+            <!-- projects -->
+            <div class="pane" id="p-projects"><div class="setup"><div class="row"><b style="font-size:15px">Sessions on this device</b><span style="flex:1"></span><button class="wbtn" id="newSess">New session</button></div><div class="plist" id="plist"></div></div></div>
+            <!-- setup -->
+            <div class="pane" id="p-setup"><div class="setup">
+              <div class="kv" id="dev"></div>
+              <div class="row" style="margin-top:14px"><select id="model"></select><button class="wbtn pri" id="loadBtn">Download and start</button><button class="wbtn" id="stopModel">Stop</button><button class="wbtn" id="rmModel">Remove</button></div>
+              <div class="bar"><i id="bar"></i></div><div style="color:var(--w-quiet);font-size:12.5px" id="prog">Pick a model. It downloads once and runs on your GPU.</div>
+              <div class="row" style="margin-top:16px"><label style="color:var(--w-quiet)">Your name</label><input id="sName" style="width:140px"><label style="color:var(--w-quiet)">Temp</label><input id="sTemp" type="number" step="0.1" min="0" max="1.5" style="width:70px"><label style="color:var(--w-quiet)">Max tokens</label><input id="sMax" type="number" step="64" min="64" max="4096" style="width:90px"></div>
+              <div class="row"><input id="sSys" style="flex:1" placeholder="Instructions for the assistant"></div>
+              <div class="row"><button class="wbtn" id="expBtn">Export my data</button><button class="wbtn" id="impBtn">Import</button><button class="wbtn" id="wipeBtn">Erase everything</button><input type="file" id="impFile" accept="application/json" style="display:none"></div>
+              <p style="color:var(--w-dim);font-size:12.5px">Everything here is saved in this browser only. Model files come from Hugging Face the first time.</p>
+            </div></div>
+          </div>
+
+          <div class="term">
+            <div class="ttabs"><button class="ttab on" data-t="term">Terminal</button><button class="ttab" data-t="out">Output</button><span style="flex:1"></span><span style="color:var(--w-dim);font-size:12px">type <span class="u-hl">help</span></span></div>
+            <div class="tbody" id="termPane"><div id="tlog"></div><div class="prompt"><span class="u-pj" id="pUser">you</span><span style="color:var(--w-dim)">$</span><input id="cmd" autocomplete="off" spellcheck="false" aria-label="terminal"></div></div>
+            <div class="tbody" id="outPane"></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="status">
+        <span class="br">⎇ main</span><span id="stV">v0</span><span id="stModel">no model</span><span id="stPeople">1 person · 1 agent</span>
+        <span class="g" id="stSandbox">● browser sandbox ready</span><span id="stDev">● 1 device connected</span><span id="stStore"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="feats">
+    <div class="feat"><small>01</small><h3>Shared terminal</h3><p>One session for you and your agents. Every command and reply stays in the history.</p></div>
+    <div class="feat"><small>02</small><h3>Sandbox</h3><p>Runs happen inside your browser on your own GPU. Nothing you type leaves the device.</p></div>
+    <div class="feat"><small>03</small><h3>Sync and share</h3><p>Export your workspace and import it anywhere. Share a receipt; keep the conversation.</p></div>
+    <div class="feat"><small>04</small><h3>Checked</h3><p>Every run gets a signed receipt. Edit one word and the check fails.</p></div>
+  </div>
+  <p class="privacy"><b>Privacy, plainly.</b> Prompts, replies, settings and receipts stay in this browser. Model files download from Hugging Face the first time, which shows them your IP address. Small models make mistakes. A receipt proves this browser's key signed the record, not that the record is true. Want agents that work with your files, phone approvals or a team host? <a href="https://io-threads.com">Talk to io threads</a>.</p>
+</div>
+
+<script type="module">
+/* iolin web v0.2 · io threads · single file, no backend.
+   Window is designed at 1140x1510 and scaled to fit; every panel is driven by this visitor's session. */
+const WEBLLM_URL = "https://esm.run/@mlc-ai/web-llm@0.2.85";
+const APP_ID = "iolin-web@0.2";
+let DEMO = new URLSearchParams(location.search).has("demo");
+const CURATED = [
+  ["Qwen3-0.6B-q4f16_1-MLC","Qwen3 0.6B","≈335 MB",0],
+  ["Llama-3.2-1B-Instruct-q4f16_1-MLC","Llama 3.2 1B","≈695 MB",0],
+  ["Llama-3.2-3B-Instruct-q4f16_1-MLC","Llama 3.2 3B","≈1.8 GB",1],
+  ["Llama-3.1-8B-Instruct-q4f16_1-MLC","Llama 3.1 8B","≈4.5 GB",2],
+];
+const SKILLS = ["help","status","model","ask","recap","receipts","verify","tamper","set","export","open","sessions","stop","tour"];
+const DEF = {name:"", system:"You are a concise, honest assistant. If unsure, say so.", temperature:0.6, max_tokens:768, model:null};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const t = () => new Date().toTimeString().slice(0,8);
+
+/* ---------- storage ---------- */
+const DB = (() => { let p; const open = () => p ??= new Promise((res, rej) => { const r = indexedDB.open("iolin", 2);
+  r.onupgradeneeded = () => { for (const s of ["kv","receipts"]) if (!r.result.objectStoreNames.contains(s)) r.result.createObjectStore(s); };
+  r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+  const tx = async (s, m, f) => { const d = await open(); return new Promise((res, rej) => { const x = d.transaction(s, m), o = f(x.objectStore(s)); x.oncomplete = () => res(o?.result); x.onerror = () => rej(x.error); }); };
+  return { get:(k,s="kv")=>tx(s,"readonly",o=>o.get(k)), set:(k,v,s="kv")=>tx(s,"readwrite",o=>o.put(v,k)),
+           all:(s="receipts")=>tx(s,"readonly",o=>o.getAll()), clear:async()=>{for(const s of["kv","receipts"])await tx(s,"readwrite",o=>o.clear());} }; })();
+
+/* ---------- crypto: canonical JSON (matches Python), Ed25519 or P-256 non-extractable key ---------- */
+const canonical = v => v === null || typeof v !== "object" ? JSON.stringify(v) : Array.isArray(v) ? "[" + v.map(canonical).join(",") + "]"
+  : "{" + Object.keys(v).sort().map(k => JSON.stringify(k) + ":" + canonical(v[k])).join(",") + "}";
+const enc = new TextEncoder(), hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,"0")).join("");
+const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b))), unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const sha = async s => "sha256:" + hex(await crypto.subtle.digest("SHA-256", enc.encode(s)));
+const iso = () => new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
+async function getSigner() {
+  const s0 = await DB.get("signer"); if (s0) return s0;
+  let kp, alg; try { kp = await crypto.subtle.generateKey({name:"Ed25519"}, false, ["sign","verify"]); alg = "ed25519"; }
+  catch { kp = await crypto.subtle.generateKey({name:"ECDSA", namedCurve:"P-256"}, false, ["sign","verify"]); alg = "ecdsa-p256"; }
+  const pub = await crypto.subtle.exportKey("raw", kp.publicKey);
+  const s = {alg, priv: kp.privateKey, pub_b64: b64(pub), key_id: hex(await crypto.subtle.digest("SHA-256", pub)).slice(0,16)};
+  await DB.set("signer", s); return s;
+}
+const signAlgo = a => a === "ed25519" ? {name:"Ed25519"} : {name:"ECDSA", hash:"SHA-256"};
+async function verify(r, pub = signer.pub_b64) {
+  const body = {...r}; delete body.signature; const raw = unb64(pub);
+  if (body.key_id !== hex(await crypto.subtle.digest("SHA-256", raw)).slice(0,16)) return false;
+  const key = await crypto.subtle.importKey("raw", raw, body.alg === "ed25519" ? {name:"Ed25519"} : {name:"ECDSA", namedCurve:"P-256"}, false, ["verify"]);
+  try { return await crypto.subtle.verify(signAlgo(body.alg), key, unb64(r.signature || ""), enc.encode(canonical(body))); } catch { return false; }
+}
+
+/* ---------- state ---------- */
+let S = {...DEF}, sessions = [], cur = null, receipts = [], verified = {}, signer, webllm = null, engine = null, loaded = null;
+let gpuOk = false, tier = 0, dev = {}, busy = false, stop = false, errors = 0, used = new Set(), events = [], zone = "all", unread = 0, view = "live", thinking = false;
+
+/* ---------- scale window to fit ---------- */
+const W = 1140, H = 1510;
+function fit() {
+  const st = $("stage"), win = $("win"), full = document.body.classList.contains("full");
+  const stack = full && innerWidth < 900; document.body.classList.toggle("stack", stack);
+  if (stack) { win.style.transform = ""; return; }
+  const avail = full ? innerWidth - 24 : st.clientWidth, sc = Math.min(1, avail / W);
+  win.style.transform = `scale(${sc})`; win.style.left = full ? Math.max(12, (innerWidth - W * sc) / 2) + "px" : "0";
+  win.style.top = full ? "12px" : "0"; st.style.height = full ? "100%" : H * sc + "px";
+  if (full) $("stage").scrollTop = 0;
+}
+addEventListener("resize", fit);
+
+/* ---------- device ---------- */
+function deviceName() { const u = navigator.userAgent;
+  if (/iPhone/.test(u)) return "iPhone"; if (/iPad|Macintosh.*Mobile/.test(u) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(u))) return "iPad";
+  if (/Macintosh/.test(u)) return "Mac"; if (/Android/.test(u)) return "Android"; if (/Windows/.test(u)) return "Windows PC"; if (/CrOS/.test(u)) return "Chromebook"; return "this device"; }
+const browserName = () => { const u = navigator.userAgent; return /Edg\//.test(u) ? "Edge" : /Chrome\//.test(u) ? "Chrome" : /Firefox\//.test(u) ? "Firefox" : /Safari\//.test(u) ? "Safari" : "browser"; };
+async function probe() {
+  dev = {name: deviceName(), browser: browserName(), gpu: "none", mem: navigator.deviceMemory ? `${navigator.deviceMemory}+ GB` : "not reported", store: "unknown"};
+  if ("gpu" in navigator) { try { const a = await navigator.gpu.requestAdapter({powerPreference:"high-performance"});
+      if (a) { gpuOk = true; const i = a.info || {}; dev.gpu = [i.vendor, i.architecture].filter(Boolean).join(" ") || "WebGPU GPU";
+        const mb = a.limits?.maxBufferSize || 0; tier = mb >= 2**31 ? 2 : mb >= 2**30 ? 1 : 0; } } catch {} }
+  if (/iPhone|Android/.test(dev.name) || (navigator.deviceMemory && navigator.deviceMemory < 8)) tier = 0;
+  try { const e = await navigator.storage.estimate(); dev.store = `${(e.quota/1e9).toFixed(1)} GB free for iolin`; } catch {}
+}
+
+/* ---------- sessions ---------- */
+const newSession = title => ({id: crypto.randomUUID(), title: title || "New session", created: iso(), messages: []});
+async function save() { await DB.set("settings", S); await DB.set("sessions", sessions); await DB.set("cur", cur.id); }
+
+/* ---------- events ---------- */
+function ev(actor, what, cls = "") { events.push({time: t(), actor, what, cls}); events = events.slice(-3); renderEvents(); }
+function renderEvents() { $("events").innerHTML = events.slice(-2).map(e => `${e.time} <b class="${e.cls}">${esc(e.actor)}</b> → ${esc(e.what)}`).join("<br>"); }
+
+/* ---------- terminal ---------- */
+const tlog = $("tlog");
+function line(html, cls = "") { const d = document.createElement("div"); d.className = "ln " + cls; d.innerHTML = html; tlog.appendChild(d); $("termPane").scrollTop = 1e9; return d; }
+const me = () => S.name || "you";
+function echo(cmd) { line(`<span class="u-pj">${esc(me())}</span> <span style="color:var(--w-dim)">$</span>  ${esc(cmd)}`); }
+function out(html, cls = "") { return line(html, "o " + cls); }
+function showOutput(text) { $("outPane").textContent = text; switchTerm("out"); }
+function switchTerm(k) { document.querySelectorAll(".ttab").forEach(b => b.classList.toggle("on", b.dataset.t === k));
+  $("termPane").style.display = k === "term" ? "block" : "none"; $("outPane").style.display = k === "out" ? "block" : "none"; if (k === "term") $("cmd").focus({preventScroll:true}); }
+
+const HELP = [
+  ["status","device, model, storage and receipts"],["model list | load <small|medium|large|id> | stop","manage your local model"],
+  ["ask <question>","ask the model; reply streams here"],["recap","summarize the current session"],
+  ["receipts","list signed receipts"],["verify [n]","check a receipt's signature"],["tamper [n]","edit one word, then check again"],
+  ["set name|temp|max <value>","change a setting"],["sessions | sessions new","list or start sessions"],
+  ["open <file>","open a workspace file in Output"],["export","download your workspace"],["demo on|off","canned replies for devices without WebGPU"],["stop","stop the reply in progress"],["tour","replay the getting-started tour"],["clear","clear the terminal"]];
+
+async function run(raw) {
+  const cmd = raw.trim(); if (!cmd) return; echo(cmd);
+  const [c0, ...rest] = cmd.replace(/^zb\s+/, "").split(/\s+/); const arg = rest.join(" "); used.add(c0); renderSide();
+  try {
+    if (c0 === "help") HELP.forEach(([a, b]) => out(`<span class="u-hl">${esc(a)}</span>  ${esc(b)}`));
+    else if (c0 === "clear") tlog.innerHTML = "";
+    else if (c0 === "stop") { if (busy && thinking) { stop = true; out("stopping…"); } else out("nothing running"); }
+    else if (c0 === "tour") { await DB.set("tourDone", false); tour(0); }
+    else if (c0 === "status") { out(`device ${esc(dev.name)} · ${esc(dev.browser)} · gpu ${esc(dev.gpu)} · ${esc(dev.store)}`);
+      out(`model ${loaded ? `<span class="u-ok">${esc(loaded)}</span> running` : "not loaded"} · receipts ${receipts.length} · sessions ${sessions.length}${DEMO ? ' · <span class="u-am">demo</span>' : ""}`); }
+    else if (c0 === "model") await cmdModel(rest);
+    else if (c0 === "ask") { if (!arg) return out("usage: ask <question>"); await ask(arg, "term"); }
+    else if (c0 === "recap") await ask("Recap this session in three short bullet points: what was asked, what was answered, what is still open.", "term", true);
+    else if (c0 === "receipts") { if (!receipts.length) return out("no receipts yet. ask something first.");
+      receipts.slice(-8).forEach((r, i, a) => out(`v${receipts.length - a.length + i + 1}  ${r.run_id.slice(0,8)}  ${esc(r.model_manifest.model_id)}  ${r.execution_mode}  ${verified[r.run_id] === false ? '<span class="u-bad">FAIL</span>' : r.execution_mode === "demo" ? '<span class="u-am">ABSTAIN</span>' : '<span class="u-ok">PASS</span>'}`)); }
+    else if (c0 === "verify" || c0 === "tamper") await cmdVerify(c0 === "tamper", rest[0]);
+    else if (c0 === "set") await cmdSet(rest[0], rest.slice(1).join(" "));
+    else if (c0 === "sessions") { if (rest[0] === "new") { cur = newSession(); sessions.push(cur); await save(); renderAll(); out(`started session ${cur.id.slice(0,8)}`); }
+      else sessions.forEach(s => out(`${s.id === cur.id ? '<span class="u-ok">●</span>' : " "} ${esc(s.title)} · ${s.messages.length} messages · ${s.created.slice(0,10)}`)); }
+    else if (c0 === "open") openFile(arg);
+    else if (c0 === "export") { await exportAll(); out(`artifact <span class="u-hl">iolin-workspace.json</span> saved · private key not included`); }
+    else if (c0 === "demo") { DEMO = rest[0] !== "off"; if (DEMO && !engine) { engine = demoEngine; loaded = "demo-engine"; } if (!DEMO && loaded === "demo-engine") { engine = null; loaded = null; }
+      out(`demo ${DEMO ? '<span class="u-am">on</span> · replies are canned' : "off"}`); renderAll(); }
+    else out(`unknown command <span class="u-hl">${esc(c0)}</span> · type help`);
+  } catch (e) { errors++; out(`<span class="u-bad">error</span> ${esc(e.message)}`); renderSide(); }
+}
+
+async function cmdModel(a) {
+  if (!a[0] || a[0] === "list") { const ids = await modelList(); ids.forEach(m => out(`${m[0] === loaded ? '<span class="u-ok">●</span>' : " "} ${esc(m[1])}  ${m[2]}  ${m[3] > tier ? '<span class="u-am">may be too big here</span>' : '<span class="u-ok">fits</span>'}  <span style="color:var(--w-dim)">${esc(m[0])}</span>`)); return; }
+  if (a[0] === "stop") { await stopModel(); out("model stopped · stays cached on this device"); return; }
+  if (a[0] === "load") { const want = a[1] || "auto"; const list = await modelList();
+    const pick = {small: list[1] || list[0], tiny: list[0], medium: list[2], large: list[3]}[want] || list.find(m => m[0] === want) || suggested(list);
+    $("model").value = pick[0]; await loadModel(); return; }
+  out("usage: model list | load <small|medium|large|id> | stop");
+}
+async function cmdVerify(tamper, n) {
+  if (!receipts.length) return out("no receipts yet");
+  const i = n ? Math.max(1, Math.min(receipts.length, +String(n).replace(/^v/, ""))) - 1 : receipts.length - 1;
+  let r = structuredClone(receipts[i]); if (tamper) r.execution_mode = r.execution_mode === "cloud" ? "local-browser" : "cloud";
+  const ok = await verify(r);
+  out(`receipt v${i + 1} ${r.run_id.slice(0,8)} · ${r.alg} · ${ok ? '<span class="u-ok">VALID</span>' : '<span class="u-bad">INVALID</span>'}${tamper ? ` · changed execution_mode to "${r.execution_mode}"` : ""}`);
+  showOutput(JSON.stringify(r, null, 1)); setTimeout(() => switchTerm("term"), 1400);
+  ev(me(), tamper ? `tamper v${i + 1} · ${ok ? "valid" : "check FAIL"}` : `verify v${i + 1} · ${ok ? "PASS" : "FAIL"}`, ok ? "m" : "");
+}
+async function cmdSet(k, v) {
+  const map = {name:"name", temp:"temperature", temperature:"temperature", max:"max_tokens", system:"system"};
+  if (!map[k] || v === "") return out("usage: set name|temp|max|system <value>");
+  S[map[k]] = map[k] === "name" || map[k] === "system" ? v : Number(v); await save(); renderAll(); out(`${map[k]} = ${esc(v)} · saved on this device`);
+}
+
+/* ---------- models ---------- */
+async function modelList() { if (webllm) { const ids = new Set(webllm.prebuiltAppConfig.model_list.map(m => m.model_id)); const l = CURATED.filter(m => ids.has(m[0])); return l.length ? l : CURATED; } return CURATED; }
+const suggested = l => l.filter(m => m[3] <= tier).at(-1) || l[0];
+async function fillModels() { const l = await modelList(); $("model").innerHTML = l.map(m => `<option value="${m[0]}">${m[1]} · ${m[2]}${m[3] > tier ? " · may be too big" : ""}</option>`).join("");
+  $("model").value = S.model && l.some(m => m[0] === S.model) ? S.model : suggested(l)[0]; }
+const demoEngine = { chat:{completions:{create: async ({messages}) => { const q = messages.at(-1).content;
+  const txt = q.startsWith("Recap") ? "• You tried iolin in demo mode.\n• Replies were canned; no model ran.\n• Open: load a real model on a WebGPU device."
+    : `Demo reply: no model is loaded on this device. You asked "${q.slice(0,70)}". On a WebGPU device, your own model answers here and the receipt names it.`;
+  return (async function*(){ for (const w of txt.split(/(\s+)/)) { await new Promise(r => setTimeout(r, 14)); yield {choices:[{delta:{content:w}}]}; } })(); }}},
+  interruptGenerate(){}, unload: async () => {} };
+async function loadModel() {
+  if (busy) return; busy = true; const id = $("model").value; $("loadBtn").disabled = true;
+  try {
+    if (DEMO) { engine = demoEngine; loaded = "demo-engine"; $("bar").style.width = "100%"; $("prog").textContent = "Demo engine ready."; out(`model <span class="u-am">demo-engine</span> ready`); }
+    else {
+      if (!gpuOk) throw new Error("this browser has no WebGPU · try Chrome/Edge on a laptop or Safari 26, or run: demo on");
+      out(`fetching <span class="u-hl">${esc(id)}</span> · first time downloads, then cached`); ev(me(), `load ${id.split("-").slice(0,3).join(" ")}`);
+      try { await navigator.storage.persist(); } catch {}
+      if (!webllm) webllm = await import(WEBLLM_URL);
+      if (engine && engine !== demoEngine) await engine.unload();
+      const pl = out("0%");
+      engine = await webllm.CreateMLCEngine(id, {initProgressCallback: p => { const pc = Math.round((p.progress||0)*100); $("bar").style.width = pc + "%"; $("prog").textContent = p.text || ""; pl.textContent = `${pc}% · ${(p.text||"").slice(0,90)}`; renderProd(pc); }});
+      loaded = id; S.model = id; await save(); out(`model <span class="u-ok">${esc(id)}</span> running on ${esc(dev.gpu)} · works offline now`);
+      $("prog").textContent = "Ready. Works offline from now on.";
+    }
+    ev("iolin", `model ready · ${loaded}`, "m");
+  } catch (e) { errors++; out(`<span class="u-bad">couldn't start</span> ${esc(e.message)}`); $("prog").textContent = e.message; }
+  finally { busy = false; $("loadBtn").disabled = false; renderAll(); }
+}
+async function stopModel() { if (engine) await engine.unload(); engine = null; loaded = null; $("bar").style.width = "0%"; renderAll(); ev(me(), "stop model"); }
+
+/* ---------- ask + receipt ---------- */
+async function ask(q, from, recap = false) {
+  if (!engine) { out(`no model running · type <span class="u-hl">model load</span>${gpuOk ? "" : " or <span class=\"u-hl\">demo on</span>"}`); return; }
+  if (busy) return out("busy · wait for the current reply"); busy = true; stop = false; thinking = true; $("stopGen").disabled = false; renderScene();
+  if (!recap) { cur.messages.push({role:"user", content:q}); if (cur.title === "New session") cur.title = q.slice(0, 40); }
+  renderChat(); const bub = addBubble("a", "");
+  const tl = from === "term" ? out("") : null; ev("iolin", recap ? "recap · working" : "answering · working");
+  const messages = [{role:"system", content:S.system}, ...cur.messages.map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
+  const started = iso(), t0 = performance.now(); let text = "", status = "completed";
+  try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), max_tokens:Number(S.max_tokens)});
+    for await (const ch of st) { if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }
+  } catch (e) { errors++; status = "failed"; text = text || "error: " + e.message; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }
+  const ms = Math.round(performance.now() - t0), run_id = crypto.randomUUID();
+  const body = { schema:"iothreads.receipt/0.1", receipt_type:"host-signed", alg:signer.alg, run_id, host_id:"browser:" + signer.key_id, agent_id:APP_ID,
+    session_id: cur.id, model_manifest:{model_id:loaded, runtime: loaded === "demo-engine" ? "demo-engine" : "webllm@0.2.85/webgpu", evidence_status:"declared"},
+    execution_mode: loaded === "demo-engine" ? "demo" : "local-browser", data_boundary:"prompt and reply stayed in this browser", policy_version:"web-p1",
+    settings_digest: await sha(canonical({system:S.system, temperature:String(S.temperature), max_tokens:String(S.max_tokens)})),
+    input_digest: await sha(canonical(messages)), output_digest: await sha(text), tool_events:[], action_receipts:[], status,
+    timestamps:{started, finished: iso(), duration_ms: String(ms), chars_out: String(text.length)},
+    evidence_status:{model_identity:"declared", output:"observed", tool_events:"none"},
+    limits:"Signed by a key held in this browser. Proves this browser's key signed this record, not that the events occurred.", key_id:signer.key_id, signed_at: iso() };
+  const r = {...body, signature: b64(await crypto.subtle.sign(signAlgo(signer.alg), signer.priv, enc.encode(canonical(body))))};
+  await DB.set(run_id, r, "receipts"); receipts.push(r); verified[run_id] = await verify(r);
+  if (!recap) cur.messages.push({role:"assistant", content:text, run_id, ms, model:loaded});
+  await save(); busy = false; thinking = false; $("stopGen").disabled = true;
+  out(`receipt <span class="u-hl">v${receipts.length}</span> ${run_id.slice(0,8)} signed · ${ms} ms · check ${verified[run_id] ? '<span class="u-ok">PASS</span>' : '<span class="u-bad">FAIL</span>'}`);
+  ev("iolin", `receipt v${receipts.length} · check ${verified[run_id] ? "PASS" : "FAIL"}`, "m");
+  if (view !== "instruct" && !recap) { unread++; } renderAll();
+}
+
+/* ---------- files ---------- */
+function files() { return { "settings.json": () => JSON.stringify(S, null, 1),
+  "README.md": () => `# ${me()}'s iolin workspace\n\nEverything here lives in this browser.\nModel: ${loaded || "none"}\nDevice: ${dev.name} · ${dev.browser} · ${dev.gpu}\nReceipts: ${receipts.length}\nPublic key (${signer.alg}): ${signer.pub_b64}`,
+  "public-key.txt": () => signer.pub_b64 }; }
+function openFile(name) {
+  const f = files(); if (f[name]) { showOutput(f[name]()); ev(me(), "open " + name); return; }
+  const r = receipts.find(x => name.includes(x.run_id.slice(0,8))); if (r) { showOutput(JSON.stringify(r, null, 1)); return; }
+  const s = sessions.find(x => name.includes(x.id.slice(0,8))); if (s) { showOutput(s.messages.map(m => `${m.role}: ${m.content}`).join("\n\n") || "(empty)"); return; }
+  out(`no file <span class="u-hl">${esc(name)}</span> · try open settings.json`);
+}
+async function exportAll() { const data = {app:APP_ID, exported_at:iso(), settings:S, sessions, receipts, signing_public_key:{alg:signer.alg, key_id:signer.key_id, pub_b64:signer.pub_b64},
+  note:"Private keys never leave the browser."}; const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], {type:"application/json"})); a.download = "iolin-workspace.json"; a.click(); ev(me(), "export workspace"); }
+
+/* ---------- render: sidebar ---------- */
+function renderTree() {
+  const rows = [["▾ ","workspace/","",""], ["▾ ","sessions/","d1",""],
+    ...sessions.slice(-4).map(s => ["","" + s.id.slice(0,8) + ".chat","d2 f","open " + s.id.slice(0,8)]),
+    ["▸ ","receipts/","d1","receipts"], ["▸ ","models/","d1","model list"],
+    ["","settings.json","d1 f","open settings.json"], ["","public-key.txt","d1 f","open public-key.txt"], ["","README.md","d1 f","open README.md"]];
+  $("tree").innerHTML = rows.map(([c, n, cls, cmd]) => `<div class="${cls}" data-cmd="${esc(cmd)}"><span class="car">${c}</span>${esc(n)}</div>`).join("");
+  $("tree").querySelectorAll("[data-cmd]").forEach(d => d.onclick = () => d.dataset.cmd && run(d.dataset.cmd));
+}
+function renderSessions() {
+  const today = new Date().toISOString().slice(0,10);
+  $("sessions").innerHTML = sessions.slice(-3).reverse().map(s => `<div class="sess ${s.id === cur.id ? "on" : ""}" data-id="${s.id}">
+    <span class="t">${s.created.slice(0,10) === today ? "Today" : new Date(s.created).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</span>
+    <span class="n">${esc(s.title)}</span>${s.id === cur.id && thinking ? '<span style="color:var(--purple)">●●</span>' : ""}<button class="chip" data-recap="${s.id}">Recap</button></div>`).join("");
+  $("sessions").querySelectorAll(".sess").forEach(d => d.onclick = async e => { const s = sessions.find(x => x.id === d.dataset.id); cur = s; await save();
+    if (e.target.dataset.recap) run("recap"); renderAll(); });
+  $("sessCount").textContent = sessions.length + (sessions.length === 1 ? " session" : " sessions");
+}
+function renderProd(pct) {
+  const v = receipts.length + 1, pass = receipts.filter(r => verified[r.run_id]).length, fails = receipts.filter(r => verified[r.run_id] === false).length;
+  const state = thinking ? "working" : busy ? "loading" : loaded ? "live" : "waiting";
+  const p = pct ?? (receipts.length ? Math.round(pass / receipts.length * 100) : 0);
+  $("pv").textContent = "v" + v; $("pv2").textContent = "v" + v; $("pstate").textContent = state; $("ppct").textContent = p + "%";
+  $("pdot").style.background = state === "waiting" ? "var(--w-dim)" : state === "working" ? "var(--purple)" : "var(--green)";
+  $("prodMeta").textContent = `v${v} ${loaded ? "in progress" : "idle"}`;
+  $("sRuns").textContent = receipts.length; $("sErr").textContent = errors; $("sFail").textContent = fails; $("sFailBox").classList.toggle("red", fails > 0);
+  $("sSkills").textContent = `${[...used].filter(x => SKILLS.includes(x)).length}/${SKILLS.length}`;
+  $("sSess").textContent = `${sessions.filter(s => s.messages.length).length}/${sessions.length}`;
+  const fl = $("sFlag"); fl.className = "stat flag " + (fails || errors ? "warn" : loaded ? "ok" : "");
+  $("sFlagT").textContent = fails ? "Check failed" : errors ? "Triaging" : loaded ? "All clear" : "Idle";
+  fl.querySelector(".dot").style.background = fails || errors ? "var(--red)" : loaded ? "var(--green)" : "var(--w-dim)";
+  const lastMsg = cur.messages.at(-1);
+  $("agentLine").innerHTML = `<span class="dot" style="background:var(--purple)"></span><b>iolin</b> <span style="color:var(--w-quiet)">${thinking ? "answering " + esc((cur.messages.filter(m=>m.role==="user").at(-1)?.content||"").slice(0,28)) + "…" : loaded ? "ready on " + esc(dev.name) : "waiting for a model"}</span>`
+    + (receipts.length ? `<div><span class="dot"></span><b>checker</b> <span style="color:var(--w-quiet)">verified ${pass}/${receipts.length} receipts</span></div>` : "");
+  // sparkline: chars per second per run
+  const rs = receipts.slice(-48), speeds = rs.map(r => +r.timestamps.chars_out / Math.max(1, +r.timestamps.duration_ms) * 1000), mx = Math.max(1, ...speeds);
+  const bw = 270 / 50; let svg = `<line x1="0" y1="34" x2="270" y2="34" stroke="#262a34"/>`;
+  rs.forEach((r, i) => { const h = Math.max(2, speeds[i] / mx * 30), x = 4 + i * bw; svg += `<rect x="${x}" y="${34 - h}" width="${bw * .55}" height="${h}" fill="${verified[r.run_id] === false ? "#f87171" : "#cfd3dc"}" opacity=".85"/>`; });
+  const pos = 4 + Math.max(0, rs.length - 1) * bw; svg += `<rect x="0" y="38" width="270" height="4" rx="2" fill="#1f2330"/><rect x="0" y="38" width="${Math.min(270, pos + 4)}" height="4" rx="2" fill="#8a90a0"/><rect x="${Math.min(266, pos + 2)}" y="${rs.length ? 6 : 26}" width="2" height="${rs.length ? 36 : 16}" fill="#fff"/>`;
+  $("spark").innerHTML = svg;
+}
+function renderVers() {
+  const list = receipts.slice(-4).map((r, i, a) => ({n: receipts.length - a.length + i + 1, r})).reverse();
+  $("vers").innerHTML = list.length ? list.map(({n, r}) => { const asked = sessions.flatMap(x => x.messages).find((m, i, arr) => arr[i + 1]?.run_id === r.run_id)?.content;
+    const tag = verified[r.run_id] === false ? '<span class="fail">FAIL</span>' : r.execution_mode === "demo" ? '<span class="abst">ABSTAIN</span>' : '<span class="pass">PASS</span>';
+    return `<div data-v="${n}"><span>v${n}</span><span class="n">${asked ? esc(me()) + " asked " + esc(asked.slice(0,40)) : "iolin recapped the session"}</span>${tag}<span style="color:var(--w-dim)">⋯</span></div>`; }).join("")
+    : `<div><span style="color:var(--w-dim)">—</span><span class="n">your runs appear here, each with a check</span><span></span><span></span></div>`;
+  $("vers").querySelectorAll("[data-v]").forEach(d => d.onclick = () => run("verify " + d.dataset.v));
+}
+function renderTasks() {
+  const pass = receipts.filter(r => verified[r.run_id]).length, fails = receipts.length - pass;
+  const rows = [["rechk", ".verify-all", receipts.length ? (fails ? '<span class="fail">FAIL</span>' : '<span class="pass">PASS</span>') : '<span style="color:var(--w-dim)">—</span>', "verify"],
+    ["model", loaded ? loaded.split("-").slice(0,3).join("-") : "none", loaded ? '<span class="pass">live ↗</span>' : '<span style="color:var(--w-dim)">off</span>', "status"],
+    ["sync", "settings.json", '<span style="color:var(--w-quiet)">saved</span>', "open settings.json"],
+    ["export", "workspace.json", '<span style="color:var(--w-quiet)">ready</span>', "export"]];
+  $("tasks").innerHTML = rows.map(([k, v, s, c]) => `<div data-cmd="${c}" style="cursor:pointer"><span class="k">${k}</span><span class="v">→ ${esc(v)}</span>${s}</div>`).join("");
+  $("tasks").querySelectorAll("[data-cmd]").forEach(d => d.onclick = () => run(d.dataset.cmd));
+}
+function renderSide() { renderTree(); renderSessions(); renderProd(); renderVers(); renderTasks(); }
+
+/* ---------- render: chat, projects, setup ---------- */
+function addBubble(k, text, meta) { const d = document.createElement("div"); d.className = "bub " + k; d.appendChild(document.createTextNode(text));
+  if (meta) { const s = document.createElement("small"); s.textContent = meta; d.appendChild(s); } $("chat").appendChild(d); $("p-instruct").scrollTop = 1e9; return d; }
+function renderChat() { $("chat").innerHTML = ""; if (!cur.messages.length) addBubble("a", engine ? "Ask anything. It runs on this device." : "Load a model in Setup (or type model load in the terminal), then ask anything.");
+  cur.messages.forEach(m => addBubble(m.role === "user" ? "u" : "a", m.content, m.run_id ? `${m.model} · ${m.ms} ms · receipt ${m.run_id.slice(0,8)}` : "")); }
+function renderProjects() { $("plist").innerHTML = sessions.slice().reverse().map(s => `<div data-id="${s.id}"><b>${esc(s.title)}</b><span>${s.messages.length} messages</span><span>${s.created.slice(0,10)}</span></div>`).join("");
+  $("plist").querySelectorAll("div").forEach(d => d.onclick = async () => { cur = sessions.find(x => x.id === d.dataset.id); await save(); setView("instruct"); renderAll(); });
+  $("projCount").textContent = sessions.length; }
+function renderSetup() { $("dev").innerHTML = [["Device", `${dev.name} · ${dev.browser}`], ["WebGPU", gpuOk ? '<span class="u-ok">available</span>' : '<span class="u-bad">not available</span> · type <span class="u-hl">demo on</span> to try the flow'],
+  ["GPU", esc(dev.gpu)], ["Memory", esc(dev.mem)], ["Storage", esc(dev.store)], ["Signing", `${signer.alg} · key ${signer.key_id}`]].map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join("");
+  $("sName").value = S.name; $("sTemp").value = S.temperature; $("sMax").value = S.max_tokens; $("sSys").value = S.system; }
+
+/* ---------- render: live scene (isometric) ---------- */
+const ZONES = [["devices","Devices","#7aa2ff"],["files","Project files","#a3a9b8"],["runs","Builds · runs","#f5a524"],["agents","Agent sessions","#a78bfa"],["net","Networking","#34d399"]];
+const iso2 = (x, y, z = 0) => [390 + (x - y) * 0.866 * 30, 250 + (x + y) * 0.5 * 30 - z * 30];
+const poly = (pts, f, s, o = 1) => `<polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="${f}" stroke="${s}" stroke-width="1" opacity="${o}"/>`;
+function box(x, y, w, d, h, top, side, front, z = 0) {
+  const P = (a, b, c) => iso2(a, b, c); return poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)], top, "#0b0c10") + poly([P(x+w,y,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x+w,y,z+h)], side, "#0b0c10") + poly([P(x,y+d,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x,y+d,z+h)], front, "#0b0c10"); }
+function label(x, y, z, text, color = "#cfd3dc") { const [a, b] = iso2(x, y, z); return `<g><rect x="${a - text.length * 3.6 - 6}" y="${b - 19}" width="${text.length * 7.2 + 12}" height="18" rx="4" fill="#0e0f14" opacity=".85"/><text x="${a}" y="${b - 6}" fill="${color}" font-size="11.5" font-family="ui-monospace,Menlo,monospace" text-anchor="middle">${esc(text)}</text></g>`; }
+function renderScene() {
+  const hi = z => zone === "all" || zone === z ? 1 : .28; let s = `<defs><radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".9"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient></defs>`;
+  // floor grid
+  for (let i = -6; i <= 6; i++) { const [a1,b1] = iso2(i,-6), [a2,b2] = iso2(i,6), [c1,d1] = iso2(-6,i), [c2,d2] = iso2(6,i);
+    s += `<line x1="${a1}" y1="${b1}" x2="${a2}" y2="${b2}" stroke="#1e2230"/><line x1="${c1}" y1="${d1}" x2="${c2}" y2="${d2}" stroke="#1e2230"/>`; }
+  // zone tiles
+  const tile = (x, y, w, d, c, z) => `<g opacity="${hi(z)}">${poly([iso2(x,y),iso2(x+w,y),iso2(x+w,y+d),iso2(x,y+d)], c + "10", c + "55")}</g>`;
+  s += tile(-6,-6,5,5,"#7aa2ff","devices") + tile(0,-6,5,5,"#a3a9b8","files") + tile(-6,0,5,6,"#f5a524","runs") + tile(0,0,6,6,"#a78bfa","agents");
+  // network line (dashed) across back
+  s += `<g opacity="${hi("net")}"><polyline points="${[iso2(-6,-6,2.6),iso2(6,-6,2.6),iso2(6,6,2.6)].map(p=>p.join(",")).join(" ")}" fill="none" stroke="#34d399" stroke-dasharray="4 5" stroke-width="1.2"/>`;
+  [[-3,-6],[0,-6],[3,-6],[6,-3],[6,0]].forEach(([x,y]) => { const [a,b] = iso2(x,y,2.6), [c,d] = iso2(x,y,1.8); s += `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#34d39966"/><circle cx="${a}" cy="${b}" r="3" fill="#34d399"/>`; }); s += `</g>`;
+  // device (this device)
+  const phone = /iPhone|Android/.test(dev.name);
+  s += `<g opacity="${hi("devices")}">` + (phone ? box(-4,-4,1.2,0.4,2,"#c9d2e3","#8792a8","#a4aec2") : box(-4.6,-4.4,2.4,1.6,0.35,"#dfe3ea","#9aa1ae","#b8bec9") + box(-4.6,-4.4,2.4,0.15,1.6,"#2b3140","#1f2430","#3a4256",0.35))
+     + label(-3.6,-3.8, phone ? 2.4 : 2.2, dev.name.toLowerCase()) + `</g>`;
+  // model tower (lit when loaded)
+  const lit = !!loaded; s += `<g opacity="${hi("devices")}">` + box(-2.2,-2.4,1.1,1.1,3.2, lit ? "#2e3546" : "#1b1f29", lit ? "#121620" : "#101319", lit ? "#1b2130" : "#141820")
+     + (lit ? [0.6,1.2,1.8,2.4].map(z => { const [a,b] = iso2(-1.1,-1.8,z); return `<rect x="${a-1}" y="${b-6}" width="3" height="10" fill="#34d399" opacity=".8" transform="skewY(-30 ${a} ${b})"/>`; }).join("") : "")
+     + label(-1.6,-1.8,3.5, loaded ? (loaded === "demo-engine" ? "demo engine" : loaded.split("-").slice(0,3).join(" ").toLowerCase()) : "no model", lit ? "#34d399" : "#8a90a0") + `</g>`;
+  // files: settings sheet + readme
+  s += `<g opacity="${hi("files")}">` + box(1.4,-4.6,2.2,1.6,0.12,"#4a8f7a","#2c5a4d","#36705f") + box(1.6,-2.4,1.2,1.4,0.6,"#cdd6ff","#8f9ad0","#aab5ea") + label(2.4,-4,.6,"settings.json") + label(2.2,-1.8,1,"README.md") + `</g>`;
+  // runs: receipts stack (one slab per receipt, max 12)
+  const n = Math.min(12, receipts.length); s += `<g opacity="${hi("runs")}">`;
+  for (let i = 0; i < n; i++) { const r = receipts[receipts.length - n + i], bad = verified[r.run_id] === false;
+    s += box(-4.6,2,2.4,1.8,0.16, bad ? "#f87171" : i === n - 1 ? "#ffd38a" : "#f5a524", bad ? "#9b3b3b" : "#9a6512", bad ? "#c24c4c" : "#c47f19", i * 0.2); }
+  s += label(-3.4,2.9, n * 0.2 + 0.7, receipts.length ? `receipts · ${receipts.length}` : "receipts · 0") + `</g>`;
+  // agents: orb + beams when thinking
+  const [ox, oy] = iso2(3,3,2.6); s += `<g opacity="${hi("agents")}">`;
+  if (thinking) { const [tx, ty] = iso2(-1.6,-1.8,3.2), [rx, ry] = iso2(-3.4,2.9,1); s += `<polygon points="${ox},${oy} ${tx-14},${ty} ${tx+14},${ty+6}" fill="#a78bfa22" stroke="#a78bfa55"/><polygon points="${ox},${oy} ${rx-14},${ry} ${rx+16},${ry+8}" fill="#34d39918" stroke="#34d39955"/>`; }
+  s += `<ellipse cx="${ox}" cy="${oy + 26}" rx="34" ry="12" fill="none" stroke="#a78bfa88"/><circle cx="${ox}" cy="${oy}" r="${thinking ? 26 : 16}" fill="url(#glow)"><animate attributeName="r" values="${thinking ? "20;28;20" : "14;17;14"}" dur="${thinking ? 1.2 : 3}s" repeatCount="indefinite"/></circle><circle cx="${ox}" cy="${oy}" r="5" fill="#d9ccff"/>`
+     + label(3,3,3.4, thinking ? "iolin · working" : loaded ? "iolin · ready" : "iolin · idle", "#a78bfa") + `</g>`;
+  $("scene").innerHTML = s;
+  const vb = {all:"0 0 780 520", devices:"90 10 480 320", files:"300 0 460 310", runs:"40 170 480 320", agents:"300 160 470 320", net:"30 0 720 470"}[zone];
+  $("scene").setAttribute("viewBox", vb);
+}
+function renderZones() { $("zones").innerHTML = ZONES.map(([k, n, c]) => `<div data-z="${k}" class="${zone === k ? "on" : ""}"><i style="background:${c}"></i>${n}</div>`).join("");
+  $("zones").querySelectorAll("div").forEach(d => d.onclick = () => { zone = zone === d.dataset.z ? "all" : d.dataset.z; $("zsel").value = zone; renderZones(); renderScene(); });
+  $("zsel").innerHTML = `<option value="all">● All zones</option>` + ZONES.map(([k, n]) => `<option value="${k}" ${zone === k ? "selected" : ""}>● ${n}</option>`).join(""); }
+
+/* ---------- top-level ---------- */
+function renderAll() {
+  const name = me(), init = (S.name || "you").slice(0,1).toUpperCase();
+  $("tUser").textContent = name.toLowerCase(); $("pUser").textContent = name.toLowerCase(); $("tModel").textContent = loaded ? loaded.split("-").slice(0,3).join(" ") : "no model";
+  $("avs").innerHTML = `<span class="av" style="background:#f9a8d4">${esc(init)}</span><span class="av" style="background:#a78bfa">i</span>`;
+  $("here").textContent = engine ? "2 here" : "1 here";
+  $("projName").textContent = cur.title === "New session" ? "Workspace" : cur.title.slice(0, 32);
+  $("projMeta").textContent = `${thinking ? "working" : loaded ? "active" : "ready"} · 1 person · ${engine ? 1 : 0} agent${engine ? "" : "s"}`;
+  $("projDot").style.background = loaded ? "var(--green)" : "var(--w-dim)";
+  $("vTitle").textContent = `${(cur.title === "New session" ? "workspace" : cur.title.slice(0,24)).toLowerCase()} · live space`;
+  $("wsMeta").textContent = `${name.toLowerCase()} · v${receipts.length} · ${loaded ? "live" : "local"}`;
+  $("stV").textContent = "v" + receipts.length; $("stModel").textContent = loaded || "no model"; $("stPeople").textContent = `1 person · ${engine ? 1 : 0} agent${engine ? "" : "s"}`;
+  $("stDev").textContent = `● ${dev.name} connected`; $("stStore").textContent = dev.store;
+  $("crumbState").textContent = loaded ? `Live · ${loaded === "demo-engine" ? "demo" : "running on your " + dev.name}` : "Live in your browser";
+  $("demoTag").style.display = DEMO ? "block" : "none";
+  $("instBadge").style.display = unread ? "inline" : "none"; $("instBadge").textContent = unread;
+  $("sendBtn").disabled = !engine; $("stopModel").disabled = !engine;
+  renderSide(); renderScene(); renderZones(); renderProjects(); renderSetup(); if (view === "instruct") renderChat(); fit();
+}
+function setView(v) { view = v; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  ["live","instruct","projects","setup"].forEach(k => $("p-" + k).classList.toggle("on", k === v));
+  $("vhead").style.display = v === "live" ? "flex" : "none"; if (v === "instruct") { unread = 0; renderChat(); } renderAll(); }
+
+
+/* ---------- first-run tour (docked inside the window, works scaled and stacked) ---------- */
+let tourStep = -1;
+const hl = id => { document.querySelectorAll(".hl").forEach(e => e.classList.remove("hl")); if (id) $(id)?.classList.add("hl"); };
+function coach(step, html) { const c = $("coach"); c.style.display = "block";
+  c.innerHTML = `<div class="step">STEP ${step} OF 5</div>${html}<div class="dots">${[1,2,3,4,5].map(i => `<i class="${i <= step ? "on" : ""}"></i>`).join("")}</div>`; }
+async function endTour(done = true) { tourStep = -1; $("coach").style.display = "none"; hl(null); if (done) await DB.set("tourDone", true); }
+async function tour(n) {
+  tourStep = n; if (view !== "live") setView("live");
+  const skip = `<button class="skip" id="tSkip">Skip tour</button>`;
+  const bind = () => { const k = $("tSkip"); if (k) k.onclick = () => { endTour(true); out("tour skipped · type <span class=\"u-hl\">tour</span> to replay"); }; };
+  if (n === 0) { hl(null); coach(1, `<h4>Welcome to iolin${S.name ? ", " + esc(S.name) : ""}.</h4><p>A private AI that runs on this device. Two minutes and you'll have your own model running, with proof of every answer.</p>
+      <div class="row"><input id="tName" placeholder="What should we call you?" value="${esc(S.name)}"><button class="wbtn pri" id="tGo">Start</button>${skip}</div>`);
+    bind(); $("tName").onkeydown = e => e.key === "Enter" && $("tGo").click();
+    $("tGo").onclick = async () => { const v = $("tName").value.trim(); if (v) { S.name = v; await save(); renderAll(); } tour(1); }; return; }
+  if (n === 1) { hl("sFlag");
+    if (gpuOk) { const sg = suggested(await modelList());
+      coach(2, `<h4>Your device can run a model.</h4><p>${esc(dev.name)} · ${esc(dev.browser)} · ${esc(dev.gpu)}. We suggest <b>${esc(sg[1])}</b> (${sg[2]} download, once; then it works offline).</p>
+        <div class="row"><button class="wbtn pri" id="tLoad">Download ${esc(sg[1])}</button><button class="wbtn" id="tDemo">Try demo first</button>${skip}</div>`);
+      bind(); $("tLoad").onclick = () => { $("model").value = sg[0]; tour(2); };
+    } else {
+      coach(2, `<h4>This browser can't run a model yet.</h4><p>Local models need WebGPU: Chrome or Edge on a laptop, or Safari on iOS 26 / macOS 26. You can still try the whole flow in demo mode, with canned replies and real receipts.</p>
+        <div class="row"><button class="wbtn pri" id="tDemo">Try demo mode</button>${skip}</div>`); bind(); }
+    $("tDemo").onclick = async () => { await run("demo on"); tour(3); }; return; }
+  if (n === 2) { hl("termPane"); coach(2, `<h4>Downloading your model…</h4><p>Keep this tab open. Progress shows here and in the terminal.</p><div class="bar"><i id="tBar"></i></div><p id="tProg" style="font-size:12.5px;color:var(--w-quiet)">starting</p>${skip}`); bind();
+    const iv = setInterval(() => { if (tourStep !== 2) return clearInterval(iv); $("tBar").style.width = $("bar").style.width; $("tProg").textContent = $("prog").textContent.slice(0, 120); }, 300);
+    echo("model load " + $("model").value); await loadModel(); clearInterval(iv);
+    if (engine && tourStep === 2) tour(3);
+    else if (tourStep === 2) { coach(2, `<h4>That model didn't start.</h4><p>${esc($("prog").textContent)}</p><div class="row"><button class="wbtn pri" id="tSmall">Try the smallest model</button><button class="wbtn" id="tDemo2">Use demo mode</button>${skip}</div>`); bind();
+      $("tSmall").onclick = () => { $("model").value = CURATED[0][0]; tour(2); }; $("tDemo2").onclick = async () => { await run("demo on"); tour(3); }; }
+    return; }
+  if (n === 3) { hl("termPane"); const qq = "What can you help me with, and does anything I type leave this device?";
+    coach(3, `<h4>Ask your first question.</h4><p>It runs ${loaded === "demo-engine" ? "in demo mode" : "on your " + esc(dev.name)}. Watch the terminal: the reply streams in, then a receipt is signed.</p>
+      <div class="row"><input id="tQ" value="${esc(qq)}"><button class="wbtn pri" id="tAsk">Ask</button>${skip}</div>`); bind();
+    $("tQ").onkeydown = e => e.key === "Enter" && $("tAsk").click();
+    $("tAsk").onclick = async () => { const v = $("tQ").value.trim() || qq; $("tAsk").disabled = true; echo("ask " + v); await ask(v, "term"); if (tourStep === 3) tour(4); }; return; }
+  if (n === 4) { hl("vers"); coach(4, `<h4>Check the proof.</h4><p>That answer got a signed receipt (left, under Production). Verify it, then edit one word and watch the check fail.</p>
+      <div class="row"><button class="wbtn pri" id="tVer">Verify</button><button class="wbtn" id="tTam" disabled>Edit one word</button>${skip}</div>`); bind();
+    $("tVer").onclick = async () => { await run("verify"); $("tTam").disabled = false; $("tVer").textContent = "Verified ✓"; };
+    $("tTam").onclick = async () => { await run("tamper"); setTimeout(() => tourStep === 4 && tour(5), 1600); }; return; }
+  if (n === 5) { hl(null); coach(5, `<h4>You're set${S.name ? ", " + esc(S.name) : ""}.</h4><p>Everything is saved on this device. Ask in <b>Instruct</b>, review in <b>Projects</b>, and use the terminal: <span class="u-hl">help</span>, <span class="u-hl">recap</span>, <span class="u-hl">receipts</span>, <span class="u-hl">export</span>. Type <span class="u-hl">tour</span> any time to see this again.</p>
+      <div class="row"><button class="wbtn pri" id="tDone">Start using iolin</button></div>`);
+    $("tDone").onclick = async () => { await endTour(true); setView("instruct"); }; }
+}
+
+/* ---------- boot ---------- */
+(async () => {
+  S = {...DEF, ...(await DB.get("settings") || {})}; sessions = await DB.get("sessions") || []; signer = await getSigner();
+  receipts = (await DB.all("receipts")).sort((a, b) => a.signed_at < b.signed_at ? -1 : 1);
+  for (const r of receipts) verified[r.run_id] = await verify(r);
+  if (!sessions.length) sessions.push(newSession()); const cid = await DB.get("cur"); cur = sessions.find(s => s.id === cid) || sessions.at(-1);
+  await probe(); await fillModels(); if (DEMO) { engine = demoEngine; loaded = "demo-engine"; }
+  document.querySelectorAll(".tab").forEach(b => b.onclick = () => setView(b.dataset.v));
+  document.querySelectorAll(".ttab").forEach(b => b.onclick = () => switchTerm(b.dataset.t));
+  const hist = []; let hi = 0;
+  $("cmd").addEventListener("keydown", e => {
+    if (e.key === "Enter") { const v = $("cmd").value; $("cmd").value = ""; if (v.trim()) { hist.push(v); hi = hist.length; } run(v); }
+    else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hi = Math.max(0, hi - 1); $("cmd").value = hist[hi]; }
+    else if (e.key === "ArrowDown" && hist.length) { e.preventDefault(); hi = Math.min(hist.length, hi + 1); $("cmd").value = hist[hi] || ""; }
+    else if (e.key === "c" && e.ctrlKey && busy && thinking) { stop = true; out("^C stopping…"); } });
+  $("stopGen").onclick = () => { if (busy && thinking) stop = true; };
+  $("termPane").addEventListener("click", () => $("cmd").focus({preventScroll:true}));
+  $("sendBtn").onclick = () => { const q = $("ask").value.trim(); if (q) { $("ask").value = ""; echo("ask " + q); ask(q, "instruct"); } };
+  $("ask").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("sendBtn").click(); } });
+  $("loadBtn").onclick = () => { echo("model load " + $("model").value); loadModel(); }; $("stopModel").onclick = () => run("model stop");
+  $("rmModel").onclick = async () => { try { if (!webllm) webllm = await import(WEBLLM_URL); await webllm.deleteModelAllInfoInCache($("model").value); out(`removed ${esc($("model").value)} from this device`); } catch (e) { out(`<span class="u-bad">remove failed</span> ${esc(e.message)}`); } };
+  $("model").onchange = async () => { S.model = $("model").value; await save(); };
+  [["sName","name",String],["sTemp","temperature",Number],["sMax","max_tokens",Number],["sSys","system",String]].forEach(([id, k, f]) => $(id).onchange = async () => { S[k] = f($(id).value); await save(); renderAll(); });
+  $("expBtn").onclick = exportAll; $("impBtn").onclick = () => $("impFile").click();
+  $("impFile").onchange = async e => { try { const d = JSON.parse(await e.target.files[0].text()); if (!String(d.app).startsWith("iolin-web")) throw new Error("not an iolin export");
+      S = {...DEF, ...d.settings}; sessions = d.sessions || sessions; for (const r of d.receipts || []) { await DB.set(r.run_id, r, "receipts"); if (!receipts.some(x => x.run_id === r.run_id)) receipts.push(r); verified[r.run_id] = await verify(r, d.signing_public_key?.pub_b64 || signer.pub_b64); }
+      cur = sessions.at(-1); await save(); renderAll(); out("imported workspace"); } catch (er) { out(`<span class="u-bad">import failed</span> ${esc(er.message)}`); } };
+  $("wipeBtn").onclick = async () => { if (DEMO || confirm("Erase settings, sessions, receipts and this browser's signing key?")) { await DB.clear(); location.reload(); } };
+  $("newSess").onclick = () => run("sessions new");
+  $("startBtn").onclick = async () => { $("stage").scrollIntoView({behavior:"smooth"}); if (!(await DB.get("tourDone"))) tour(tourStep < 0 ? 0 : tourStep); else if (!engine) setView("setup"); else setView("instruct"); };
+  $("fullBtn").onclick = () => { document.body.classList.add("full"); fit(); }; $("closeFs").onclick = () => { document.body.classList.remove("full"); fit(); };
+  addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("full")) $("closeFs").click(); });
+  // greeting
+  line(`<span style="color:var(--w-dim)">iolin web · ${esc(dev.name)} · ${esc(dev.browser)} · ${gpuOk ? '<span class="u-ok">WebGPU ready</span>' : '<span class="u-am">no WebGPU</span>'} · ${receipts.length} receipts on this device</span>`);
+  if (!engine) out(gpuOk ? `type <span class="u-hl">model load</span> to start (suggested: ${esc(suggested(await modelList())[1])}), or <span class="u-hl">help</span>` : `this browser can't run local models · type <span class="u-hl">demo on</span> to try the flow, or open this page in Chrome/Edge or Safari 26`);
+  else out(`demo engine ready · type <span class="u-hl">ask hello</span>`);
+  if (!DEMO && gpuOk && S.model) out(`last time you used <span class="u-hl">${esc(S.model)}</span> · it stays cached · type <span class="u-hl">model load ${esc(S.model)}</span> to resume`);
+  ev(me(), "session opened"); if (loaded) ev("iolin", "ready", "m");
+  renderAll(); fit();
+  const q = new URLSearchParams(location.search);
+  if (q.has("welcome") || !(await DB.get("tourDone"))) tour(0);
+  if (q.has("welcome")) { q.delete("welcome"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); }
+  window.__iolin = {ready:true, tourStep:() => tourStep, run, signer:() => ({alg:signer.alg, pub_b64:signer.pub_b64}), last:() => receipts.at(-1)};
+})();
+</script>
+</body>
+</html>
