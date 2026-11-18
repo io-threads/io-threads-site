@@ -11,6 +11,7 @@
 <meta property="og:url" content="https://io-threads.com/iolin/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://esm.run" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><link rel="preconnect" href="https://huggingface.co" crossorigin><link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111217'/%3E%3Ccircle cx='16' cy='16' r='8' fill='none' stroke='%23e4572e' stroke-width='3'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -130,6 +131,8 @@ h1 b{font-weight:400}
 body.full{overflow:hidden}
 body.full .stage{position:fixed;inset:0;z-index:50;background:#0b0c10;overflow:auto}
 .closefs{display:none}body.full .closefs{display:block;position:fixed;right:12px;top:12px;z-index:60}
+body.full.stack .stage::before{content:"";display:block;position:sticky;top:0;height:56px;background:#0b0c10;border-bottom:1px solid var(--w-line);z-index:5}
+body.full.stack .closefs{top:8px}
 /* stacked layout for narrow full-screen */
 body.full.stack .win{position:relative;transform:none!important;width:100%;height:auto;border-radius:0;grid-template-rows:auto auto auto}
 body.full.stack .body{grid-template-columns:minmax(0,1fr)}body.full.stack .win{grid-template-columns:minmax(0,1fr)}body.full.stack .main{grid-template-columns:minmax(0,1fr)}
@@ -391,7 +394,7 @@ async function run(raw) {
     else if (c0 === "stop") { if (busy && thinking) { stop = true; out("stopping…"); } else out("nothing running"); }
     else if (c0 === "tour") { await DB.set("tourDone", false); tour(0); }
     else if (c0 === "status") { out(`device ${esc(dev.name)} · ${esc(dev.browser)} · gpu ${esc(dev.gpu)} · ${esc(dev.store)}`);
-      out(`model ${loaded ? `<span class="u-ok">${esc(loaded)}</span> running` : "not loaded"} · receipts ${receipts.length} · sessions ${sessions.length}${DEMO ? ' · <span class="u-am">demo</span>' : ""}`); }
+      out(`model ${loaded ? `<span class="u-ok">${esc(loaded)}</span> running${engineMode ? ` in the ${engineMode === "worker" ? "background worker" : "page"}` : ""}` : "not loaded"} · receipts ${receipts.length} · sessions ${sessions.length}${DEMO ? ' · <span class="u-am">demo</span>' : ""}`); }
     else if (c0 === "model") await cmdModel(rest);
     else if (c0 === "ask") { if (!arg) return out("usage: ask <question>"); await ask(arg, "term"); }
     else if (c0 === "recap") await ask("Recap this session in three short bullet points: what was asked, what was answered, what is still open.", "term", true);
@@ -438,6 +441,16 @@ async function cmdSet(k, v) {
 }
 
 /* ---------- models ---------- */
+// The model runs in a Web Worker by default, so downloads and replies never block the window. ?worker=0 runs it on the page.
+const USE_WORKER = typeof Worker !== "undefined" && new URLSearchParams(location.search).get("worker") !== "0";
+let engineMode = "";
+function makeWorker() {
+  const src = `import { WebWorkerMLCEngineHandler } from "${WEBLLM_URL}"; const h = new WebWorkerMLCEngineHandler(); self.onmessage = (m) => h.onmessage(m);`;
+  return new Worker(URL.createObjectURL(new Blob([src], {type: "text/javascript"})), {type: "module"});
+}
+// Fetch the WebLLM library early (while the visitor reads the tour), so "Download" starts at once.
+let libWarm = null;
+function warmLib() { if (webllm || libWarm || !gpuOk || DEMO) return libWarm; libWarm = import(WEBLLM_URL).then(m => (webllm = webllm || m)).catch(() => (libWarm = null)); return libWarm; }
 async function modelList() { if (webllm) { const ids = new Set(webllm.prebuiltAppConfig.model_list.map(m => m.model_id)); const l = CURATED.filter(m => ids.has(m[0])); return l.length ? l : CURATED; } return CURATED; }
 const suggested = l => l.filter(m => m[3] <= tier).at(-1) || l[0];
 async function fillModels() { const l = await modelList(); $("model").innerHTML = l.map(m => `<option value="${m[0]}">${m[1]} · ${m[2]}${m[3] > tier ? " · may be too big" : ""}</option>`).join("");
@@ -458,7 +471,10 @@ async function loadModel() {
       if (!webllm) webllm = await import(WEBLLM_URL);
       if (engine && engine !== demoEngine) await engine.unload();
       const pl = out("0%");
-      engine = await webllm.CreateMLCEngine(id, {initProgressCallback: p => { const pc = Math.round((p.progress||0)*100); $("bar").style.width = pc + "%"; $("prog").textContent = p.text || ""; pl.textContent = `${pc}% · ${(p.text||"").slice(0,90)}`; renderProd(pc); }});
+      const opts = {initProgressCallback: p => { const pc = Math.round((p.progress||0)*100); $("bar").style.width = pc + "%"; $("prog").textContent = p.text || ""; pl.textContent = `${pc}% · ${(p.text||"").slice(0,90)}`; renderProd(pc); }};
+      engine = null;
+      if (USE_WORKER) { try { engine = await webllm.CreateWebWorkerMLCEngine(makeWorker(), id, opts); engineMode = "worker"; } catch (e) { console.warn("iolin: worker engine failed, using the page", e); } }
+      if (!engine) { engine = await webllm.CreateMLCEngine(id, opts); engineMode = "page"; }
       loaded = id; S.model = id; await save(); out(`model <span class="u-ok">${esc(id)}</span> running on ${esc(dev.gpu)} · works offline now`);
       $("prog").textContent = "Ready. Works offline from now on.";
     }
@@ -476,9 +492,10 @@ async function ask(q, from, recap = false) {
   renderChat(); const bub = addBubble("a", "");
   const tl = from === "term" ? out("") : null; ev("iolin", recap ? "recap · working" : "answering · working");
   const messages = [{role:"system", content:S.system}, ...cur.messages.map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
-  const started = iso(), t0 = performance.now(); let text = "", status = "completed";
+  const started = iso(), t0 = performance.now(); let text = "", status = "completed", paint = 0;
   try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), max_tokens:Number(S.max_tokens)});
-    for await (const ch of st) { if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }
+    for await (const ch of st) { if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; if (!paint) paint = requestAnimationFrame(() => { paint = 0; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }); }
+    if (paint) { cancelAnimationFrame(paint); paint = 0; } bub.firstChild.textContent = text; if (tl) tl.textContent = text;
   } catch (e) { errors++; status = "failed"; text = text || "error: " + e.message; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }
   const ms = Math.round(performance.now() - t0), run_id = crypto.randomUUID();
   const body = { schema:"iothreads.receipt/0.1", receipt_type:"host-signed", alg:signer.alg, run_id, host_id:"browser:" + signer.key_id, agent_id:APP_ID,
@@ -669,8 +686,8 @@ async function tour(n) {
     bind(); $("tName").onkeydown = e => e.key === "Enter" && $("tGo").click();
     $("tGo").onclick = async () => { const v = $("tName").value.trim(); if (v) { S.name = v; await save(); renderAll(); } tour(1); }; return; }
   if (n === 1) { hl("sFlag");
-    if (gpuOk) { const sg = suggested(await modelList());
-      coach(2, `<h4>Your device can run a model.</h4><p>${esc(dev.name)} · ${esc(dev.browser)} · ${esc(dev.gpu)}. We suggest <b>${esc(sg[1])}</b> (${sg[2]} download, once; then it works offline).</p>
+    if (gpuOk) { const ml = await modelList(), sg = S.model ? suggested(ml) : ml[0];
+      coach(2, `<h4>Your device can run a model.</h4><p>${esc(dev.name)} · ${esc(dev.browser)} · ${esc(dev.gpu)}. We suggest <b>${esc(sg[1])}</b> (${sg[2]} download, once; then it works offline).${S.model ? "" : " It starts fast; pick a bigger model any time in Setup."}</p>
         <div class="row"><button class="wbtn pri" id="tLoad">Download ${esc(sg[1])}</button><button class="wbtn" id="tDemo">Try demo first</button>${skip}</div>`);
       bind(); $("tLoad").onclick = () => { $("model").value = sg[0]; tour(2); };
     } else {
@@ -702,9 +719,18 @@ async function tour(n) {
 (async () => {
   S = {...DEF, ...(await DB.get("settings") || {})}; sessions = await DB.get("sessions") || []; signer = await getSigner();
   receipts = (await DB.all("receipts")).sort((a, b) => a.signed_at < b.signed_at ? -1 : 1);
-  for (const r of receipts) verified[r.run_id] = await verify(r);
+  await Promise.all(receipts.map(async r => { verified[r.run_id] = await verify(r); }));
   if (!sessions.length) sessions.push(newSession()); const cid = await DB.get("cur"); cur = sessions.find(s => s.id === cid) || sessions.at(-1);
   await probe(); await fillModels(); if (DEMO) { engine = demoEngine; loaded = "demo-engine"; }
+  // App shell: opens instantly next time and works offline (sw.js; the page itself is always fetched fresh first).
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
+  // Speed: fetch the model library while the page is idle; a returning visitor's cached model reloads without a download.
+  if (gpuOk && !DEMO) (window.requestIdleCallback || setTimeout)(() => {
+    warmLib()?.then(async m => {
+      if (!m || engine || !S.model || tourStep >= 0) return;
+      try { if (await m.hasModelInCache(S.model)) { $("model").value = S.model; out(`reloading <span class="u-hl">${esc(S.model)}</span> from this device's cache · no download`); loadModel(); } } catch {}
+    });
+  }, 1200);
   document.querySelectorAll(".tab").forEach(b => b.onclick = () => setView(b.dataset.v));
   document.querySelectorAll(".ttab").forEach(b => b.onclick = () => switchTerm(b.dataset.t));
   const hist = []; let hi = 0;
