@@ -77,6 +77,7 @@ def main():
         for h in p.hrefs:
             if h.startswith(("http", "mailto:")): continue
             path, _, frag = h.partition("#")
+            path = path.partition("?")[0]   # a query string (login.html?mode=signup) points at the same file
             target = path or n
             if path and not (DIST / path).exists(): fails.append(f"{n}: broken link {h}")
             elif frag and target in parsed and frag not in parsed[target].ids: fails.append(f"{n}: missing anchor {h}")
