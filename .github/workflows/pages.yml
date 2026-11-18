@@ -6,7 +6,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
-permissions: { contents: read, pages: write, id-token: write }
+# Only deploy (Pages) and record (ops console) can mint an OIDC token; the check job runs third-party installs.
+permissions: { contents: read }
 concurrency: { group: pages, cancel-in-progress: false }
 jobs:
   check:
@@ -17,8 +18,10 @@ jobs:
         with: { python-version: "3.12" }
       - name: Secret scan (gitleaks)
         run: |
-          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz | tar -xz gitleaks
-          ./gitleaks detect --no-git --source . --redact --no-banner
+          curl -sSfLo "$RUNNER_TEMP/gl.tgz" https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz
+          echo "5bc41815076e6ed6ef8fbecc9d9b75bcae31f39029ceb55da08086315316e3ba  $RUNNER_TEMP/gl.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gl.tgz" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" detect --no-git --source . --redact --no-banner
       - run: python .ci/check.py
       - run: python .ci/links.py
       # The browser download is cached between runs (it counts against Actions minutes once the repo is private).
@@ -34,7 +37,23 @@ jobs:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: check
     runs-on: ubuntu-latest
+    permissions: { pages: write, id-token: write }
     environment: { name: github-pages, url: "${{ steps.d.outputs.page_url }}" }
     steps:
       - id: d
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+  # Report the publish to the ops console with GitHub's OIDC token (no stored secret). Never fails the run.
+  record:
+    if: always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: [check, deploy]
+    runs-on: ubuntu-latest
+    permissions: { id-token: write }
+    steps:
+      - name: Record publish for the ops console
+        continue-on-error: true
+        env:
+          VERDICT: ${{ (needs.check.result == 'success' && needs.deploy.result == 'success') && 'success' || (contains(needs.*.result, 'cancelled') && 'cancelled' || 'failure') }}
+        run: |
+          TOKEN=$(curl -fsS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=io-threads-ops" | jq -r .value)
+          echo "::add-mask::$TOKEN"
+          curl -sS -X POST "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/site-run" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "{\"verdict\":\"$VERDICT\"}"
