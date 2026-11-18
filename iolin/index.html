@@ -429,7 +429,12 @@ async function cmdVerify(tamper, n) {
 async function cmdSet(k, v) {
   const map = {name:"name", temp:"temperature", temperature:"temperature", max:"max_tokens", system:"system"};
   if (!map[k] || v === "") return out("usage: set name|temp|max|system <value>");
-  S[map[k]] = map[k] === "name" || map[k] === "system" ? v : Number(v); await save(); renderAll(); out(`${map[k]} = ${esc(v)} · saved on this device`);
+  const f = map[k]; let val = v;
+  if (f === "temperature") { val = Number(v); if (!Number.isFinite(val) || val < 0 || val > 1.5) return out("temperature must be a number from 0 to 1.5"); }
+  else if (f === "max_tokens") { val = Number(v); if (!Number.isInteger(val) || val < 64 || val > 4096) return out("max must be a whole number from 64 to 4096"); }
+  else if (f === "name") { val = v.trim().slice(0, 40); if (!val) return out("name can't be empty"); }
+  else val = v.slice(0, 2000);
+  S[f] = val; await save(); renderAll(); out(`${f} = ${esc(String(val))} · saved on this device`);
 }
 
 /* ---------- models ---------- */
@@ -715,7 +720,11 @@ async function tour(n) {
   $("loadBtn").onclick = () => { echo("model load " + $("model").value); loadModel(); }; $("stopModel").onclick = () => run("model stop");
   $("rmModel").onclick = async () => { try { if (!webllm) webllm = await import(WEBLLM_URL); await webllm.deleteModelAllInfoInCache($("model").value); out(`removed ${esc($("model").value)} from this device`); } catch (e) { out(`<span class="u-bad">remove failed</span> ${esc(e.message)}`); } };
   $("model").onchange = async () => { S.model = $("model").value; await save(); };
-  [["sName","name",String],["sTemp","temperature",Number],["sMax","max_tokens",Number],["sSys","system",String]].forEach(([id, k, f]) => $(id).onchange = async () => { S[k] = f($(id).value); await save(); renderAll(); });
+  [["sName","name"],["sTemp","temp"],["sMax","max"],["sSys","system"]].forEach(([id, k]) => $(id).onchange = async () => {
+    const v = $(id).value;
+    if (k === "system" && v.trim() === "") { S.system = ""; await save(); renderAll(); return; }   // clearing the instructions is allowed
+    await cmdSet(k, v); renderAll();   // same checks as the set command; an invalid value snaps back to the saved one
+  });
   $("expBtn").onclick = exportAll; $("impBtn").onclick = () => $("impFile").click();
   $("impFile").onchange = async e => { try { const d = JSON.parse(await e.target.files[0].text()); if (!String(d.app).startsWith("iolin-web")) throw new Error("not an iolin export");
       S = {...DEF, ...d.settings}; sessions = d.sessions || sessions; for (const r of d.receipts || []) { await DB.set(r.run_id, r, "receipts"); if (!receipts.some(x => x.run_id === r.run_id)) receipts.push(r); verified[r.run_id] = await verify(r, d.signing_public_key?.pub_b64 || signer.pub_b64); }
