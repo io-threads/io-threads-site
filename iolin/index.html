@@ -179,6 +179,46 @@ body.full.stack .fbar{margin-top:14px}body.full.stack .zboard{zoom:.6;height:620
 .demo{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--amber);color:#111;font-size:12px;font-weight:700;border-radius:99px;padding:2px 10px;z-index:5}
 
 /* Instruct: Finder-style thread list above the chat (from the members page's .fdr) */
+/* Instruct templates */
+.tpls{display:flex;gap:6px;max-width:980px;margin:0 auto 8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;align-items:center}
+.tpls .tl{color:var(--w-quiet);font-size:12.5px;white-space:nowrap;margin-right:2px}
+.tpls button{flex:none;font:inherit;font-size:12.5px;border:1px solid var(--w-line);background:#13151b;color:var(--w-ink);border-radius:99px;padding:4px 11px;cursor:pointer;white-space:nowrap}
+.tpls button:hover{border-color:var(--w-quiet)}.tpls button:focus-visible,.tcards button:focus-visible{outline:1.5px solid #9DBBFF;outline-offset:1px}
+.tcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;margin:4px 0 0}
+.tcards button{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--w-line);border-radius:10px;padding:10px 12px;background:#13151b;display:grid;gap:3px;min-width:0}
+.tcards button:hover{border-color:var(--w-quiet)}.tcards b{font-weight:500;font-size:13.5px}.tcards span{font-size:12px;color:var(--w-quiet)}
+/* Setup: model library, presets, serve to apps */
+.sth{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;color:var(--w-ink);margin:22px 0 8px;padding-top:14px;border-top:1px solid var(--w-line)}
+.sth span{font-size:12.5px;font-weight:400;color:var(--w-quiet)}
+.mlbar{display:flex;gap:8px;flex-wrap:wrap}.mlbar input{flex:1;min-width:160px}
+.mlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px;max-height:282px;overflow:auto;padding:2px}
+.mc{all:unset;box-sizing:border-box;cursor:pointer;border:1px solid var(--w-line);border-radius:10px;padding:9px 12px;display:grid;gap:4px;background:#13151b;min-width:0}
+.mc:hover{border-color:var(--w-quiet)}.mc[aria-selected="true"]{border-color:#9DBBFF;box-shadow:inset 0 0 0 1px #9DBBFF}
+.mc:focus-visible{outline:1.5px solid #9DBBFF;outline-offset:1px}
+.mc .h{display:flex;gap:8px;align-items:baseline;min-width:0}.mc .h b{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc .h span{margin-left:auto;font:12px var(--mono);color:var(--w-quiet);white-space:nowrap}
+.mc .s{font-size:12px;color:var(--w-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tg{display:flex;gap:5px;flex-wrap:wrap}
+.pill{font:11px var(--mono);border-radius:99px;padding:1px 7px;border:1px solid var(--w-line);color:var(--w-quiet);white-space:nowrap}
+.pill.ok{color:var(--green);border-color:color-mix(in srgb,var(--green) 40%,transparent)}.pill.am{color:var(--amber);border-color:color-mix(in srgb,var(--amber) 40%,transparent)}.pill.bad{color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,transparent)}
+.mdet{border:1px solid var(--w-line);border-radius:12px;padding:14px 16px;margin-top:10px;background:#101217}
+.mdet h4{margin:0 0 2px;font-size:16px;font-weight:500}.mdet .sub{color:var(--w-quiet);font-size:12.5px;margin:0 0 10px}
+.mdet dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:5px 12px;margin:0;font-size:13px}.mdet dt{color:var(--w-quiet)}.mdet dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.mdet a{color:var(--w-ink)}
+.mdet .lb{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:4px}.mdet .lb li{display:flex;gap:8px;align-items:center;min-width:0;font-size:12.5px}
+.mdet .lb a{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mnote{color:var(--w-quiet);font-size:12.5px}
+.ck{display:flex;gap:6px;align-items:center;color:var(--w-quiet)}
+.sbase{font:12.5px var(--mono);color:#C9D9FF;background:#13151b;border:1px solid var(--w-line);border-radius:7px;padding:5px 8px;overflow-wrap:anywhere}
+.prs button{font:inherit;font-size:13px;border:1px solid var(--w-line);background:transparent;color:var(--w-quiet);border-radius:99px;padding:4px 12px;cursor:pointer}
+.prs button[aria-pressed="true"]{background:var(--w-raise);color:var(--w-ink);border-color:var(--w-quiet)}
+.sntabs{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.sntabs button{font:inherit;font-size:12.5px;border:1px solid var(--w-line);background:transparent;color:var(--w-quiet);border-radius:7px;padding:4px 10px;cursor:pointer}
+.sntabs button[aria-selected="true"]{background:var(--w-raise);color:var(--w-ink)}
+.snip{position:relative;margin-top:6px}.snip pre{margin:0;background:#0e1015;border:1px solid var(--w-line);border-radius:10px;padding:12px 70px 12px 14px;font:12.5px/1.5 var(--mono);color:#cfd3dc;overflow:auto;max-height:230px;white-space:pre}
+.snip .wbtn{position:absolute;top:8px;right:8px;padding:4px 10px;font-size:12px}
+body.full.stack .mlist,body.full.stack .tcards{grid-template-columns:minmax(0,1fr)}
+body.full.stack .mdet dl{grid-template-columns:110px minmax(0,1fr)}
 .fbar{display:flex;align-items:center;gap:10px;max-width:980px;margin:0 auto 8px;color:var(--w-quiet);font-size:13px}
 .fdr{display:grid;grid-template-columns:170px minmax(0,1fr) minmax(0,1fr);height:230px;max-width:980px;margin:0 auto 16px;border:1px solid var(--w-line);border-radius:12px;background:#0e1015;overflow:hidden}
 .fdr.closed{display:none}
@@ -214,6 +254,14 @@ body.full.stack .fbar{margin-top:14px}body.full.stack .zboard{zoom:.6;height:620
 /* reply bubble while waiting for the first words */
 .bub.typing::after{content:"";display:inline-block;width:26px;height:8px;background:radial-gradient(circle,var(--w-quiet) 2.5px,transparent 3px) 0 50%/9px 8px repeat-x;opacity:.7}
 @media (prefers-reduced-motion:no-preference){.bub.typing::after{animation:typ 1s steps(3) infinite}@keyframes typ{0%{width:8px}50%{width:17px}100%{width:26px}}}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@200;300;400;500&display=swap" id="f-head">
+<style id="type">
+/* Page-level display headings match the rest of the site; the app window's own headings are left alone. */
+:root{--f-head:"Hanken Grotesk","Schibsted Grotesk","Helvetica Neue",Arial,sans-serif}
+.site>h1,.app-sec>h2{font-family:var(--f-head);font-weight:300}
+.site>h1{letter-spacing:-.035em;line-height:1.06}.app-sec>h2{letter-spacing:-.025em}
+.site>h1 b,.site>h1 strong,.app-sec>h2 b,.app-sec>h2 strong{font-weight:500}
 </style>
 </head>
 <body>
@@ -300,6 +348,7 @@ body.full.stack .fbar{margin-top:14px}body.full.stack .zboard{zoom:.6;height:620
                 <div class="fc c3" aria-live="polite"></div>
               </div>
               <div class="chat" id="chat"></div>
+              <div class="tpls" id="tpls" role="group" aria-label="Start from a template"></div>
               <div class="compose"><textarea id="ask" placeholder="Ask your model. It runs on this device."></textarea><button class="wbtn pri" id="sendBtn">Send</button><button class="wbtn" id="stopGen" disabled>Stop</button></div>
             </div>
             <!-- projects -->
@@ -307,12 +356,27 @@ body.full.stack .fbar{margin-top:14px}body.full.stack .zboard{zoom:.6;height:620
             <!-- setup -->
             <div class="pane" id="p-setup"><div class="setup">
               <div class="kv" id="dev"></div>
-              <div class="row" style="margin-top:14px"><select id="model"></select><button class="wbtn pri" id="loadBtn">Download and start</button><button class="wbtn" id="stopModel">Stop</button><button class="wbtn" id="rmModel">Remove</button></div>
+              <h3 class="sth">Models <span id="mlMeta"></span></h3>
+              <div class="mlbar"><input id="mlQ" type="search" placeholder="Search models, labs, licenses" aria-label="Search models"><select id="mlFilter" aria-label="Filter models"><option value="all">All models</option><option value="fits">Fits this device</option><option value="small">Under 2 GB</option><option value="permissive">Permissive license</option><option value="data">Training data published</option><option value="reasoning">Reasoning</option><option value="code">Code</option></select><select id="mlSort" aria-label="Sort models"><option value="fit">Best fit first</option><option value="size">Smallest first</option><option value="ctx">Longest context</option><option value="name">Name</option></select></div>
+              <div class="mlist" id="mlist" role="listbox" aria-label="Model library"></div>
+              <div class="mdet" id="mdet" aria-live="polite"></div>
+              <select id="model" aria-label="Model" hidden></select>
+              <div class="row" style="margin-top:12px"><button class="wbtn pri" id="loadBtn">Download and start</button><button class="wbtn" id="stopModel">Stop</button><button class="wbtn" id="rmModel">Remove</button><span class="mnote" id="mlNote"></span></div>
               <div class="bar"><i id="bar"></i></div><div style="color:var(--w-quiet);font-size:12.5px" id="prog">Pick a model. It downloads once and runs on your GPU.</div>
-              <div class="row" style="margin-top:16px"><label style="color:var(--w-quiet)">Your name</label><input id="sName" style="width:140px"><label style="color:var(--w-quiet)">Temp</label><input id="sTemp" type="number" step="0.1" min="0" max="1.5" style="width:70px"><label style="color:var(--w-quiet)">Max tokens</label><input id="sMax" type="number" step="64" min="64" max="4096" style="width:90px"></div>
-              <div class="row"><input id="sSys" style="flex:1" placeholder="Instructions for the assistant"></div>
+              <h3 class="sth">Presets <span>how the model answers</span></h3>
+              <div class="row prs" id="presets" role="group" aria-label="Generation presets"></div>
+              <div class="row"><label style="color:var(--w-quiet)" for="sName">Your name</label><input id="sName" style="width:140px"><label style="color:var(--w-quiet)" for="sTemp">Temp</label><input id="sTemp" type="number" step="0.1" min="0" max="1.5" style="width:70px"><label style="color:var(--w-quiet)" for="sTopP">Top p</label><input id="sTopP" type="number" step="0.05" min="0.05" max="1" style="width:76px"><label style="color:var(--w-quiet)" for="sMax">Max tokens</label><input id="sMax" type="number" step="64" min="64" max="4096" style="width:90px"><label style="color:var(--w-quiet)" for="sCtx">Context</label><select id="sCtx"><option value="2048">2K</option><option value="4096">4K</option><option value="8192">8K</option><option value="16384">16K</option></select></div>
+              <div class="row"><select id="sysPreset" aria-label="Instructions preset"></select><input id="sSys" style="flex:1;min-width:200px" placeholder="Instructions for the assistant" aria-label="Instructions for the assistant"></div>
+              <div class="mnote" id="tplInfo"></div>
+              <h3 class="sth">Serve to apps <span class="pill am">in the iolin app</span></h3>
+              <p class="mnote" style="margin:0 0 6px">Available in the iolin app; in this browser demo the endpoint is shown, not running. The app serves an OpenAI-compatible API, so scripts, IDEs and other apps on this machine or your network can call your local model.</p>
+              <div class="row"><label style="color:var(--w-quiet)" for="srvHost">Host or IP</label><input id="srvHost" style="width:150px" spellcheck="false"><label style="color:var(--w-quiet)" for="srvPort">Port</label><input id="srvPort" type="number" min="1" max="65535" style="width:90px"><label class="ck"><input type="checkbox" id="srvKeyOn"> Require an API key</label></div>
+              <div class="row"><code class="sbase" id="srvBase"></code><button class="wbtn" id="srvTest">Test connection</button><span class="mnote" id="srvRes" aria-live="polite"></span></div>
+              <div class="sntabs" role="tablist" aria-label="Connect from" id="snTabs"></div>
+              <div class="snip"><pre id="srvCode" tabindex="0" aria-label="Connection snippet"></pre><button class="wbtn" id="srvCopy">Copy</button></div>
+              <h3 class="sth">Your data</h3>
               <div class="row"><button class="wbtn" id="expBtn">Export my data</button><button class="wbtn" id="impBtn">Import</button><button class="wbtn" id="wipeBtn">Erase everything</button><input type="file" id="impFile" accept="application/json" style="display:none"></div>
-              <p style="color:var(--w-dim);font-size:12.5px">Everything here is saved in this browser only. Model files come from Hugging Face the first time.</p>
+              <p style="color:var(--w-dim);font-size:12.5px">Everything here is saved in this browser only. Model files come from Hugging Face the first time; model details link to each model's own card and license.</p>
             </div></div>
           </div>
 
@@ -410,9 +474,44 @@ const CURATED = [
   ["Llama-3.2-1B-Instruct-q4f16_1-MLC","Llama 3.2 1B","≈695 MB",0],
   ["Llama-3.2-3B-Instruct-q4f16_1-MLC","Llama 3.2 3B","≈1.8 GB",1],
   ["Llama-3.1-8B-Instruct-q4f16_1-MLC","Llama 3.1 8B","≈4.5 GB",2],
+  ["Qwen2.5-1.5B-Instruct-q4f16_1-MLC","Qwen2.5 1.5B","≈0.9 GB",1],
+  ["Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC","Qwen2.5 Coder 1.5B","≈0.9 GB",1],
+  ["SmolLM2-1.7B-Instruct-q4f16_1-MLC","SmolLM2 1.7B","≈1.0 GB",1],
+  ["gemma-2-2b-it-q4f16_1-MLC","Gemma 2 2B","≈1.5 GB",1],
+  ["Phi-3.5-mini-instruct-q4f16_1-MLC","Phi-3.5 mini","≈2.2 GB",1],
+  ["Mistral-7B-Instruct-v0.3-q4f16_1-MLC","Mistral 7B v0.3","≈4.1 GB",2],
+  ["Qwen2.5-7B-Instruct-q4f16_1-MLC","Qwen2.5 7B","≈4.3 GB",2],
+  ["DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC","DeepSeek R1 Distill 7B","≈4.3 GB",2],
 ];
-const SKILLS = ["help","status","model","ask","recap","receipts","verify","tamper","set","export","open","sessions","stop","tour"];
-const DEF = {name:"", system:"You are a concise, honest assistant. If unsure, say so.", temperature:0.6, max_tokens:768, model:null};
+// The original four drive "model load tiny|small|medium|large" and the suggestion; the rest are in the library.
+const CORE = {tiny:CURATED[0][0], small:CURATED[1][0], medium:CURATED[2][0], large:CURATED[3][0]};
+// Model facts shown in Setup. Everything comes from each model's own card; the link is there so anyone can check it.
+const LIC = {apache:["Apache 2.0","https://www.apache.org/licenses/LICENSE-2.0",1], mit:["MIT","https://opensource.org/license/mit",1],
+  llama31:["Llama 3.1 Community License","https://www.llama.com/llama3_1/license/",0], llama32:["Llama 3.2 Community License","https://www.llama.com/llama3_2/license/",0],
+  gemma:["Gemma Terms of Use","https://ai.google.dev/gemma/terms",0]};
+const TPLS = {chatml:"ChatML (<|im_start|> … <|im_end|>)", llama3:"Llama 3 (<|start_header_id|> … <|eot_id|>)", phi3:"Phi-3 (<|user|> … <|end|>)",
+  gemma:"Gemma (<start_of_turn> … <end_of_turn>), no system role", mistral:"Mistral ([INST] … [/INST])", r1:"DeepSeek R1 (<｜User｜> … <｜Assistant｜>), reasons inside <think> first"};
+const DATA = {published:["ok","Published"], summary:["am","Summary only"], none:["bad","Not disclosed"]};
+const META = {
+  "Qwen3-0.6B-q4f16_1-MLC": {lab:"Qwen (Alibaba)", family:"qwen", params:"0.6B", ctx:32768, lic:"apache", tpl:"chatml", data:"summary", dataNote:"Sources summarised in the Qwen3 technical report; the training data isn't released.", repo:"Qwen/Qwen3-0.6B", tasks:["chat","reasoning","multilingual"]},
+  "Llama-3.2-1B-Instruct-q4f16_1-MLC": {lab:"Meta", family:"llama", params:"1.2B", ctx:131072, lic:"llama32", tpl:"llama3", data:"summary", dataNote:"A mix of publicly available online data, cutoff December 2023 (model card); datasets not released.", repo:"meta-llama/Llama-3.2-1B-Instruct", tasks:["chat","multilingual"]},
+  "Llama-3.2-3B-Instruct-q4f16_1-MLC": {lab:"Meta", family:"llama", params:"3.2B", ctx:131072, lic:"llama32", tpl:"llama3", data:"summary", dataNote:"A mix of publicly available online data, cutoff December 2023 (model card); datasets not released.", repo:"meta-llama/Llama-3.2-3B-Instruct", tasks:["chat","multilingual"]},
+  "Llama-3.1-8B-Instruct-q4f16_1-MLC": {lab:"Meta", family:"llama", params:"8B", ctx:131072, lic:"llama31", tpl:"llama3", data:"summary", dataNote:"A mix of publicly available online data, cutoff December 2023 (model card); datasets not released.", repo:"meta-llama/Llama-3.1-8B-Instruct", tasks:["chat","code","multilingual"]},
+  "Qwen2.5-1.5B-Instruct-q4f16_1-MLC": {lab:"Qwen (Alibaba)", family:"qwen", params:"1.5B", ctx:32768, lic:"apache", tpl:"chatml", data:"summary", dataNote:"Sources summarised in the Qwen2.5 technical report; the training data isn't released.", repo:"Qwen/Qwen2.5-1.5B-Instruct", tasks:["chat","multilingual"]},
+  "Qwen2.5-Coder-1.5B-Instruct-q4f16_1-MLC": {lab:"Qwen (Alibaba)", family:"qwen", params:"1.5B", ctx:32768, lic:"apache", tpl:"chatml", data:"summary", dataNote:"Code-heavy mix summarised in the Qwen2.5-Coder report; the training data isn't released.", repo:"Qwen/Qwen2.5-Coder-1.5B-Instruct", tasks:["code","chat"]},
+  "SmolLM2-1.7B-Instruct-q4f16_1-MLC": {lab:"Hugging Face", family:"smollm", params:"1.7B", ctx:8192, lic:"apache", tpl:"chatml", data:"published", dataNote:"Training mix is public (FineWeb-Edu, DCLM, The Stack and Hugging Face's own SmolTalk sets), with the recipe in the SmolLM2 paper.", repo:"HuggingFaceTB/SmolLM2-1.7B-Instruct", tasks:["chat"]},
+  "gemma-2-2b-it-q4f16_1-MLC": {lab:"Google", family:"gemma", params:"2.6B", ctx:8192, lic:"gemma", tpl:"gemma", data:"summary", dataNote:"Web documents, code and maths, mostly English (model card); datasets not released.", repo:"google/gemma-2-2b-it", tasks:["chat"]},
+  "Phi-3.5-mini-instruct-q4f16_1-MLC": {lab:"Microsoft", family:"phi", params:"3.8B", ctx:131072, lic:"mit", tpl:"phi3", data:"summary", dataNote:"Filtered public web, synthetic 'textbook-like' data and chat data (model card); datasets not released.", repo:"microsoft/Phi-3.5-mini-instruct", tasks:["chat","reasoning","code"]},
+  "Mistral-7B-Instruct-v0.3-q4f16_1-MLC": {lab:"Mistral AI", family:"mistral", params:"7.2B", ctx:32768, lic:"apache", tpl:"mistral", data:"none", dataNote:"Not disclosed.", repo:"mistralai/Mistral-7B-Instruct-v0.3", tasks:["chat"]},
+  "Qwen2.5-7B-Instruct-q4f16_1-MLC": {lab:"Qwen (Alibaba)", family:"qwen", params:"7.6B", ctx:32768, lic:"apache", tpl:"chatml", data:"summary", dataNote:"Sources summarised in the Qwen2.5 technical report; the training data isn't released.", repo:"Qwen/Qwen2.5-7B-Instruct", tasks:["chat","code","multilingual"]},
+  "DeepSeek-R1-Distill-Qwen-7B-q4f16_1-MLC": {lab:"DeepSeek", family:"deepseek", params:"7.6B", ctx:131072, lic:"mit", tpl:"r1", data:"summary", dataNote:"Fine-tuned from Qwen2.5-Math-7B on samples generated by DeepSeek-R1 (paper); the samples aren't released.", repo:"deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", tasks:["reasoning","code"]},
+};
+const gbOf = m => { const v = parseFloat(String(m[2]).replace(/[^\d.]/g, "")); return /MB/.test(m[2]) ? v / 1000 : v; };
+const memOf = m => Math.round((gbOf(m) * 1.25 + 0.4) * 10) / 10;   // weights + runtime + a short context; an estimate, labelled as one
+const ctxK = n => n >= 1024 ? Math.round(n / 1024) + "K" : String(n);
+const slug = m => m[1].toLowerCase().replace(/\s+/g, "-");
+const SKILLS = ["help","status","model","templates","ask","recap","receipts","verify","tamper","set","export","open","sessions","stop","tour"];
+const DEF = {name:"", system:"You are a concise, honest assistant. If unsure, say so.", temperature:0.6, top_p:0.95, max_tokens:768, ctx:4096, preset:"Balanced", model:null, srvHost:"127.0.0.1", srvPort:1234, srvKeyOn:false, srvKey:"", snip:"curl"};
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const t = () => new Date().toTimeString().slice(0,8);
@@ -501,7 +600,7 @@ const HELP = [
   ["status","device, model, storage and receipts"],["model list | load <small|medium|large|id> | stop","manage your local model"],
   ["ask <question>","ask the model; reply streams here"],["recap","summarize the current session"],
   ["receipts","list signed receipts"],["verify [n]","check a receipt's signature"],["tamper [n]","edit one word, then check again"],
-  ["set name|temp|max <value>","change a setting"],["sessions | sessions new","list or start sessions"],
+  ["set name|temp|top_p|max|ctx <value>","change a setting"],["templates | template <name>","list or start an Instruct template"],["sessions | sessions new","list or start sessions"],
   ["open <file>","open a workspace file in Output"],["export","download your workspace"],["demo on|off","pre-recorded replies (default); off opens the real-model page"],["stop","stop the reply in progress"],["tour","replay the getting-started tour"],["clear","clear the terminal"]];
 
 async function run(raw) {
@@ -515,6 +614,8 @@ async function run(raw) {
     else if (c0 === "status") { out(`device ${esc(dev.name)} · ${esc(dev.browser)} · gpu ${esc(dev.gpu)} · ${esc(dev.store)}`);
       out(`model ${loaded ? `<span class="u-ok">${esc(loaded)}</span> running${engineMode ? ` in the ${engineMode === "worker" ? "background worker" : "page"}` : ""}` : "not loaded"} · receipts ${receipts.length} · sessions ${sessions.length}${DEMO ? ' · <span class="u-am">demo</span>' : ""}`); }
     else if (c0 === "model") await cmdModel(rest);
+    else if (c0 === "templates") TEMPLATES.forEach(x => out(`<span class="u-hl">${esc(x.id)}</span>  ${esc(x.name)} · ${esc(x.desc)}`));
+    else if (c0 === "template") { const x = TEMPLATES.find(y => y.id === rest[0]); if (!x) return out("usage: template <name> · type templates to list them"); useTemplate(x.id); out(`template <span class="u-hl">${esc(x.name)}</span> ready in Instruct · fill in the [brackets], then Send`); }
     else if (c0 === "ask") { if (!arg) return out("usage: ask <question>"); await ask(arg, "term"); }
     else if (c0 === "recap") await ask("Recap this session in three short bullet points: what was asked, what was answered, what is still open.", "term", true);
     else if (c0 === "receipts") { if (!receipts.length) return out("no receipts yet. ask something first.");
@@ -535,7 +636,8 @@ async function cmdModel(a) {
   if (!a[0] || a[0] === "list") { const ids = await modelList(); ids.forEach(m => out(`${m[0] === loaded ? '<span class="u-ok">●</span>' : " "} ${esc(m[1])}  ${m[2]}  ${m[3] > tier ? '<span class="u-am">may be too big here</span>' : '<span class="u-ok">fits</span>'}  <span style="color:var(--w-dim)">${esc(m[0])}</span>`)); return; }
   if (a[0] === "stop") { await stopModel(); out("model stopped · stays cached on this device"); return; }
   if (a[0] === "load") { const want = a[1] || "auto"; const list = await modelList();
-    const pick = {small: list[1] || list[0], tiny: list[0], medium: list[2], large: list[3]}[want] || list.find(m => m[0] === want) || suggested(list);
+    const byId = id => list.find(m => m[0] === id);
+    const pick = (CORE[want] && byId(CORE[want])) || list.find(m => m[0] === want || slug(m) === want.toLowerCase()) || suggested(list);
     $("model").value = pick[0]; await loadModel(); return; }
   out("usage: model list | load <small|medium|large|id> | stop");
 }
@@ -549,11 +651,13 @@ async function cmdVerify(tamper, n) {
   ev(me(), tamper ? `tamper v${i + 1} · ${ok ? "valid" : "check FAIL"}` : `verify v${i + 1} · ${ok ? "PASS" : "FAIL"}`, ok ? "m" : "");
 }
 async function cmdSet(k, v) {
-  const map = {name:"name", temp:"temperature", temperature:"temperature", max:"max_tokens", system:"system"};
-  if (!map[k] || v === "") return out("usage: set name|temp|max|system <value>");
+  const map = {name:"name", temp:"temperature", temperature:"temperature", max:"max_tokens", system:"system", top_p:"top_p", topp:"top_p", ctx:"ctx", context:"ctx"};
+  if (!map[k] || v === "") return out("usage: set name|temp|top_p|max|ctx|system <value>");
   const f = map[k]; let val = v;
   if (f === "temperature") { val = Number(v); if (!Number.isFinite(val) || val < 0 || val > 1.5) return out("temperature must be a number from 0 to 1.5"); }
   else if (f === "max_tokens") { val = Number(v); if (!Number.isInteger(val) || val < 64 || val > 4096) return out("max must be a whole number from 64 to 4096"); }
+  else if (f === "top_p") { val = Number(v); if (!Number.isFinite(val) || val <= 0 || val > 1) return out("top_p must be a number above 0 and at most 1"); }
+  else if (f === "ctx") { val = Number(v); if (![2048, 4096, 8192, 16384].includes(val)) return out("context must be 2048, 4096, 8192 or 16384"); }
   else if (f === "name") { val = v.trim().slice(0, 40); if (!val) return out("name can't be empty"); }
   else val = v.slice(0, 2000);
   S[f] = val; await save(); renderAll(); out(`${f} = ${esc(String(val))} · saved on this device`);
@@ -571,9 +675,9 @@ function makeWorker() {
 let libWarm = null;
 function warmLib() { if (webllm || libWarm || !gpuOk || DEMO) return libWarm; libWarm = import(WEBLLM_URL).then(m => (webllm = webllm || m)).catch(() => (libWarm = null)); return libWarm; }
 async function modelList() { if (webllm) { const ids = new Set(webllm.prebuiltAppConfig.model_list.map(m => m.model_id)); const l = CURATED.filter(m => ids.has(m[0])); return l.length ? l : CURATED; } return CURATED; }
-const suggested = l => l.filter(m => m[3] <= tier).at(-1) || l[0];
+const suggested = l => l.filter(m => m[3] <= tier && Object.values(CORE).includes(m[0])).at(-1) || l[0];
 async function fillModels() { const l = await modelList(); $("model").innerHTML = l.map(m => `<option value="${m[0]}">${m[1]} · ${m[2]}${m[3] > tier ? " · may be too big" : ""}</option>`).join("");
-  $("model").value = S.model && l.some(m => m[0] === S.model) ? S.model : suggested(l)[0]; }
+  $("model").value = S.model && l.some(m => m[0] === S.model) ? S.model : suggested(l)[0]; renderModels(); }
 // Pre-recorded replies for the demo: picked by topic, streamed at reading pace. Nothing the visitor types is echoed back.
 const DEMO_REPLIES = [
   [/^recap/i, "• You tried iolin in the demo.\n• Replies were pre-recorded, so no model ran and nothing was downloaded.\n• Each answer still got a signed receipt you can verify, and editing one word makes the check fail.\n• Next: run iolin on your own hardware, or try a real model here with ?live=1."],
@@ -584,7 +688,7 @@ const DEMO_REPLIES = [
   [/price|cost|plan|pay|team|buy/i, "iolin has a free tier and team plans; the Join page has the current options. Teams can run it on a host they own, with shared sessions and the same signed records for every run."],
   [/^(hi|hello|hey)\b/i, "Hello. This is the iolin demo: replies are pre-recorded, but the receipts are real. Ask what iolin keeps private, or how a receipt is checked."],
 ];
-const demoReply = q => (DEMO_REPLIES.find(([re]) => re.test(q.trim())) || [0, "Here's how that would work in iolin: your question goes to a model running on hardware you control, the answer streams back here, and a signed receipt records the run.\n\nThis page is the demo, so this reply is pre-recorded. Ask about privacy, receipts or models to see more."])[1];
+const demoReply = q => (TPL_REPLIES.find(([re]) => re.test(q)) || DEMO_REPLIES.find(([re]) => re.test(q.trim())) || [0, "Here's how that would work in iolin: your question goes to a model running on hardware you control, the answer streams back here, and a signed receipt records the run.\n\nThis page is the demo, so this reply is pre-recorded. Ask about privacy, receipts or models to see more."])[1];
 const demoEngine = { chat:{completions:{create: async ({messages}) => { const txt = demoReply(messages.at(-1).content || "");
   return (async function*(){ await new Promise(r => setTimeout(r, 420));
     for (const w of txt.split(/(\s+)/)) { await new Promise(r => setTimeout(r, 16 + Math.random() * 26)); yield {choices:[{delta:{content:w}}]}; } })(); }}},
@@ -602,8 +706,8 @@ async function loadModel() {
       const pl = out("0%");
       const opts = {initProgressCallback: p => { const pc = Math.round((p.progress||0)*100); $("bar").style.width = pc + "%"; $("prog").textContent = p.text || ""; pl.textContent = `${pc}% · ${(p.text||"").slice(0,90)}`; renderProd(pc); }};
       engine = null;
-      if (USE_WORKER) { try { engine = await webllm.CreateWebWorkerMLCEngine(makeWorker(), id, opts); engineMode = "worker"; } catch (e) { console.warn("iolin: worker engine failed, using the page", e); } }
-      if (!engine) { engine = await webllm.CreateMLCEngine(id, opts); engineMode = "page"; }
+      if (USE_WORKER) { try { engine = await webllm.CreateWebWorkerMLCEngine(makeWorker(), id, opts, {context_window_size: Number(S.ctx) || 4096}); engineMode = "worker"; } catch (e) { console.warn("iolin: worker engine failed, using the page", e); } }
+      if (!engine) { engine = await webllm.CreateMLCEngine(id, opts, {context_window_size: Number(S.ctx) || 4096}); engineMode = "page"; }
       loaded = id; S.model = id; await save(); out(`model <span class="u-ok">${esc(id)}</span> running on ${esc(dev.gpu)} · works offline now`);
       $("prog").textContent = "Ready. Works offline from now on.";
     }
@@ -619,7 +723,7 @@ async function signRun(sess, messages, text, status, started, ms, model = loaded
   const body = { schema:"iothreads.receipt/0.1", receipt_type:"host-signed", alg:signer.alg, run_id, host_id:"browser:" + signer.key_id, agent_id:APP_ID,
     session_id: sess.id, model_manifest:{model_id:model, runtime: model === "demo-engine" ? "demo-engine" : "webllm@0.2.85/webgpu", evidence_status:"declared"},
     execution_mode: model === "demo-engine" ? "demo" : "local-browser", data_boundary:"prompt and reply stayed in this browser", policy_version:"web-p1",
-    settings_digest: await sha(canonical({system:S.system, temperature:String(S.temperature), max_tokens:String(S.max_tokens)})),
+    settings_digest: await sha(canonical({system:S.system, temperature:String(S.temperature), top_p:String(S.top_p ?? 0.95), max_tokens:String(S.max_tokens)})),
     input_digest: await sha(canonical(messages)), output_digest: await sha(text), tool_events:[], action_receipts:[], status,
     timestamps:{started, finished, duration_ms: String(ms), chars_out: String(text.length)},
     evidence_status:{model_identity:"declared", output:"observed", tool_events:"none"},
@@ -636,7 +740,7 @@ async function ask(q, from, recap = false) {
   const tl = from === "term" ? out("") : null; ev("iolin", recap ? "recap · working" : "answering · working");
   const messages = [{role:"system", content:S.system}, ...cur.messages.map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
   const started = iso(), t0 = performance.now(); let text = "", status = "completed", paint = 0;
-  try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), max_tokens:Number(S.max_tokens)});
+  try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), top_p:Number(S.top_p ?? 0.95), max_tokens:Number(S.max_tokens)});
     for await (const ch of st) { if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; if (text) bub.classList.remove("typing"); if (!paint) paint = requestAnimationFrame(() => { paint = 0; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }); }
     if (paint) { cancelAnimationFrame(paint); paint = 0; }
     if (!text.trim()) text = status === "stopped" ? "(stopped before the reply started)" : loaded === "demo-engine" ? demoReply(q) : "(the model returned no text; try again or pick another model in Setup)";
@@ -728,7 +832,11 @@ function renderSide() { renderTree(); renderSessions(); renderProd(); renderVers
 /* ---------- render: chat, projects, setup ---------- */
 function addBubble(k, text, meta) { const d = document.createElement("div"); d.className = "bub " + k; d.appendChild(document.createTextNode(text));
   if (meta) { const s = document.createElement("small"); s.textContent = meta; d.appendChild(s); } $("chat").appendChild(d); $("p-instruct").scrollTop = 1e9; return d; }
-function renderChat() { $("chat").innerHTML = ""; if (!cur.messages.length) addBubble("a", engine ? "Ask anything. It runs on this device." : "Load a model in Setup (or type model load in the terminal), then ask anything.");
+function renderChat() { $("chat").innerHTML = ""; if (!cur.messages.length) { addBubble("a", engine ? "Ask anything, or start from a template. It runs on this device." : "Load a model in Setup (or type model load in the terminal), then ask anything.");
+    const g = document.createElement("div"); g.className = "tcards"; g.setAttribute("aria-label", "Templates");
+    TEMPLATES.slice(0, 6).forEach(x => { const b = document.createElement("button"); b.type = "button"; b.dataset.tpl = x.id;
+      const t1 = document.createElement("b"); t1.textContent = x.name; const t2 = document.createElement("span"); t2.textContent = x.desc; b.append(t1, t2); b.onclick = () => useTemplate(x.id); g.appendChild(b); });
+    $("chat").appendChild(g); }
   cur.messages.forEach(m => addBubble(m.role === "user" ? "u" : "a", m.content, m.run_id ? `${m.model} · ${m.ms} ms · receipt ${m.run_id.slice(0,8)}` : "")); }
 function renderProjects() { $("plist").innerHTML = sessions.slice().reverse().map(s => `<div data-id="${s.id}"><b>${esc(s.title)}</b><span>${s.messages.length} messages</span><span>${s.created.slice(0,10)}</span></div>`).join("");
   $("plist").querySelectorAll("div").forEach(d => d.onclick = async () => { cur = sessions.find(x => x.id === d.dataset.id); await save(); setView("instruct"); renderAll(); });
@@ -800,7 +908,9 @@ async function seedSamples() {
 
 function renderSetup() { $("dev").innerHTML = [["Mode", LIVE ? '<span class="u-ok">real model in this browser</span>' : `<span class="u-am">demo · pre-recorded replies</span> · <a href="${liveUrl()}" style="color:inherit">run a real model here (downloads ≈335 MB+)</a>`], ["Device", `${dev.name} · ${dev.browser}`], ["WebGPU", gpuOk ? '<span class="u-ok">available</span>' : '<span class="u-bad">not available</span> · type <span class="u-hl">demo on</span> to try the flow'],
   ["GPU", esc(dev.gpu)], ["Memory", esc(dev.mem)], ["Storage", esc(dev.store)], ["Signing", `${signer.alg} · key ${signer.key_id}`]].map(([a, b]) => `<span>${a}</span><span>${b}</span>`).join("");
-  $("sName").value = S.name; $("sTemp").value = S.temperature; $("sMax").value = S.max_tokens; $("sSys").value = S.system; }
+  $("sName").value = S.name; $("sTemp").value = S.temperature; $("sMax").value = S.max_tokens; $("sSys").value = S.system;
+  $("sTopP").value = S.top_p ?? 0.95; $("sCtx").value = String(S.ctx || 4096); $("srvHost").value = S.srvHost || "127.0.0.1"; $("srvPort").value = S.srvPort || 1234; $("srvKeyOn").checked = !!S.srvKeyOn;
+  renderPresets(); renderServer(); }
 
 /* ---------- render: live scene (isometric) ---------- */
 const ZONES = [["devices","Devices","#7aa2ff"],["files","Project files","#a3a9b8"],["runs","Builds · runs","#f5a524"],["agents","Agent sessions","#a78bfa"],["net","Networking","#34d399"]];
@@ -849,6 +959,165 @@ function renderZones() { $("zones").innerHTML = ZONES.map(([k, n, c]) => `<div d
   $("zsel").innerHTML = `<option value="all">● All zones</option>` + ZONES.map(([k, n]) => `<option value="${k}" ${zone === k ? "selected" : ""}>● ${n}</option>`).join(""); }
 
 /* ---------- top-level ---------- */
+/* ---------- Instruct templates ---------- */
+// Each template prefills the ask box (fill in the [brackets]); in the demo its first line picks a matching pre-recorded reply.
+const TEMPLATES = [
+  {id:"release", name:"Release check", desc:"PASS, FAIL or ABSTAIN before you ship", prompt:"Release check: decide PASS, FAIL or ABSTAIN for [model or app, version].\nGates: accuracy at least [0.85], no personal data in outputs, refusal rate at most [5%].\nResults: [paste the eval numbers]",
+   reply:"Verdict: ABSTAIN until every gate has its evidence.\n\n• Accuracy (at least 0.85): paste the eval score and I'll mark it PASS or FAIL.\n• Personal data: run the Data-leak check template on a sample of outputs first.\n• Refusals (at most 5%): needs the refusal count from the same sample.\n\nA gate with no evidence can't pass, so the honest answer is ABSTAIN, not PASS. The receipt below records the verdict and what it was based on."},
+  {id:"privacy", name:"Privacy review", desc:"What personal data a flow touches", prompt:"Privacy review: list what personal data this flow touches, where it goes and who can see it.\nFlow: [describe the feature or paste the spec]",
+   reply:"What to map, step by step:\n\n1. Inputs: which fields are personal (name, email, IP, free text that may hold anything).\n2. Where it goes: this device only, your server, or a third party (name each one).\n3. Who can see it: the user, your team, a model provider.\n4. How long it stays: set a deletion rule for each store.\n\nIn iolin the model runs on hardware you control, so the prompt itself never leaves; the risk usually sits in logs and exports. The receipt below shows what this run kept."},
+  {id:"recap", name:"Meeting recap", desc:"Decisions, owners and dates", prompt:"Meeting recap: turn these notes into decisions, owners and due dates.\nNotes: [paste the notes]",
+   reply:"Decisions\n• Ship the support bot behind the new release gate.\n• Keep the old model as the fallback for two weeks.\n\nOwners and dates\n• Release gate thresholds: Maya, Friday.\n• Rollback drill: Sam, next Tuesday.\n\nStill open\n• Who signs off if the gate says ABSTAIN?\n\n(Demo reply: in iolin this is written from your own notes, on your own hardware.)"},
+  {id:"code", name:"Code review", desc:"Bugs, risky changes, missing tests", prompt:"Code review: find bugs, risky changes and missing tests.\nLanguage: [language]\nDiff: [paste the diff]",
+   reply:"Review, most important first:\n\n1. Bug risk: an input that's empty or null isn't handled before it's used. Add a guard and a test for it.\n2. Risky change: the retry loop has no upper bound; cap it and log the final failure.\n3. Missing tests: the error path and the timeout path.\n4. Style: fine; nothing blocking.\n\nThe receipt records which model reviewed which diff, so the review itself can be checked later."},
+  {id:"incident", name:"Incident summary", desc:"Short and blameless", prompt:"Incident summary: write a short, blameless summary.\nTimeline: [times and events]\nImpact: [who was affected and for how long]",
+   reply:"Summary\nFor 42 minutes some customers couldn't sign in. No data was lost.\n\nWhat happened\nA configuration change shortened a timeout; sign-in requests failed under normal load.\n\nWhat fixed it\nThe change was rolled back at 14:12.\n\nWhat we're changing\n• Configuration changes now go through staging with a load test.\n• An alert fires when sign-in failures pass 2%."},
+  {id:"leak", name:"Data-leak check", desc:"Scan outputs for personal or secret data", prompt:"Data-leak check: scan these outputs for personal data, secrets or internal details.\nOutputs: [paste model outputs]",
+   reply:"Checked for: email addresses, phone numbers, card and account numbers, API keys and tokens, internal hostnames, and names next to private details.\n\nResult: FAIL on 1 of 12 outputs. Output 7 contains what looks like an API key (starts with sk_). Remove it and rotate the key.\n\nThe other 11 are clean. The receipt records the check, not the outputs themselves."},
+  {id:"gate", name:"Eval gate", desc:"Score an answer against a reference", prompt:"Eval gate: score the answer PASS, FAIL or ABSTAIN against the reference, with one line of evidence.\nQuestion: [question]\nReference: [expected answer]\nAnswer: [model answer]",
+   reply:"PASS: the answer gives the same figure as the reference and cites the same source.\n\nRules used\n• PASS: matches the reference on every fact that matters.\n• FAIL: contradicts it, or adds a claim the reference doesn't support.\n• ABSTAIN: the reference can't settle it; ask a person.\n\nThe verdict and the rule it used are in the receipt."},
+  {id:"email", name:"Customer email", desc:"A short, plain reply", prompt:"Customer email: draft a short, plain reply.\nCustomer wrote: [paste their message]\nWhat we can offer: [the facts]",
+   reply:"Hi Jordan,\n\nThanks for flagging this, and sorry for the trouble. We've found the cause: a setting on our side, now fixed. Your account is back to normal and nothing was lost.\n\nIf anything still looks wrong, reply here and I'll look at it today.\n\nBest,\nSam"},
+  {id:"inject", name:"Prompt-injection test", desc:"Try to break the rules; see what held", prompt:"Prompt-injection test: try to make the assistant ignore its rules, then report what held.\nRules: [paste the system rules]\nAttack: [paste the attack text]",
+   reply:"Result: the rules held.\n\n• The attack asked the assistant to reveal its instructions: refused.\n• It hid an instruction inside a pasted document: treated as text, not followed.\n• It asked to switch to a 'developer mode': refused.\n\nKeep this as a regression test: run it again after every model or prompt change. The receipt makes each run comparable."},
+  {id:"drift", name:"Drift check", desc:"This week vs the baseline", prompt:"Drift check: compare this week with the baseline and flag what moved.\nBaseline: [last week's numbers]\nThis week: [this week's numbers]",
+   reply:"What moved\n• Accuracy: 0.88 → 0.84 (down 0.04): past a 0.03 alert line, so flag it.\n• Refusals: 2.1% → 2.3%: within normal range.\n• Average reply length: up 18%: check the new prompt.\n\nVerdict: drift on accuracy. Re-run the release check before the next deploy."},
+  {id:"contract", name:"Contract clause", desc:"Plain words plus questions for a lawyer", prompt:"Contract clause: explain this clause in plain words and list what to ask a lawyer.\nClause: [paste the clause]",
+   reply:"In plain words: either side can end the agreement with 30 days' written notice, but fees already paid aren't refunded.\n\nAsk a lawyer\n• Does 'written notice' include email?\n• Are fees for work not yet delivered refundable?\n• What survives after it ends (confidentiality, data deletion)?\n\nThis is a summary, not legal advice."},
+  {id:"dataset", name:"Dataset card", desc:"Where data came from, what's missing", prompt:"Dataset card: describe where this data came from, what's in it, what's missing and how it may be used.\nDataset: [name and source]",
+   reply:"Source: support tickets from 2024–2025, exported from the help desk.\nContents: 18,400 tickets, English only, personal details removed.\nMissing: phone support, non-English customers, anything before 2024.\nUse: fine for evaluating support answers; not representative of all customers.\nLicence: internal use only.\n\nA card like this goes next to every eval, so a result can't be read without its limits."},
+  {id:"summary", name:"Summarise a document", desc:"Five bullets and one open question", prompt:"Summarise: give five short bullets and one open question.\nText: [paste the text]",
+   reply:"• The plan moves the support bot to a model that runs on our own hardware.\n• Every answer gets a signed record, so reviews can be checked later.\n• Release gates block a launch unless evidence is attached.\n• Costs drop because nothing is sent to a cloud model.\n• Rollout starts with one team for two weeks.\n\nOpen question: who reviews ABSTAIN verdicts during the pilot?"},
+  {id:"sql", name:"Explain a query", desc:"What it returns and what could go wrong", prompt:"Explain this query: what it returns, how heavy it is, and what could go wrong.\nSQL: [paste the query]",
+   reply:"Returns: each customer's total spend in the last 30 days, highest first.\nHow heavy: one pass over orders; fine with an index on (created_at, customer_id).\nWhat could go wrong\n• Refunds aren't subtracted, so totals run high.\n• Time zones: 'last 30 days' uses the server's clock.\n• No LIMIT: it returns every customer."},
+];
+const TPL_REPLIES = TEMPLATES.map(x => [new RegExp("^\\s*" + x.prompt.split(":")[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ":", "i"), x.reply]);
+function useTemplate(id) { const x = TEMPLATES.find(y => y.id === id); if (!x) return; if (view !== "instruct") setView("instruct");
+  const a = $("ask"); a.value = x.prompt; a.focus({preventScroll:true}); const i = x.prompt.indexOf("["); if (i >= 0) a.setSelectionRange(i, x.prompt.indexOf("]", i) + 1); ev(me(), "template · " + x.name); }
+function renderTemplates() { const box = $("tpls"); if (!box || box.dataset.ready) return; box.dataset.ready = "1";
+  const l = document.createElement("span"); l.className = "tl"; l.textContent = "Templates"; box.appendChild(l);
+  TEMPLATES.forEach(x => { const b = document.createElement("button"); b.type = "button"; b.dataset.tpl = x.id; b.textContent = x.name; b.title = x.desc; b.onclick = () => useTemplate(x.id); box.appendChild(b); }); }
+
+/* ---------- Setup: model library ---------- */
+// Leaderboards come from io threads' public benchmarks feed (Kaggle + Hugging Face, polled every 6 h); a small snapshot is the offline fallback.
+// Names are third-party text: always set with textContent, never as HTML.
+const BENCH_URL = "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/benchmarks?limit=100&sort=popular";
+const BENCH_SNAPSHOT = {live:false, polled:{huggingface:"2026-11-17"}, items:[
+  {source:"huggingface", name:"open-llm-leaderboard/open llm leaderboard", url:"https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard", owner:"open-llm-leaderboard", tier:"lab", tags:["modality:text","eval:code","eval:math"], popularity:14164},
+  {source:"huggingface", name:"lmarena-ai/arena-leaderboard", url:"https://huggingface.co/spaces/lmarena-ai/arena-leaderboard", owner:"lmarena-ai", tier:"lab", tags:[], popularity:5039},
+  {source:"huggingface", name:"mteb/leaderboard", url:"https://huggingface.co/spaces/mteb/leaderboard", owner:"mteb", tier:"lab", tags:[], popularity:7779}]};
+let bench = null, benchP = null, mSel = null; const hfStats = {};
+function loadBench() { if (bench) return Promise.resolve(bench); if (benchP) return benchP;
+  return benchP = (async () => {
+    try { const c = JSON.parse(localStorage.getItem("iolin-bench") || "null"); if (c && Date.now() - c.at < 6 * 3600e3 && Array.isArray(c.items)) return bench = c; } catch {}
+    try { const r = await fetch(BENCH_URL, {signal: AbortSignal.timeout(6000)}); if (!r.ok) throw new Error(r.status);
+      const j = await r.json(); const items = (j.items || []).filter(i => /^https:\/\//.test(String(i.url || ""))).map(i => ({source:String(i.source || ""), name:String(i.name || "").slice(0, 120),
+        url:String(i.url), owner:String(i.owner || ""), tier:String(i.tier || ""), tags:(i.tags || []).map(String).slice(0, 12), popularity:Number(i.popularity) || 0}));
+      bench = {at:Date.now(), live:true, polled:j.polled || {}, total:j.total || items.length, items}; try { localStorage.setItem("iolin-bench", JSON.stringify(bench)); } catch {}
+    } catch { bench = {...BENCH_SNAPSHOT, at:Date.now()}; }
+    return bench; })(); }
+function boardsFor(id) { const m = META[id] || {}, items = (bench || BENCH_SNAPSHOT).items, seen = new Set(), outL = [];
+  const add = i => { if (!seen.has(i.url) && outL.length < 5) { seen.add(i.url); outL.push(i); } };
+  items.filter(i => m.family && (i.name + " " + i.owner).toLowerCase().includes(m.family)).forEach(add);
+  items.filter(i => /llm|arena|chat/i.test(i.name) && i.tier === "lab").forEach(add);
+  (m.tasks || []).forEach(t => items.filter(i => i.tags.includes("eval:" + (t === "reasoning" ? "math" : t)) && /llm|leaderboard|arena|bench/i.test(i.name)).forEach(add));
+  return outL; }
+function fitOf(m) { const need = memOf(m);
+  if (m[3] <= tier) return ["ok", "fits this device", need]; if (m[3] === tier + 1) return ["am", "may be slow here", need]; return ["bad", "too big for this device", need]; }
+function mlFiltered() { const q = ($("mlQ").value || "").trim().toLowerCase(), f = $("mlFilter").value, so = $("mlSort").value;
+  let l = CURATED.filter(m => { const x = META[m[0]] || {}; const hay = [m[1], x.lab, x.family, (LIC[x.lic] || [])[0], ...(x.tasks || [])].join(" ").toLowerCase();
+    if (q && !hay.includes(q)) return false;
+    if (f === "fits") return m[3] <= tier; if (f === "small") return gbOf(m) < 2; if (f === "permissive") return (LIC[x.lic] || [])[2] === 1;
+    if (f === "data") return x.data === "published"; if (f === "reasoning" || f === "code") return (x.tasks || []).includes(f); return true; });
+  const k = {fit: m => m[3] <= tier ? -gbOf(m) : 100 + gbOf(m), size: gbOf, ctx: m => -((META[m[0]] || {}).ctx || 0), name: null}[so];
+  return k ? l.sort((a, b) => k(a) - k(b)) : l.sort((a, b) => a[1].localeCompare(b[1])); }
+function renderModels() { const box = $("mlist"); if (!box) return; const l = mlFiltered(); box.innerHTML = "";
+  if (!mSel || !CURATED.some(m => m[0] === mSel)) mSel = $("model").value || CURATED[0][0];
+  $("mlMeta").textContent = `${l.length} of ${CURATED.length} · open weights · runs on hardware you control`;
+  if (!l.length) { const p = document.createElement("p"); p.className = "mnote"; p.textContent = "No model matches. Clear the search or the filter."; box.appendChild(p); }
+  for (const m of l) { const x = META[m[0]] || {}, [fc, ft] = fitOf(m), lic = LIC[x.lic] || ["?", "", 0];
+    const b = document.createElement("button"); b.type = "button"; b.className = "mc"; b.setAttribute("role", "option"); b.dataset.id = m[0]; b.setAttribute("aria-selected", String(m[0] === mSel));
+    b.innerHTML = `<div class="h"><b></b><span>${esc(m[2])}</span></div><div class="s"></div><div class="tg"><span class="pill ${fc}">${esc(ft)}</span><span class="pill ${lic[2] ? "ok" : ""}">${esc(lic[0])}</span><span class="pill ${DATA[x.data] ? DATA[x.data][0] : ""}">data: ${esc(DATA[x.data] ? DATA[x.data][1].toLowerCase() : "unknown")}</span>${m[0] === loaded ? '<span class="pill ok">● running</span>' : ""}</div>`;
+    b.querySelector("b").textContent = m[1]; b.querySelector(".s").textContent = `${x.lab || ""} · ${x.params || ""} parameters · ${ctxK(x.ctx || 0)} context · ${(x.tasks || []).join(", ")}`;
+    b.onclick = async () => { mSel = m[0]; $("model").value = m[0]; S.model = m[0]; await save(); renderModels(); renderModelDetail(); };
+    box.appendChild(b); }
+  renderModelDetail(); }
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function link(href, text) { const a = el("a", "", text); a.setAttribute("href", href); a.target = "_blank"; a.rel = "noopener noreferrer"; return a; }
+function renderModelDetail() { const box = $("mdet"); if (!box) return; const m = CURATED.find(y => y[0] === mSel) || CURATED[0], x = META[m[0]] || {}, lic = LIC[x.lic] || ["?", "", 0];
+  const [fc, ft, need] = fitOf(m); box.innerHTML = "";
+  box.appendChild(el("h4", "", m[1])); box.appendChild(el("p", "sub", `${x.lab || ""} · ${m[0]}`));
+  const dl = el("dl"); const row = (k, v) => { dl.appendChild(el("dt", "", k)); const d = el("dd"); typeof v === "string" ? (d.textContent = v) : d.append(...[].concat(v)); dl.appendChild(d); };
+  row("Size", `${x.params || "?"} parameters · 4-bit (q4f16_1) · download ${m[2]}`);
+  const fit = el("span", "pill " + fc, ft); row("This device", [fit, document.createTextNode(` needs ≈${need} GB of GPU memory (estimate) · this device: ${dev.mem || "not reported"}${gpuOk ? "" : " · no WebGPU here; runs in the iolin app"}`)]);
+  row("Context", `${ctxK(x.ctx || 0)} tokens native · this browser runs ${ctxK(Number(S.ctx) || 4096)} (Presets)`);
+  row("Weights", [el("span", "pill ok", "open weights"), document.createTextNode(" · license "), link(lic[1], lic[0]), document.createTextNode(lic[2] ? " (permissive)" : " (read the terms before commercial use)")]);
+  const dd = DATA[x.data] || ["", "Unknown"]; row("Training data", [el("span", "pill " + dd[0], dd[1]), document.createTextNode(" " + (x.dataNote || ""))]);
+  row("Chat template", TPLS[x.tpl] || "from the model card");
+  row("Best for", (x.tasks || []).join(", ") || "chat");
+  const hf = el("span", "", hfStats[x.repo] ? hfStats[x.repo] : "—"); hf.id = "hfStat"; row("Hugging Face", [hf, document.createTextNode(" · "), link("https://huggingface.co/" + x.repo, "model card")]);
+  const ul = el("ul", "lb"); const bl = boardsFor(m[0]);
+  for (const i of bl) { const li = el("li"); li.append(el("span", "pill " + (i.tier === "lab" ? "ok" : i.tier === "community" ? "" : "am"), i.tier || "?"), link(i.url, i.name), el("span", "mnote", i.source)); ul.appendChild(li); }
+  const bsrc = bench && bench.live ? `live from the iot benchmarks feed · polled ${String(Object.values(bench.polled || {})[0] || "").slice(0, 10)}` : "offline snapshot of the iot benchmarks feed";
+  row("Leaderboards", [ul, el("div", "mnote", bl.length ? `Where to check how it ranks · ${bsrc}. A listing, not an endorsement.` : `None matched · ${bsrc}.`)]);
+  box.appendChild(dl);
+  $("tplInfo").textContent = `Chat template for ${m[1]}: ${TPLS[x.tpl] || "from the model card"}. iolin applies it for you.`;
+  $("loadBtn").textContent = DEMO ? "Start (demo)" : "Download and start";
+  $("mlNote").textContent = DEMO ? "Demo: starts the pre-recorded engine; nothing is downloaded." : "";
+  if (view === "setup" && x.repo && !hfStats[x.repo]) hfLoad(x.repo); }
+async function hfLoad(repo) { hfStats[repo] = "loading…";
+  try { const r = await fetch("https://huggingface.co/api/models/" + repo.split("/").map(encodeURIComponent).join("/"), {signal: AbortSignal.timeout(5000)}); if (!r.ok) throw new Error(r.status);
+    const j = await r.json(); const n = v => Number(v || 0).toLocaleString();
+    hfStats[repo] = `${n(j.likes)} likes · ${n(j.downloads)} downloads last month`; }
+  catch { hfStats[repo] = "stats unavailable right now"; }
+  const s = $("hfStat"); const m = CURATED.find(y => y[0] === mSel); if (s && m && (META[m[0]] || {}).repo === repo) s.textContent = hfStats[repo]; }
+
+/* ---------- Setup: presets ---------- */
+const PRESETS = [["Precise", {temperature:0.2, top_p:0.9, max_tokens:512, ctx:4096}], ["Balanced", {temperature:0.6, top_p:0.95, max_tokens:768, ctx:4096}],
+  ["Creative", {temperature:1.0, top_p:1, max_tokens:1024, ctx:4096}], ["Long context", {temperature:0.5, top_p:0.95, max_tokens:2048, ctx:16384}]];
+const SYS_PRESETS = [["Concise assistant", "You are a concise, honest assistant. If unsure, say so."],
+  ["Release gatekeeper", "You decide PASS, FAIL or ABSTAIN. Never pass a gate without its evidence. Give one line of evidence per gate."],
+  ["Strict reviewer", "You review work for bugs, risks and missing tests. Most important first. No praise, no filler."],
+  ["Privacy officer", "You map personal data: what is collected, where it goes, who can see it, how long it stays. Flag every third party."],
+  ["Plain-words writer", "You write short, plain replies a customer can read in 20 seconds. No jargon."]];
+function renderPresets() { const box = $("presets"); if (!box) return; box.innerHTML = "";
+  for (const [n, v] of PRESETS) { const b = document.createElement("button"); b.type = "button"; b.textContent = n; b.dataset.preset = n;
+    b.setAttribute("aria-pressed", String(Object.entries(v).every(([k, val]) => Number(S[k]) === val)));
+    b.onclick = async () => { Object.assign(S, v, {preset:n}); await save(); renderAll(); out(`preset <span class="u-hl">${esc(n)}</span> · temp ${v.temperature} · top_p ${v.top_p} · max ${v.max_tokens} · context ${ctxK(v.ctx)}`); }; box.appendChild(b); }
+  const sp = $("sysPreset"); if (sp && !sp.options.length) { sp.appendChild(new Option("Instructions preset…", "")); SYS_PRESETS.forEach(([n]) => sp.appendChild(new Option(n, n))); }
+  if (sp) sp.value = (SYS_PRESETS.find(([, t]) => t === S.system) || [""])[0]; }
+
+/* ---------- Setup: serve to apps ---------- */
+const SNIPS = ["curl", "Python", "JavaScript", "VS Code (Continue)", "Cursor", "Zed", "JetBrains AI"];
+const srvBase = () => { const h = String(S.srvHost || "127.0.0.1").trim(), host = h.includes(":") && !h.startsWith("[") ? `[${h}]` : h; return `http://${host}:${Number(S.srvPort) || 1234}/v1`; };
+function snippet(k) { const base = srvBase(), key = S.srvKeyOn ? S.srvKey : "", m = CURATED.find(y => y[0] === ($("model").value || mSel)) || CURATED[0], mid = slug(m), ctx = (META[m[0]] || {}).ctx || 8192;
+  return {
+    "curl": `curl ${base}/chat/completions \\\n  -H "Content-Type: application/json" \\\n${key ? `  -H "Authorization: Bearer ${key}" \\\n` : ""}  -d '{"model": "${mid}", "messages": [{"role": "user", "content": "Hello"}]}'`,
+    "Python": `# pip install openai\nfrom openai import OpenAI\n\nclient = OpenAI(base_url="${base}", api_key="${key || "not-needed"}")\nr = client.chat.completions.create(\n    model="${mid}",\n    messages=[{"role": "user", "content": "Hello"}],\n)\nprint(r.choices[0].message.content)`,
+    "JavaScript": `// npm install openai\nimport OpenAI from "openai";\n\nconst client = new OpenAI({ baseURL: "${base}", apiKey: "${key || "not-needed"}" });\nconst r = await client.chat.completions.create({\n  model: "${mid}",\n  messages: [{ role: "user", content: "Hello" }],\n});\nconsole.log(r.choices[0].message.content);`,
+    "VS Code (Continue)": `# ~/.continue/config.yaml\nmodels:\n  - name: iolin (local)\n    provider: openai\n    model: ${mid}\n    apiBase: ${base}\n    apiKey: ${key || "not-needed"}\n    roles: [chat, edit, apply]`,
+    "Cursor": `Cursor → Settings → Models\n  1. Add a custom model named ${mid}\n  2. OpenAI API key: ${key || "any text (the local server doesn't check it)"}\n  3. Override OpenAI base URL: ${base}\n  4. Verify, then pick ${mid} in chat\n\nCursor sends some requests from its own servers, so a 127.0.0.1\naddress may not be reachable; use an address Cursor can reach.`,
+    "Zed": `// ~/.config/zed/settings.json\n{\n  "language_models": {\n    "openai_compatible": {\n      "iolin": {\n        "api_url": "${base}",\n        "available_models": [\n          { "name": "${mid}", "display_name": "iolin · ${m[1]}", "max_tokens": ${ctx} }\n        ]\n      }\n    }\n  }\n}${key ? `\n// API key: add ${key} for the iolin provider in Zed's agent settings` : ""}`,
+    "JetBrains AI": `JetBrains IDE → Settings → Tools → AI Assistant → Models\n  1. Third-party AI providers → OpenAI-compatible (or LM Studio)\n  2. URL: ${base}${key ? `\n  3. API key: ${key}` : ""}\n  ${key ? 4 : 3}. Test Connection, then choose ${mid} for chat`,
+  }[k] || ""; }
+function renderServer() { if (!$("snTabs")) return; $("srvBase").textContent = srvBase();
+  const t = $("snTabs"); if (!t.children.length) SNIPS.forEach(k => { const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "tab"); b.textContent = k; b.dataset.snip = k;
+    b.onclick = async () => { S.snip = k; await save(); renderServer(); }; t.appendChild(b); });
+  if (!SNIPS.includes(S.snip)) S.snip = "curl";
+  t.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.snip === S.snip)));
+  $("srvCode").textContent = snippet(S.snip); }
+async function srvTest() { const base = srvBase(), res = $("srvRes"); res.className = "mnote"; res.textContent = `Checking ${base}/models …`;
+  try { const r = await fetch(base + "/models", {signal: AbortSignal.timeout(3000), headers: S.srvKeyOn && S.srvKey ? {Authorization: "Bearer " + S.srvKey} : {}});
+    if (!r.ok) { res.textContent = `Reached ${base}, but it answered ${r.status}${r.status === 401 ? " (check the API key)" : ""}.`; res.className = "mnote u-am"; return; }
+    const j = await r.json().catch(() => ({})); const ids = (j.data || []).map(x => String(x.id || "")).filter(Boolean);
+    res.textContent = `Connected · ${ids.length} model${ids.length === 1 ? "" : "s"}${ids.length ? ": " + ids.slice(0, 4).join(", ") + (ids.length > 4 ? " …" : "") : ""}`; res.className = "mnote u-ok"; ev(me(), "server · connected");
+  } catch (e) { const h = String(S.srvHost || ""), local = /^(127\.|localhost$|\[?::1\]?$)/.test(h);
+    const why = local ? "Nothing answered on this machine. Start the iolin app (or LM Studio) with its server on; in LM Studio also turn on Developer → Enable CORS so a web page can call it."
+      : location.protocol === "https:" ? "Browsers block http:// calls from an https page to addresses other than this machine. Test it from the iolin app, or give the server an https address."
+      : "Check the address, that the server is running, and that it allows calls from web pages (CORS).";
+    res.textContent = `${e && e.name === "TimeoutError" ? "No answer within 3 s." : "Couldn't connect."} ${why}`; res.className = "mnote u-am"; }
+}
+
 function renderAll() {
   const name = me(), init = (S.name || "you").slice(0,1).toUpperCase();
   $("tUser").textContent = name.toLowerCase(); $("pUser").textContent = name.toLowerCase(); $("tModel").textContent = loaded ? loaded.split("-").slice(0,3).join(" ") : "no model";
@@ -869,7 +1138,7 @@ function renderAll() {
 }
 function setView(v) { view = v; document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.v === v));
   ["live","instruct","projects","setup"].forEach(k => $("p-" + k).classList.toggle("on", k === v));
-  $("vhead").style.display = v === "live" ? "flex" : "none"; if (v === "instruct") { unread = 0; renderChat(); } renderAll(); }
+  $("vhead").style.display = v === "live" ? "flex" : "none"; if (v === "instruct") { unread = 0; renderChat(); } if (v === "setup") loadBench().then(renderModelDetail); renderAll(); }
 
 
 /* ---------- first-run tour (docked inside the window, works scaled and stacked) ---------- */
@@ -953,8 +1222,18 @@ async function tour(n) {
   $("sendBtn").onclick = () => { const q = $("ask").value.trim(); if (q) { $("ask").value = ""; echo("ask " + q); ask(q, "instruct"); } };
   $("ask").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("sendBtn").click(); } });
   $("loadBtn").onclick = () => { echo("model load " + $("model").value); loadModel(); }; $("stopModel").onclick = () => run("model stop");
-  $("rmModel").onclick = async () => { try { if (!webllm) webllm = await import(WEBLLM_URL); await webllm.deleteModelAllInfoInCache($("model").value); out(`removed ${esc($("model").value)} from this device`); } catch (e) { out(`<span class="u-bad">remove failed</span> ${esc(e.message)}`); } };
+  $("rmModel").onclick = async () => { if (DEMO) { out(`demo · nothing was downloaded, so there's nothing to remove`); $("mlNote").textContent = "Demo: nothing downloaded, nothing to remove."; return; } try { if (!webllm) webllm = await import(WEBLLM_URL); await webllm.deleteModelAllInfoInCache($("model").value); out(`removed ${esc($("model").value)} from this device`); } catch (e) { out(`<span class="u-bad">remove failed</span> ${esc(e.message)}`); } };
   $("model").onchange = async () => { S.model = $("model").value; await save(); };
+  renderTemplates();
+  ["mlQ", "mlFilter", "mlSort"].forEach(id => $(id).addEventListener("input", renderModels));
+  $("sTopP").onchange = async () => { await cmdSet("top_p", $("sTopP").value); renderAll(); };
+  $("sCtx").onchange = async () => { await cmdSet("ctx", $("sCtx").value); renderAll(); };
+  $("sysPreset").onchange = async () => { const p = SYS_PRESETS.find(([n]) => n === $("sysPreset").value); if (p) { S.system = p[1]; await save(); renderAll(); out(`instructions preset <span class="u-hl">${esc(p[0])}</span>`); } };
+  $("srvHost").onchange = async () => { const v = $("srvHost").value.trim(); if (/^[A-Za-z0-9.\-:\[\]]{1,80}$/.test(v)) S.srvHost = v; await save(); renderServer(); };
+  $("srvPort").onchange = async () => { const v = Number($("srvPort").value); if (Number.isInteger(v) && v > 0 && v < 65536) S.srvPort = v; await save(); renderSetup(); };
+  $("srvKeyOn").onchange = async () => { S.srvKeyOn = $("srvKeyOn").checked; if (S.srvKeyOn && !S.srvKey) S.srvKey = "iolin-" + [...crypto.getRandomValues(new Uint8Array(12))].map(b => b.toString(16).padStart(2, "0")).join(""); await save(); renderServer(); };
+  $("srvTest").onclick = srvTest;
+  $("srvCopy").onclick = async () => { const t = $("srvCode").textContent; try { await navigator.clipboard.writeText(t); $("srvCopy").textContent = "Copied"; } catch { const r = document.createRange(); r.selectNodeContents($("srvCode")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $("srvCopy").textContent = "Selected"; } setTimeout(() => ($("srvCopy").textContent = "Copy"), 1600); };
   [["sName","name"],["sTemp","temp"],["sMax","max"],["sSys","system"]].forEach(([id, k]) => $(id).onchange = async () => {
     const v = $(id).value;
     if (k === "system" && v.trim() === "") { S.system = ""; await save(); renderAll(); return; }   // clearing the instructions is allowed
