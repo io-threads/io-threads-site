@@ -183,9 +183,10 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   <p class="label">Last 30 days</p>
   <div class="stack">
     <h2 id="h-30" class="label">Automated checks</h2>
-    <p>Every 3 hours, our engine suite checks the site, sign-in, payments, the iot API and the benchmarks feed from four separate engines. A day is green when every run that day found everything live.</p>
+    <p>Every 3 hours, and after every release, our engine suite runs 50+ checks on the site, sign-in, payments, the iot API and the benchmarks feed from four separate engines. A day is green when every run that day passed every check. Red means at least one check failed, which isn't always an outage.</p>
     <div class="st-bars" id="st-bars" role="img" aria-label="Daily results for the last 30 days">Loading…</div>
     <p class="fine" id="st-30"></p>
+    <p class="fine">Past problems: 16–17 Nov, HTTPS on the www. address (io-threads.com itself stayed up; www is still being fixed, so use io-threads.com). 18 Nov, one payment check after a plan change, and one run where the engines disagreed. Neither stopped the service.</p>
   </div>
 </section>
 
@@ -229,7 +230,8 @@ li.bad .st-dot,.st-bars i.bad{background:var(--fail,#b5502e)}
     for(var i=29;i>=0;i--){var d=new Date(Date.now()-i*864e5).toISOString().slice(0,10),r=by[d],el=document.createElement("i");
       if(r){runs+=r.live+r.problems;live+=r.live;el.className=r.problems===0?"ok":r.live===0?"bad":"part";el.title=d+": "+r.live+" of "+(r.live+r.problems)+" runs all live"}else el.title=d+": no runs recorded";
       box.appendChild(el)}
-    note.textContent=runs?live+" of "+runs+" runs in the last 30 days found everything live ("+(100*live/runs).toFixed(1)+"%). Grey days have no recorded run.":"No runs recorded yet."}
+    var green=box.querySelectorAll("i.ok").length,seen=box.querySelectorAll("i.ok,i.bad,i.part").length;
+    note.textContent=seen?green+" of the "+seen+" days with runs passed every check. Grey days have no recorded run.":"No runs recorded yet."}
 })();</script>
 
 <footer class="site">
