@@ -943,7 +943,7 @@ section.free2{border-bottom:1px solid var(--rule)}
       function show(lines){out.innerHTML=lines.map(function(l){return "<li>"+l+"</li>"}).join("");$("ws-st-l").textContent="Ln "+lines.length+", Col 1"}
       function log(html){var d=document.createElement("div");d.innerHTML=html;term.appendChild(d);term.scrollTop=term.scrollHeight}
       function reqView(){var s=S.filter(function(x){return x[0]===svc.value})[0];
-        show([C("### "+s[1]),K("POST")+" https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/checks",K("Authorization")+": Bearer "+Sx("$IOT_KEY").replace(/&quot;/g,""),K("Content-Type")+": application/json","","{",'  '+Sx("service")+": "+Sx(s[0])+",",'  '+Sx("target")+": "+Sx(T[tgt.value])+",",'  '+Sx("claim")+": "+Sx(claim.value.trim()),"}"])}
+        show([C("### "+s[1]),K("POST")+" https://api.io-threads.com/functions/v1/iot/v1/checks",K("Authorization")+": Bearer "+Sx("$IOT_KEY").replace(/&quot;/g,""),K("Content-Type")+": application/json","","{",'  '+Sx("service")+": "+Sx(s[0])+",",'  '+Sx("target")+": "+Sx(T[tgt.value])+",",'  '+Sx("claim")+": "+Sx(claim.value.trim()),"}"])}
       function planView(){if(!last){show([C("// plan.json is written after the first request"),"{}"]);return}show(last)}
       function setTab(t){tab=t;tabs.forEach(function(b){var on=b.getAttribute("data-tab")===t;b.classList.toggle("on",on);if(b.getAttribute("role")==="tab")b.setAttribute("aria-selected",String(on))});$("ws-crumb").textContent=t==="req"?"check.http":"plan.json";form.style.display=t==="req"?"":"none";t==="req"?reqView():planView()}
       tabs.forEach(function(b){b.addEventListener("click",function(){setTab(b.getAttribute("data-tab"))})});

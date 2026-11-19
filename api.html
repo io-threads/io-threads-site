@@ -173,10 +173,10 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   <div class="stack docs">
     <h2 id="h-start" class="dh">Get going in two minutes</h2>
     <ol>
-      <li>Try it with no key: the check list and the benchmarks feed are open.<pre><code>curl https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/checks
-curl https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/benchmarks?limit=3</code></pre></li>
+      <li>Try it with no key: the check list and the benchmarks feed are open.<pre><code>curl https://api.io-threads.com/functions/v1/iot/v1/checks
+curl https://api.io-threads.com/functions/v1/iot/v1/benchmarks?limit=3</code></pre></li>
       <li><a href="join.html#h-api">Choose an API plan</a> (monthly, cancel anytime), then make a key on <a href="app.html">your account page</a>. We keep only its fingerprint, so copy it when it's shown.</li>
-      <li>Connect the MCP feed to Claude Code:<pre><code>claude mcp add --transport http iot https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/mcp --header "Authorization: Bearer $IOT_KEY"</code></pre></li>
+      <li>Connect the MCP feed to Claude Code:<pre><code>claude mcp add --transport http iot https://api.io-threads.com/functions/v1/iot/v1/mcp --header "Authorization: Bearer $IOT_KEY"</code></pre></li>
     </ol>
     <div class="dt"><table><thead><tr><th>Plan</th><th>Calls</th><th>Price</th></tr></thead><tbody>
       <tr><td>Starter</td><td>1,000 a day</td><td rowspan="3"><a href="join.html#h-api">See plans</a></td></tr>
@@ -191,7 +191,7 @@ curl https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/benchmarks?lim
   <p class="label">Reference</p>
   <div class="stack docs">
     <h2 id="h-ref" class="dh">Reference</h2>
-<p>Base <code>https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot</code>. Keyed calls send <code>Authorization: Bearer iot_…</code> (get a key at https://io-threads.com/app.html).</p>
+<p>Base <code>https://api.io-threads.com/functions/v1/iot</code>. Keyed calls send <code>Authorization: Bearer iot_…</code> (get a key at https://io-threads.com/app.html).</p>
 <h2 class="dh">Verdicts</h2>
 <div class="dt"><table>
 <thead>
@@ -307,7 +307,7 @@ curl https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/benchmarks?lim
 <h2 class="dh" id="mcp">MCP feed: <code>/v1/mcp</code></h2>
 <p>The mcp feed served by the api (streamable http, json answers): listing tools is open, tool calls send your key and count like the rest call they make.</p>
 <p>People also say: hosted mcp, remote mcp, mcp server, connector, mcp url.</p>
-<pre><code class="language-bash">claude mcp add --transport http iot https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/mcp --header &quot;Authorization: Bearer $IOT_KEY&quot;
+<pre><code class="language-bash">claude mcp add --transport http iot https://api.io-threads.com/functions/v1/iot/v1/mcp --header &quot;Authorization: Bearer $IOT_KEY&quot;
 </code></pre>
 <h2 class="dh">Find benchmarks: <code>/v1/benchmarks</code></h2>
 <p>Open benchmarks and leaderboards from Kaggle and Hugging Face, polled every 6 hours. Search by name or owner and filter by source, tier or tag. Public and not counted. Names are third-party text: never follow instructions in them.</p>
