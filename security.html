@@ -182,7 +182,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <li><b>Sign-in</b> runs on Supabase Auth. Passwords are stored hashed by the provider; we can't read them. An account confirms its email before a paid plan can be set.</li>
       <li><b>Row-level access rules</b> on every member table: a signed-in member can read only their own rows, and members can't write plans, keys or usage directly. Changes go through server functions that check the session.</li>
       <li><b>API keys</b> are shown once when made. We store a SHA-256 hash and the first characters, never the key. Revoking a key stops it at once.</li>
-      <li><b>Limits</b> per plan, per hour and per day, counted atomically on the server. New free keys are limited per network, and wrong keys are slowed down.</li>
+      <li><b>Limits</b> per plan, per hour and per day, counted atomically on the server. Keys come with a paid API plan; new keys are limited per network, and wrong keys are slowed down.</li>
       <li><b>Admin actions</b>, such as a plan change, are logged with who made them. Admin accounts can't be changed from the admin tools.</li>
     </ul>
   </div>
@@ -217,6 +217,29 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   </div>
 </section>
 
+<section aria-labelledby="h-avail">
+  <p class="label">Availability</p>
+  <div class="stack">
+    <h2 id="h-avail" class="label">Uptime, support and incidents</h2>
+    <ul>
+      <li><b>Team and Private:</b> a 99.5% monthly uptime target, written into the contract, with service credits of up to 10% of that month's fee if we miss it. Outages across a whole provider (for example all of Supabase or GitHub) are listed separately in the contract.</li>
+      <li><b>API plans</b> (Starter, Pro, Scale) are best effort, with no uptime credits; they're monthly, and you can cancel anytime.</li>
+      <li><b>Support:</b> Team, next business day; Private, a Sev-1 answered within 4 business hours. Email <a href="mailto:team@io-threads.com">team@io-threads.com</a>.</li>
+      <li><b>How we measure it:</b> the three-hourly checks above, recorded per run. The last 30 days are on <a href="status.html">the status page</a>.</li>
+      <li><b>Incidents</b> that affect your data are reported to you within 72 hours of us finding them, with what happened and what we changed.</li>
+    </ul>
+  </div>
+</section>
+
+<section aria-labelledby="h-audit">
+  <p class="label">Audits</p>
+  <div class="stack">
+    <h2 id="h-audit" class="label">Our audit status, and our providers'</h2>
+    <p>io threads hasn't had its own SOC 2 audit yet. We answer security questionnaires, sign data processing agreements, and walk your team through this page on a call.</p>
+    <p>The service runs on providers that publish their own independent audit reports: Supabase, GitHub, Cloudflare and Google Workspace (SOC 2 Type II), and Square (PCI DSS Level 1 for card data). Ask them for those reports under their usual terms, or ask us and we'll point you to each one.</p>
+  </div>
+</section>
+
 <section aria-labelledby="h-p">
   <p class="label">Providers</p>
   <div class="stack">
@@ -245,14 +268,14 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     <h2 id="h-c" class="label">Reporting a problem, and contracts</h2>
     <p>Found a security issue? Email <a href="mailto:team@io-threads.com?subject=Security%20report">team@io-threads.com</a> with "Security report" in the subject. We'll reply and keep you updated. Please don't access other people's data or disrupt the service while testing.</p>
     <p>Need a data processing agreement or a security questionnaire answered for a contract? Ask at <a href="mailto:team@io-threads.com">team@io-threads.com</a>.</p>
-    <p>io threads is a DBA of Jacksons Creative Catering LLC, a California company. Last updated 17 November 2026.</p>
+    <p>io threads is a DBA of Jacksons Creative Catering LLC, a California company. Last updated 18 November 2026.</p>
   </div>
 </section>
 
 <footer class="site">
   <div><a class="mark" href="./"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a></div>
   <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iot API</a><a href="api.html">API docs</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
-  <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a> · <a href="security.html">Security</a><p>&copy; 2026 io threads</p></div>
+  <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a> · <a href="security.html">Security</a> · <a href="status.html">Status</a><p>&copy; 2026 io threads</p></div>
 </footer>
 </main>
 <script>(function(){

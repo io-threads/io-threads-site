@@ -247,9 +247,10 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <h2 id="ap-h-key">Your API key</h2>
       <p id="ap-key-state" aria-live="polite">Checking…</p>
       <div class="ap-key" id="ap-key-new" hidden></div>
+      <p id="ap-key-plan" hidden><a class="btn solid" href="join.html#h-api">See API plans</a></p>
       <div class="ap-row"><button class="btn solid" type="button" id="ap-key-make">Create key</button><button class="btn line" type="button" id="ap-key-copy" hidden>Copy</button><button class="btn line" type="button" id="ap-key-revoke" hidden>Revoke</button></div>
       <p class="fine">Send it as <code>Authorization: Bearer $IOT_KEY</code>. We keep only a fingerprint, so copy it when it's shown. It works on the iot API and the hosted MCP feed; see <a href="api.html">the API docs</a>.</p>
-      <div id="ap-use" hidden><p id="ap-use-state" aria-live="polite"></p><button class="btn line" type="button" id="ap-over" hidden></button><p class="fine">Usage packs add 100,000 calls a month each, invoiced; order them at team@io-threads.com. With all 10 in use you can switch on metered overage, billed per 1,000 calls past your daily limit and invoiced monthly. Prices are on <a href="join.html#h-api">the join page</a>.</p></div>
+      <div id="ap-use" hidden><p id="ap-use-state" aria-live="polite"></p><div class="ap-row" id="packs"><a class="btn line" id="ap-packs-req" href="mailto:team@io-threads.com?subject=Usage%20packs" hidden>Request usage packs</a><button class="btn line" type="button" id="ap-over" hidden></button></div><p class="fine">Usage packs (Pro and Scale) add 100,000 calls a month each, invoiced; request them here and we add them within a business day. With all 10 in use you can switch on metered overage, billed per 1,000 calls past your daily limit and invoiced monthly. Prices are on <a href="join.html#h-api">the join page</a>.</p></div>
     </section>
     <section class="ap-card" aria-labelledby="ap-h-sub" id="ap-sub" hidden>
       <p class="ap-k">Plan</p>
@@ -314,15 +315,17 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
 <script src="vendor/supabase-2.45.4.js"></script>
 <script src="auth.js"></script>
 <script>(function(){
-var $=function(i){return document.getElementById(i)},key=null;
+var $=function(i){return document.getElementById(i)},key=null,M=null,K=null;
 if(!window.iotAuth)return;
 iotAuth.gate("app.html").then(function(s){if(!s)return;
   $("ap-email").textContent=s.user.email;
   function usage(d){var api=["Builder","Buyer","Partner"].indexOf(d.plan)>=0;$("ap-use").hidden=!api;if(!api)return;
+    if(d.plan==="Builder"){$("ap-use-state").textContent="Usage packs come with Pro and Scale. Need more than 1,000 calls a day? Pro has 10,000.";$("ap-over").hidden=true;$("ap-packs-req").hidden=true;return}
+    var rq=$("ap-packs-req");rq.hidden=d.status!=="active"||(d.usage_packs||0)>=10;rq.href="mailto:team@io-threads.com?subject="+encodeURIComponent("Usage packs")+"&body="+encodeURIComponent("Account email: "+s.user.email+"\nPlan: "+(NAMES[d.plan]||d.plan)+"\nPacks I have: "+(d.usage_packs||0)+"\nPacks I want in total (up to 10): \n");
     $("ap-use-state").textContent=(d.usage_packs||0)+" of 10 usage packs in use. Metered overage is "+(d.overage?"on":"off")+".";
     var b=$("ap-over");b.hidden=!(d.usage_packs===10&&d.status==="active");b.textContent=d.overage?"Switch overage off":"Switch on metered overage";
     b.onclick=function(){b.disabled=true;iotAuth.sb.rpc("iot_set_overage",{p_on:!d.overage}).then(function(r){b.disabled=false;var x=r.data&&r.data[0];if(r.error||!x||!x.ok){$("ap-use-state").textContent=(x&&x.error)||"Couldn't change overage. Try again.";return}d.overage=x.overage;usage(d)})}}
-  iotAuth.sb.from("members").select("plan,status,role,usage_packs,overage").maybeSingle().then(function(r){return r.error?iotAuth.sb.from("members").select("plan,status,role").maybeSingle():r}).then(function(r){if(r.error){$("ap-plan").textContent="Plan unavailable"}if(r.data){usage(r.data);$("ap-plan").textContent=(NAMES[r.data.plan]||r.data.plan)+(r.data.status!=="active"?" · "+r.data.status.replace("_"," "):"")+(r.data.role==="admin"?" · Admin":"");sub(r.data);if(r.data.role==="admin"){mfa();loadAdmin()}}});
+  iotAuth.sb.from("members").select("plan,status,role,usage_packs,overage").maybeSingle().then(function(r){return r.error?iotAuth.sb.from("members").select("plan,status,role").maybeSingle():r}).then(function(r){if(r.error){$("ap-plan").textContent="Plan unavailable"}if(r.data){M=r.data;keyUi();usage(r.data);$("ap-plan").textContent=(NAMES[r.data.plan]||r.data.plan)+(r.data.status!=="active"?" · "+r.data.status.replace("_"," "):"")+(r.data.role==="admin"?" · Admin":"");sub(r.data);if(r.data.role==="admin"){mfa();loadAdmin()}}});
   loadKey();
   $("ap-out").onclick=function(){iotAuth.signOut()};
   var WELCOME=!!new URLSearchParams(location.search).get("welcome");   // new sign-up: go to the iolin tour after the password
@@ -335,7 +338,7 @@ iotAuth.gate("app.html").then(function(s){if(!s)return;
   $("ap-key-copy").onclick=function(){navigator.clipboard.writeText(key).then(function(){$("ap-key-copy").textContent="Copied"})};
   $("ap-key-revoke").onclick=function(){call("revoke").then(function(){key=null;$("ap-key-new").hidden=true;$("ap-key-copy").hidden=true;loadKey()})};
 });
-var NAMES={Reader:"Free",Builder:"Starter",Buyer:"Pro",Partner:"Scale",Lifetime:"Lifetime"};
+var NAMES={Reader:"No API plan",Builder:"Starter",Buyer:"Pro",Partner:"Scale",Lifetime:"Lifetime"};
 // Admin card: the role shown here only decides whether to try; the admin function re-checks it on every call.
 function adm(body){return iotAuth.session().then(function(s){if(!s){location.replace("login.html?next=app.html");throw 0}return fetch(iotAuth.fn+"/admin",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+s.access_token},body:JSON.stringify(body)})}).then(function(r){return r.json()}).catch(function(){return {ok:false,error:"Couldn't reach the admin service. Try again."}})}
 function loadAdmin(msg){adm({action:"overview"}).then(function(r){if(!r.ok){if(r.error==="Admins only.")return;if(r.code==="aal2_required"){$("ap-admin").hidden=true;mfa();return}$("ap-admin").hidden=false;$("ap-adm-state").textContent=r.error;return}
@@ -376,8 +379,12 @@ $("ap-mfa-form").onsubmit=function(){var c=$("ap-mfa-code").value.replace(/\s/g,
     if(r.error){mfaSay(/invalid|expired/i.test(r.error.message)?"That code didn't match. Wait for the next one and try again.":"Couldn't check the code. Try again.");return}
     mfa();loadAdmin("Two-step sign-in is on.")}).catch(function(){mfaSay("Couldn't reach sign-in. Try again.")})};
 function loadKey(){iotAuth.sb.from("api_keys").select("prefix,created_at").is("revoked_at",null).order("created_at",{ascending:false}).limit(1).then(function(r){if(r.error){$("ap-key-state").textContent="Couldn't load your key. Reload the page.";return}var k=r.data&&r.data[0];
-  $("ap-key-state").textContent=k?"Active key "+k.prefix+"… created "+new Date(k.created_at).toLocaleDateString()+".":"You don't have a key yet. Free is 60 calls an hour, 1,000 a day.";
-  $("ap-key-make").textContent=k?"Replace key":"Create key";$("ap-key-revoke").hidden=!k})}
+  K=k||0;$("ap-key-make").textContent=k?"Replace key":"Create key";$("ap-key-revoke").hidden=!k;keyUi()})}
+// Accounts are free; API keys come with Starter, Pro or Scale (admins and Lifetime too).
+function keyUi(){if(K===null)return;var k=K,paid=!M||["Builder","Buyer","Partner","Lifetime"].indexOf(M.plan)>=0||M.role==="admin";
+  $("ap-key-make").hidden=!paid;$("ap-key-plan").hidden=paid;
+  $("ap-key-state").textContent=k?"Active key "+k.prefix+"… created "+new Date(k.created_at).toLocaleDateString()+"."+(paid?"":" It works again once you choose an API plan."):
+    (!M?"Checking…":paid?"You don't have a key yet. Make one and copy it when it's shown.":"API keys come with an API plan: Starter, Pro or Scale. Cancel anytime.")}
 function call(action){$("ap-key-state").textContent="Working…";return iotAuth.session().then(function(s){if(!s){location.replace("login.html?next=app.html");throw 0}return fetch(iotAuth.fn+"/api-key",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+s.access_token},body:JSON.stringify({action:action})})}).then(function(r){return r.json()}).then(function(r){if(!r.ok){$("ap-key-state").textContent=r.error||"Something went wrong."}return r}).catch(function(){$("ap-key-state").textContent="Couldn't reach the key service. Try again."; return {}})}
 })();</script>
 <div class="band">
@@ -387,7 +394,7 @@ function call(action){$("ap-key-state").textContent="Working…";return iotAuth.
 <footer class="site">
   <div><a class="mark" href="./"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a></div>
   <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iot API</a><a href="api.html">API docs</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
-  <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a><p>&copy; 2026 io threads</p></div>
+  <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a> · <a href="status.html">Status</a><p>&copy; 2026 io threads</p></div>
 </footer>
 </main>
 <script>(function(){
