@@ -197,7 +197,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <li><b>Account data</b> (email, plan, key fingerprint, usage counts) lives in a Supabase Postgres database in the US West (Oregon) region, encrypted at rest and reached over TLS.</li>
       <li><b>iolin web</b> runs the model in your browser. Chats, receipts and your signing key stay on your device.</li>
       <li><b>Payments</b> are taken by Square. We never see a full card number.</li>
-      <li><b>Point-in-time database recovery</b> isn't enabled on our current plan. The schema and server code are in version control, and every database change ships as a migration.</li>
+      <li><b>Backups:</b> the database is backed up daily, and each backup is kept for 7 days. Point-in-time recovery isn't enabled. The schema and server code are in version control, and every database change ships as a migration.</li>
     </ul>
     <p>Full details: <a href="privacy.html">Privacy</a>.</p>
   </div>
