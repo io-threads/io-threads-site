@@ -549,11 +549,11 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
               <section class="dsec" id="sx-api" aria-label="iot API">
               <h3 class="sth">iot API <span class="pill ok">hosted · works from anywhere</span></h3>
               <p class="dlead">Checks that return PASS, FAIL or ABSTAIN with the evidence behind them, plus the open benchmarks feed. One key for the API and MCP. This page never asks for or stores your key.</p>
-              <dl class="dfacts"><dt>Base URL</dt><dd><code class="sbase">https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1</code></dd>
+              <dl class="dfacts"><dt>Base URL</dt><dd><code class="sbase">https://api.io-threads.com/functions/v1/iot/v1</code></dd>
                 <dt>Auth</dt><dd><code class="sbase">Authorization: Bearer iot_…</code> Make a key on your <a href="/app.html">Account page</a>; it's shown once, so copy it then.</dd>
                 <dt>Limits</dt><dd>Starter 1,000 calls a day, Pro 10,000, Scale 100,000; a key without an API plan gets <code>402 no_plan</code>. <code>/v1/benchmarks</code> and <code>/v1/checks</code> are public and not counted; <code>/v1/me</code> isn't counted. Plan limits: <code>GET /v1/plans</code>.</dd>
                 <dt>Errors</dt><dd><code>401</code> no_key or bad_key · <code>429</code> limit (wait for Retry-After) · <code>400</code> bad_request (the message says which field)</dd></dl>
-              <h4 class="dsub">Endpoints <span>paths as in the full docs: /v1/me is https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/me</span></h4>
+              <h4 class="dsub">Endpoints <span>paths as in the full docs: /v1/me is https://api.io-threads.com/functions/v1/iot/v1/me</span></h4>
               <div class="bwrap"><table class="btab"><thead><tr><th scope="col">Method</th><th scope="col">Path</th><th scope="col">Key</th><th scope="col">What it does</th></tr></thead><tbody id="apiEp"></tbody></table></div>
               <h4 class="dsub">Examples</h4>
               <div class="sntabs" role="tablist" aria-label="Example language" id="apiTabs"></div>
@@ -566,7 +566,7 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
               <section class="dsec" id="sx-mcp" aria-label="MCP">
               <h3 class="sth">MCP <span class="pill ok">hosted · Streamable HTTP</span></h3>
               <p class="dlead">The iot checks as Model Context Protocol tools for agents and IDEs. Listing the tools is open; a tool call sends your key and counts like the API call it makes.</p>
-              <dl class="dfacts"><dt>URL</dt><dd><code class="sbase" id="mcpUrl">https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/mcp</code></dd>
+              <dl class="dfacts"><dt>URL</dt><dd><code class="sbase" id="mcpUrl">https://api.io-threads.com/functions/v1/iot/v1/mcp</code></dd>
                 <dt>Transport</dt><dd>Streamable HTTP, JSON answers</dd>
                 <dt>Auth</dt><dd><code class="sbase">Authorization: Bearer iot_…</code> Keep the key in an environment variable such as <code>IOT_KEY</code>.</dd></dl>
               <div class="sntabs" role="tablist" aria-label="Connect from" id="mcpTabs"></div>
@@ -1249,7 +1249,7 @@ function renderTemplates() { const box = $("tpls"); if (!box || !cur) return; bo
 /* ---------- Setup: model library ---------- */
 // Leaderboards come from io threads' public benchmarks feed (Kaggle + Hugging Face, polled every 6 h); a small snapshot is the offline fallback.
 // Names are third-party text: always set with textContent, never as HTML.
-const BENCH_URL = "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/benchmarks?limit=100&sort=popular";
+const BENCH_URL = "https://api.io-threads.com/functions/v1/iot/v1/benchmarks?limit=100&sort=popular";
 const BENCH_SNAPSHOT = {live:false, polled:{huggingface:"2026-11-17"}, items:[
   {source:"huggingface", name:"open-llm-leaderboard/open llm leaderboard", url:"https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard", owner:"open-llm-leaderboard", tier:"lab", tags:["modality:text","eval:code","eval:math"], popularity:14164},
   {source:"huggingface", name:"lmarena-ai/arena-leaderboard", url:"https://huggingface.co/spaces/lmarena-ai/arena-leaderboard", owner:"lmarena-ai", tier:"lab", tags:[], popularity:5039},
@@ -1598,7 +1598,7 @@ function renderMarket() { const box = $("mkt"); if (!box) return; const fk = kee
   fk(); }
 
 /* iot API + MCP docs (endpoints and tools as documented on /api.html) */
-const API_BASE = "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1", MCP_URL = API_BASE + "/mcp";
+const API_BASE = "https://api.io-threads.com/functions/v1/iot/v1", MCP_URL = API_BASE + "/mcp";
 const API_EP = [["GET", "/v1", "no", "Lists the endpoints"], ["GET", "/v1/health", "no", "Is the API up"], ["GET", "/v1/plans", "no", "Plans and their call limits"], ["GET", "/v1/checks", "no", "The checks you can run"],
   ["GET", "/v1/me", "yes", "Your key, plan and usage"], ["GET", "/v1/benchmarks", "no", "Open leaderboards from Kaggle and Hugging Face; q, source, tier, tag, sort (popular or recent), limit (up to 100), offset"],
   ["POST", "/v1/mcp", "per tool", "The MCP feed (Streamable HTTP)"], ["POST", "/v1/pretrain/checks", "yes", "Before training: leakage, duplicates, labels, coverage, personal data"],
