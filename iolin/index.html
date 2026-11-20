@@ -812,10 +812,10 @@ const HELP = [
   ["ask <question>","ask the model; reply streams here"],["recap","summarize the current session"],
   ["receipts","list signed receipts"],["verify [n]","check a receipt's signature"],["tamper [n]","edit one word, then check again"],
   ["set name|temp|top_p|max|ctx <value>","change a setting"],["templates | template <name>","list or start an Instruct template"],["sessions | sessions new","list or start sessions"],
-  ["open <file>","open a workspace file in Output"],["export","download your workspace"],["demo on|off","pre-recorded replies (default); off opens the real-model page"],["stop","stop the reply in progress"],["tour","replay the getting-started tour"],["clear","clear the terminal"]];
+  ["agents | agents live | agents {json}","which agent setup is best on a task (iot API agent scores)"],["agents key <iot_…> | agents forget","use your iot key in this tab only"],["open <file>","open a workspace file in Output"],["export","download your workspace"],["demo on|off","pre-recorded replies (default); off opens the real-model page"],["stop","stop the reply in progress"],["tour","replay the getting-started tour"],["clear","clear the terminal"]];
 
 async function run(raw) {
-  const cmd = raw.trim(); if (!cmd) return; echo(cmd);
+  const cmd = raw.trim(); if (!cmd) return; echo(cmd.replace(KEY_RE, m => m.slice(0, 8) + "…"));
   const [c0, ...rest] = cmd.replace(/^zb\s+/, "").split(/\s+/); const arg = rest.join(" "); used.add(c0); renderSide();
   try {
     if (c0 === "help") HELP.forEach(([a, b]) => out(`<span class="u-hl">${esc(a)}</span>  ${esc(b)}`));
@@ -835,6 +835,7 @@ async function run(raw) {
     else if (c0 === "set") await cmdSet(rest[0], rest.slice(1).join(" "));
     else if (c0 === "sessions") { if (rest[0] === "new") { cur = newSession(); sessions.push(cur); await save(); renderAll(); out(`started session ${cur.id.slice(0,8)}`); }
       else sessions.forEach(s => out(`${s.id === cur.id ? '<span class="u-ok">●</span>' : " "} ${esc(s.title)} · ${s.messages.length} messages · ${s.created.slice(0,10)}`)); }
+    else if (c0 === "agents") await cmdAgents(rest, cmd);
     else if (c0 === "open") openFile(arg);
     else if (c0 === "export") { await exportAll(); out(`artifact <span class="u-hl">iolin-workspace.json</span> saved · private key not included`); }
     else if (c0 === "demo") { if (rest[0] === "off" && !LIVE) { out(`opening the real-model version · downloads a model once (≈335 MB+)`); location.search = liveUrl(); return; } DEMO = rest[0] !== "off"; if (DEMO && !engine) { engine = demoEngine; loaded = "demo-engine"; } if (!DEMO && loaded === "demo-engine") { engine = null; loaded = null; }
@@ -860,6 +861,47 @@ async function cmdVerify(tamper, n) {
   out(`receipt v${i + 1} ${r.run_id.slice(0,8)} · ${r.alg} · ${ok ? '<span class="u-ok">VALID</span>' : '<span class="u-bad">INVALID</span>'}${tamper ? ` · changed execution_mode to "${r.execution_mode}"` : ""}`);
   showOutput(JSON.stringify(r, null, 1)); setTimeout(() => switchTerm("term"), 1400);
   ev(me(), tamper ? `tamper v${i + 1} · ${ok ? "valid" : "check FAIL"}` : `verify v${i + 1} · ${ok ? "PASS" : "FAIL"}`, ok ? "m" : "");
+}
+/* ---------- agents: which agent setup is best (iot API POST /v1/agents/scores) ---------- */
+// "agents" shows a sample response computed by the API's own check. "agents live" (or agents {json}) calls the API with
+// your key, which stays in this tab's memory only: never saved, never shown in full, gone when the tab closes.
+const KEY_RE = /iot_[A-Za-z0-9_-]{8,}/g;
+const AGENTS_SAMPLE = {"body":{"task":"refund-lookup","floor":0.8,"cost_weight":0.3,"arms":[{"id":"executor·gemini-flash·wise_budget","pass":41,"fail":6,"abstain":3,"cost_usd":2.05,"tokens":410000,"p95_ms":1800},{"id":"executor·claude-haiku·latency_aware","pass":44,"fail":4,"cost_usd":3.96,"tokens":300000,"p95_ms":1200},{"id":"executor·local-gemma·cheapest","pass":30,"fail":12,"cost_usd":0.0,"p95_ms":4100},{"id":"researcher·flash·fixed_chain","pass":12,"fail":2,"cost_usd":0.4,"p95_ms":2600},{"id":"executor·rogue-scope","pass":50,"fail":0,"breaches":1,"cost_usd":1.0}]},"res":{"verdict":"PASS","task":"refund-lookup","floor":0.8,"arms":[{"id":"executor·claude-haiku·latency_aware","pass":44,"fail":4,"abstain":0,"n":48,"rate":0.9167,"ci95":[0.8045,0.9671],"breaches":0,"cost_per_success":0.09,"tokens_per_success":6818,"p95_ms":1200,"verdict":"PASS","result":"clears the floor: whole interval at or above 0.8","p_best":0.6325,"weight":0.7871},{"id":"executor·gemini-flash·wise_budget","pass":41,"fail":6,"abstain":3,"n":47,"rate":0.8723,"ci95":[0.7483,0.9402],"breaches":0,"cost_per_success":0.05,"tokens_per_success":10000,"p95_ms":1800,"verdict":"ABSTAIN","result":"interval straddles the floor: run more tasks on this arm","p_best":0.1995,"weight":0.0777},{"id":"researcher·flash·fixed_chain","pass":12,"fail":2,"abstain":0,"n":14,"rate":0.8571,"ci95":[0.6006,0.9599],"breaches":0,"cost_per_success":0.0333,"p95_ms":2600,"verdict":"ABSTAIN","result":"interval straddles the floor: run more tasks on this arm","p_best":0.1668,"weight":0.1321},{"id":"executor·local-gemma·cheapest","pass":30,"fail":12,"abstain":0,"n":42,"rate":0.7143,"ci95":[0.5643,0.8283],"breaches":0,"cost_per_success":0,"p95_ms":4100,"verdict":"ABSTAIN","result":"interval straddles the floor: run more tasks on this arm","p_best":0.0013,"weight":0.0031},{"id":"executor·rogue-scope","pass":50,"fail":0,"abstain":0,"n":50,"rate":1,"ci95":[0.9286,1],"breaches":1,"cost_per_success":0.02,"verdict":"FAIL","result":"1 run(s) broke a rule (scope, stop or a forged step): out of the running until a person clears it","p_best":0,"weight":0}],"leader":{"id":"executor·claude-haiku·latency_aware","p_best":0.6325,"decided":false},"signal":"no clear leader yet: executor·claude-haiku·latency_aware has a 63% chance of being best; run more tasks","next_run":["run more tasks on executor·gemini-flash·wise_budget","run more tasks on researcher·flash·fixed_chain","run more tasks on executor·local-gemma·cheapest","run more tasks on the top two arms to separate them"],"abstain_note":"3 abstained run(s) are listed but count as neither pass nor fail","method":"Wilson 95% interval vs the floor per arm; chance of being best from 4000 seeded Beta(pass+1, fail+1) draws"}};
+let iotKey = "";
+async function cmdAgents(rest, raw) {
+  const sub = rest[0] || "sample";
+  if (sub === "key") { const k = (rest[1] || "").trim();
+    if (!/^iot_[A-Za-z0-9_-]{20,64}$/.test(k)) return out("usage: agents key iot_… · make a key at io-threads.com/app.html");
+    iotKey = k; return out(`key ${esc(k.slice(0, 8))}… set for this tab only · not saved · type <span class="u-hl">agents live</span>`); }
+  if (sub === "forget") { iotKey = ""; return out("key forgotten"); }
+  if (sub === "sample") { renderArms(AGENTS_SAMPLE.res, "sample response from the API's own check · no key, nothing sent"); return; }
+  let body = AGENTS_SAMPLE.body;
+  if (sub !== "live") { try { body = JSON.parse(raw.slice(raw.indexOf("{"))); } catch { return out('usage: agents | agents live | agents {"arms":[{"id":"a","pass":9,"fail":1}]} · agents key iot_…'); } }
+  if (!iotKey) return out("set your key first: agents key iot_… (kept in this tab only)");
+  const t0 = performance.now(); let r, d;
+  try { r = await fetch(API_BASE + "/agents/scores", {method: "POST", headers: {"Content-Type": "application/json", Authorization: "Bearer " + iotKey}, body: JSON.stringify(body)}); d = await r.json().catch(() => ({})); }
+  catch { return out('<span class="u-bad">unreachable</span> couldn\'t reach the iot API'); }
+  if (r.status === 404) return out('<span class="u-am">not live yet</span> agent scores isn\'t in production yet · type <span class="u-hl">agents</span> for the sample');
+  if (!r.ok) return out(`<span class="u-bad">${r.status}</span> ${esc(d.error?.code || "")}: ${esc(d.error?.message || "")}`);
+  renderArms(d, `POST /v1/agents/scores · ${Math.round(performance.now() - t0)} ms · ${esc(r.headers.get("X-RateLimit-Remaining") ?? "?")} calls left`);
+}
+function renderArms(d, where) {
+  const VC = {PASS: "u-ok", FAIL: "u-bad", ABSTAIN: "u-am"}, G = {PASS: "✓", FAIL: "✗", ABSTAIN: "?"};
+  out(`<span class="${VC[d.verdict] || ""}">${G[d.verdict] || "?"} ${esc(d.verdict)}</span>  task ${esc(d.task || "—")} · floor ${esc(d.floor)} · <span style="color:var(--w-dim)">${where}</span>`);
+  out(`<span style="color:var(--w-dim)">${esc("  arm".padEnd(38) + "rate   95% interval       best  share")}</span>`);
+  for (const a of d.arms || []) {
+    const cells = Array(17).fill("·"), fl = Math.round(d.floor * 16);
+    for (let i = Math.round(a.ci95[0] * 16); i <= Math.round(a.ci95[1] * 16); i++) cells[i] = "━";
+    cells[fl] = "|";
+    const rate = a.rate == null ? "  —  " : a.rate.toFixed(3);
+    out(`<span class="${VC[a.verdict] || ""}">${G[a.verdict] || "?"}</span> ${esc(String(a.id).slice(0, 35).padEnd(36))}${rate}  <span class="${VC[a.verdict] || ""}">${cells.join("")}</span>  ${String(Math.round((a.p_best || 0) * 100)).padStart(3)}%  ${String(Math.round((a.weight || 0) * 100)).padStart(3)}%`);
+    if (a.verdict !== "PASS") out(`<span style="color:var(--w-dim)">${esc("  └ " + a.result)}</span>`);
+  }
+  if (d.leader) out(`leader <span class="u-hl">${esc(d.leader.id)}</span> · ${d.leader.decided ? '<span class="u-ok">decided</span>' : '<span class="u-am">not decided</span>'} · ${esc(d.signal)}`);
+  for (const k of ["abstain_note", "cost_note"]) if (d[k]) out(`<span style="color:var(--w-dim)">${esc(d[k])}</span>`);
+  $("outPane").textContent = JSON.stringify(d, null, 1);
+  out('<span style="color:var(--w-dim)">full response in Output · ABSTAIN means run more, never a pass</span>');
+  ev(me(), `agents · ${d.verdict}${d.leader ? " · " + d.leader.id : ""}`, d.verdict === "PASS" ? "m" : "");
 }
 async function cmdSet(k, v) {
   const map = {name:"name", temp:"temperature", temperature:"temperature", max:"max_tokens", system:"system", top_p:"top_p", topp:"top_p", ctx:"ctx", context:"ctx"};
@@ -1748,7 +1790,7 @@ async function tour(n) {
   document.querySelectorAll(".ttab").forEach(b => b.onclick = () => switchTerm(b.dataset.t));
   const hist = []; let hi = 0;
   $("cmd").addEventListener("keydown", e => {
-    if (e.key === "Enter") { const v = $("cmd").value; $("cmd").value = ""; if (v.trim()) { hist.push(v); hi = hist.length; } run(v); }
+    if (e.key === "Enter") { const v = $("cmd").value; $("cmd").value = ""; if (v.trim()) { hist.push(v.replace(KEY_RE, m => m.slice(0, 8) + "…")); hi = hist.length; } run(v); }
     else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hi = Math.max(0, hi - 1); $("cmd").value = hist[hi]; }
     else if (e.key === "ArrowDown" && hist.length) { e.preventDefault(); hi = Math.min(hist.length, hi + 1); $("cmd").value = hist[hi] || ""; }
     else if (e.key === "c" && e.ctrlKey && busy && thinking) { stop = true; out("^C stopping…"); } });

@@ -72,6 +72,25 @@ with sync_playwright() as p:
     o = cmd(pg, "stop", 3000); check("terminal", "stop mid-reply", re.search(r"stop", o, re.I), o.replace("\n", " ")[:160])
     pg.fill("#cmd", ""); pg.focus("#cmd"); pg.keyboard.press("ArrowUp"); hv = pg.input_value("#cmd")
     check("terminal", "↑ recalls command history", hv == "stop", hv); pg.fill("#cmd", "")
+    # Agent scores (iot API POST /v1/agents/scores): sample needs no key; the live call is mocked here, so no call is spent.
+    o = cmd(pg, "agents")
+    check("agents", "sample shows verdict, arms and a leader", "PASS" in o and "leader" in o and "rogue-scope" in o and "broke a rule" in o, o[-300:])
+    o = cmd(pg, "agents live"); check("agents", "live without a key asks for one", "set your key first" in o, o)
+    fake = "iot_" + "Z" * 30
+    o = cmd(pg, "agents key " + fake); check("agents", "key is masked in the terminal", fake not in term(pg) and "iot_ZZZZ…" in o, o)
+    pg.fill("#cmd", ""); pg.focus("#cmd"); pg.keyboard.press("ArrowUp"); hv = pg.input_value("#cmd"); pg.fill("#cmd", "")
+    check("agents", "key is masked in command history", fake not in hv, hv)
+    seen = {}
+    def fake_api(route):
+        seen["auth"] = route.request.headers.get("authorization", ""); seen["body"] = route.request.post_data or ""
+        route.fulfill(status=200, headers={"Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Access-Control-Expose-Headers": "X-RateLimit-Remaining", "X-RateLimit-Remaining": "998"},
+                      body=json.dumps({"verdict": "ABSTAIN", "task": "t", "floor": 0.8, "arms": [{"id": "<b>x</b>", "verdict": "ABSTAIN", "rate": 0.85, "ci95": [0.7, 0.93], "p_best": 0.5, "weight": 0.5, "result": "interval straddles the floor"}],
+                                       "leader": {"id": "<b>x</b>", "p_best": 0.5, "decided": False}, "signal": "no clear leader yet"}))
+    pg.route("**/functions/v1/iot/v1/agents/scores", fake_api)
+    o = cmd(pg, 'agents {"arms":[{"id":"a","pass":9,"fail":1}]}', 1500)
+    check("agents", "live call sends the key and the JSON typed", seen.get("auth") == "Bearer " + fake and '"pass":9' in seen.get("body", ""), seen)
+    check("agents", "live result renders, arm names escaped", "ABSTAIN" in o and "998 calls left" in o and "<b>x</b>" in o and not pg.query_selector("#termPane b"), o[-250:])
+    pg.unroute("**/functions/v1/iot/v1/agents/scores"); cmd(pg, "agents forget")
     o = cmd(pg, "receipts"); n_rec = len(re.findall(r"\bv\d+\s", o)); check("terminal", "receipts lists every run", n_rec >= 3, o.replace("\n", " | ")[:200])
     o = cmd(pg, "verify 2", 1500); check("terminal", "verify 2 → VALID", "VALID" in o and "INVALID" not in o, o.strip()[:120])
     o = cmd(pg, "tamper 2", 1500); check("terminal", "tamper 2 → INVALID with the changed field", "INVALID" in o, o.strip()[:140])
