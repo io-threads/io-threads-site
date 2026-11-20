@@ -91,6 +91,18 @@ with sync_playwright() as p:
     check("agents", "live call sends the key and the JSON typed", seen.get("auth") == "Bearer " + fake and '"pass":9' in seen.get("body", ""), seen)
     check("agents", "live result renders, arm names escaped", "ABSTAIN" in o and "998 calls left" in o and "<b>x</b>" in o and not pg.query_selector("#termPane b"), o[-250:])
     pg.unroute("**/functions/v1/iot/v1/agents/scores"); cmd(pg, "agents forget")
+    # Local feed (local_feed.py on the visitor's machine), mocked: the page reads 127.0.0.1 with the tab-only token.
+    o = cmd(pg, "feed watch"); check("feed", "feed without a token says how to connect", "connect first" in o, o)
+    ftok = "feed_" + "Q" * 24; got = {}
+    def fake_feed(route):
+        got["auth"] = route.request.headers.get("authorization", "")
+        route.fulfill(status=200, headers={"Content-Type": "application/json", "Access-Control-Allow-Origin": "*"},
+                      body=json.dumps({"name": "bus", "at": "2026-11-20T03:20:00Z", "took_ms": 1400, "every_s": 20, "rc": 0, "text": "┌─ MACHINE BUS <b>x</b>\n│ bridge: HEALTHY"}))
+    pg.route("http://127.0.0.1:8806/v1/feed", fake_feed)
+    o = cmd(pg, "feed connect " + ftok); check("feed", "feed token masked in the terminal", ftok not in term(pg), o)
+    cmd(pg, "feed watch", 1200); outp = pg.inner_text("#outPane")
+    check("feed", "feed shows the local terminal in Output, as text", "MACHINE BUS <b>x</b>" in outp and "bridge: HEALTHY" in outp and got.get("auth") == "Bearer " + ftok and not pg.query_selector("#outPane b"), outp[:160])
+    pg.click('[data-t="term"]'); cmd(pg, "feed forget"); pg.unroute("http://127.0.0.1:8806/v1/feed")
     o = cmd(pg, "receipts"); n_rec = len(re.findall(r"\bv\d+\s", o)); check("terminal", "receipts lists every run", n_rec >= 3, o.replace("\n", " | ")[:200])
     o = cmd(pg, "verify 2", 1500); check("terminal", "verify 2 → VALID", "VALID" in o and "INVALID" not in o, o.strip()[:120])
     o = cmd(pg, "tamper 2", 1500); check("terminal", "tamper 2 → INVALID with the changed field", "INVALID" in o, o.strip()[:140])
