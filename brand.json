@@ -1,0 +1,19 @@
+{
+ "product": "iostem",
+ "company": "io threads",
+ "api": {
+  "name": "iostem API",
+  "engine": "iot",
+  "base_path": "/iot/v1",
+  "key_prefix": "iot_",
+  "docs": "https://io-threads.com/api.html",
+  "note": "iostem is the product name; keys, the base path and every endpoint are unchanged, so existing integrations keep working"
+ },
+ "surfaces": {
+  "api": "iostem API",
+  "mcp": "iostem MCP feed",
+  "iolin": "iolin — iostem signed records",
+  "engine": "iostem (worldbuild, replay, economy)"
+ },
+ "updated": "2026-11-20"
+}
