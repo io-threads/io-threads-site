@@ -1074,10 +1074,18 @@ function renderTree() {
   $("tree").innerHTML = rows.map(([c, n, cls, cmd]) => `<div class="${cls}" data-cmd="${esc(cmd)}"><span class="car">${c}</span>${esc(n)}</div>`).join("");
   $("tree").querySelectorAll("[data-cmd]").forEach(d => d.onclick = () => d.dataset.cmd && run(d.dataset.cmd));
 }
+/* session label: the time if today (local), "Yesterday", else the day ("Mon, Nov 17") */
+function sessWhen(iso) {
+  const d = new Date(iso); if (isNaN(d)) return "";
+  const day = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(new Date()) - day(d)) / 86400000);
+  if (diff === 0) return d.toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"});
+  if (diff === 1) return "Yesterday";
+  return d.toLocaleDateString(undefined, {weekday: "short", month: "short", day: "numeric", ...(d.getFullYear() !== new Date().getFullYear() ? {year: "numeric"} : {})});
+}
 function renderSessions() {
-  const today = new Date().toISOString().slice(0,10);
   $("sessions").innerHTML = sessions.slice(-3).reverse().map(s => `<div class="sess ${s.id === cur.id ? "on" : ""}" data-id="${s.id}">
-    <span class="t">${s.created.slice(0,10) === today ? "Today" : new Date(s.created).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</span>
+    <span class="t" title="${esc(new Date(s.created).toLocaleString())}">${sessWhen(s.created)}</span>
     <span class="n">${esc(s.title)}</span>${s.id === cur.id && thinking ? '<span style="color:var(--purple)">●●</span>' : ""}<button class="chip" data-recap="${s.id}">Recap</button></div>`).join("");
   $("sessions").querySelectorAll(".sess").forEach(d => d.onclick = async e => { const s = sessions.find(x => x.id === d.dataset.id); cur = s; await save();
     if (e.target.dataset.recap) run("recap"); renderAll(); });
