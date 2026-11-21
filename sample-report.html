@@ -4,11 +4,11 @@
 <script>/* site theme before first paint (footer toggle); Dawn (kraft) is the default */try{var t=null;try{t=localStorage.getItem("iot-site-theme")}catch(x){}if(t!=="twilight"&&t!=="dusk")t="dawn";var e=document.documentElement;if(t==="dusk")e.setAttribute("data-theme","dark");else{e.setAttribute("data-site",t);e.setAttribute("data-theme",t==="twilight"?"dark":"light")}}catch(x){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>iot API: pre-train, intra-train, forward-train | io threads</title>
-<meta name="description" content="iot API for pre-train, intra-train and forward-train checks: data leakage, checkpoint regressions, launch gates and recheck baselines.">
+<title>iostem API: pre, intra, forward-train | io threads</title>
+<meta name="description" content="iostem API for pre-train, intra-train and forward-train checks: data leakage, checkpoint regressions, launch gates and recheck baselines.">
 <link rel="canonical" href="https://io-threads.com/sample-report.html">
 <meta property="og:title" content="Sample AI Evaluation Report | io threads">
-<meta property="og:description" content="iot API for pre-train, intra-train and forward-train checks: data leakage, checkpoint regressions, launch gates and recheck baselines.">
+<meta property="og:description" content="iostem API for pre-train, intra-train and forward-train checks: data leakage, checkpoint regressions, launch gates and recheck baselines.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://io-threads.com/sample-report.html">
 <meta property="og:site_name" content="io threads">
@@ -19,7 +19,7 @@
 <meta property="og:image:alt" content="io threads: your AI claim is only as good as the person who checked it. Verdict table showing PASS, FAIL and ABSTAIN.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Sample AI Evaluation Report | io threads">
-<meta name="twitter:description" content="iot API for pre-train, intra-train and forward-train checks: data leakage, checkpoint regressions, launch gates and recheck baselines.">
+<meta name="twitter:description" content="iostem API for pre-train, intra-train and forward-train checks: data leakage, checkpoint regressions, launch gates and recheck baselines.">
 <meta name="twitter:image" content="https://io-threads.com/assets/og-card.png">
 <meta name="theme-color" content="#141D2D">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%232a1416'/%3E%3Ccircle cx='256' cy='282' r='150' fill='none' stroke='%23E07A52' stroke-width='44'/%3E%3Cline x1='256' y1='58' x2='256' y2='108' stroke='%23E07A52' stroke-width='44' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -1364,7 +1364,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     <a class="mark only" href="./" aria-label="io threads home"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a>
     <nav class="nav" aria-label="Main">
       <a href="iolin/" data-looop>iolin</a>
-      <a href="sample-report.html" aria-current="page">iot API</a>
+      <a href="sample-report.html" aria-current="page">iostem API</a>
       <a href="industries.html">Enterprise</a>
       <a class="login" href="login.html"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="5.5" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 14c.8-2.8 3-4 5.5-4s4.7 1.2 5.5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Log in</a>
       <a class="btn solid" href="join.html">Join now</a>
@@ -1403,7 +1403,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
 
 
 <div class="api-head">
-  <p class="label">iot API · preview spec</p>
+  <p class="label">iostem API · preview spec</p>
   <h1>Checks before, during and after training.</h1>
   <p class="meta1"><span>preview · live reference on <a href="api.html">API docs</a></span><span>Bearer key</span><span>API plan from Starter</span><span>PASS · FAIL · ABSTAIN</span></p>
   <nav class="pline" aria-label="On this page"><a href="industries.html#h-free" class="go">Start here</a><a href="#pretrain"><i>01</i>Pre-train<em>the data</em></a><a href="#intratrain"><i>02</i>Intra-train<em>the run</em></a><a href="#forwardtrain"><i>03</i>Forward-train<em>what ships</em></a><a href="#local"><i>04</i>Local<em>free, on your machine</em></a></nav>
@@ -1583,12 +1583,12 @@ section.docs>*{grid-column:1/-1!important}
   <p class="fine">Anyone with the record can check that the inputs, gates and verdict are the ones that ran. It shows what happened in this run; it doesn't promise how the system behaves outside the test set.</p>
 </section>
 <div class="band">
-  <div><h2>Building agents, IDEs or search apps?</h2><p>Plug in the check layer. The iot API, MCP feed and agent skill put a PASS, FAIL or ABSTAIN on every answer your product gives, with the evidence attached.</p></div>
+  <div><h2>Building agents, IDEs or search apps?</h2><p>Plug in the check layer. The iostem API, MCP feed and agent skill put a PASS, FAIL or ABSTAIN on every answer your product gives, with the evidence attached.</p></div>
   <div class="cta"><a class="btn solid" href="industries.html#h-free">Start here</a><a class="btn line" href="mailto:team@io-threads.com?subject=Partnership%3A%20agentic%20apps">Partner with us</a></div>
 </div>
 <footer class="site">
   <div><a class="mark" href="./"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a></div>
-  <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iot API</a><a href="api.html">API docs</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
+  <nav aria-label="Footer"><a href="industries.html">Enterprise</a><a href="sample-report.html">iostem API</a><a href="api.html">API docs</a><a href="about.html">About</a><a href="services.html">Services</a></nav>
   <div><a href="mailto:team@io-threads.com">team@io-threads.com</a><br><a href="privacy.html">Privacy</a> · <a href="security.html">Security</a> · <a href="status.html">Status</a><p>&copy; 2026 io threads</p></div>
 </footer>
 </main>

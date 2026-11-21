@@ -158,7 +158,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
     <a class="mark only" href="./" aria-label="io threads home"><svg class="mk or" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg><b>io</b></a>
     <nav class="nav" aria-label="Main">
       <a href="iolin/" data-looop>iolin</a>
-      <a href="sample-report.html">iot API</a>
+      <a href="sample-report.html">iostem API</a>
       <a href="industries.html">Enterprise</a>
       <a class="login" href="login.html"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><circle cx="8" cy="5.5" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.5 14c.8-2.8 3-4 5.5-4s4.7 1.2 5.5 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Log in</a>
       <a class="btn solid" href="join.html">Join now</a>
@@ -275,7 +275,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
 var $=function(i){return document.getElementById(i)};
 if(!window.iotAuth)return;
 var FN=iotAuth.fn, SB=FN.replace("/functions/v1",""), SITE_REPO="io-threads/io-threads-site";
-var PAGES=[["Home","./"],["Join","join.html"],["iot API (sample report)","sample-report.html"],["Enterprise","industries.html"],["Services","services.html"],["About","about.html"],["Contact","contact.html"],["Privacy","privacy.html"],["Log in","login.html"],["Account","app.html"],["iolin","looop.html"],["Not found","404.html"]];
+var PAGES=[["Home","./"],["Join","join.html"],["iostem API (sample report)","sample-report.html"],["Enterprise","industries.html"],["Services","services.html"],["About","about.html"],["Contact","contact.html"],["Privacy","privacy.html"],["Log in","login.html"],["Account","app.html"],["iolin","looop.html"],["Not found","404.html"]];
 function el(tag,text,cls){var e=document.createElement(tag);if(text!=null)e.textContent=text;if(cls)e.className=cls;return e}
 function ago(t){var s=(Date.now()-new Date(t).getTime())/1000;if(s<90)return "just now";if(s<5400)return Math.round(s/60)+" min ago";if(s<129600)return Math.round(s/3600)+" h ago";return Math.round(s/86400)+" days ago"}
 function row(tb,cells){var tr=el("tr");cells.forEach(function(c){var td=el("td");if(c&&c.nodeType)td.appendChild(c);else td.textContent=c==null?"":c;tr.appendChild(td)});tb.appendChild(tr)}
@@ -295,7 +295,7 @@ function live(){$("op-live").textContent="";
   tile("Sign-in",function(){return fetch(SB+"/auth/v1/health",{headers:{apikey:iotAuth.sb.supabaseKey||""}}).then(function(r){return [r.ok?"ok":"bad",r.ok?"Supabase Auth up":"HTTP "+r.status]})});
   tile("Square checkout",function(){return reach("https://web.squarecdn.com/v1/square.js")});
   tile("Merch store",function(){return reach("https://10threads.store/")});
-  tile("iot API",function(){return fetch("https://api.io-threads.com/v1/checks",{mode:"no-cors"}).then(function(){return ["ok","answering"]},function(){return ["warn","not open yet (runbook block E)"]})});
+  tile("iostem API",function(){return fetch("https://api.io-threads.com/v1/checks",{mode:"no-cors"}).then(function(){return ["ok","answering"]},function(){return ["warn","not open yet (runbook block E)"]})});
   tile("Sign-in email (DKIM)",function(){return fetch("https://dns.google/resolve?name=google._domainkey.io-threads.com&type=TXT").then(function(r){return r.json()}).then(function(d){var on=JSON.stringify(d.Answer||[]).indexOf("v=DKIM1")>=0;return [on?"ok":"warn",on?"Google DKIM set":"not set up yet (runbook block A)"]})});
 }
 
