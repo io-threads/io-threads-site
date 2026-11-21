@@ -497,9 +497,7 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
               <h3 class="sth">Benchmarks <span id="bMeta"></span></h3>
               <div class="mlbar"><input id="bQ" type="search" placeholder="Search leaderboards or owners" aria-label="Search leaderboards"><select id="bSrc" aria-label="Source"></select><select id="bTier" aria-label="Tier"></select><select id="bTask" aria-label="Task"></select></div>
               <div class="bwrap"><table class="btab"><thead><tr><th scope="col">#</th><th scope="col">Leaderboard</th><th scope="col">Tier</th><th scope="col">Tasks</th><th scope="col" class="n">Popularity</th></tr></thead><tbody id="bBody"></tbody></table></div>
-              <details class="bmore" id="bAbout"><summary>About this list: sources, and what's planned</summary>
-                <p class="dlead">The leaderboards where open models are ranked, from the iot benchmarks feed (Kaggle and Hugging Face, polled every 6 hours), in the feed's popularity order. iolin doesn't score models itself: open a leaderboard to see where a model places. A listing, not an endorsement.</p>
-                <p class="mnote" id="bNote"></p>
+              <details class="bmore" id="bAbout"><summary>Coming next: more sources, weights and presets</summary>
                 <div class="bplan"><b>Planned, not built yet</b>
                   <ul>
                     <li><b>More sources:</b> other public leaderboards, read politely (public pages only, robots.txt honoured, no sign-ins).</li>
@@ -1539,9 +1537,7 @@ function renderBench() { const body = $("bBody"); if (!body) return; const fk = 
       const lw = el("div", "lib"); lw.append(el("span", "mnote", "in the library "), c); nm.append(lw); }
     body.append(r); });
   if (!l.length) { const r = el("tr"), d = el("td", "mnote", "No leaderboard matches. Clear the search or a filter."); d.colSpan = 5; r.append(d); body.append(r); }
-  const pol = Object.entries(b.polled || {}).map(([k, v]) => `${BSRC[k] || k} ${String(v).slice(0, 10)}`).join(", ");
   $("bMeta").textContent = `${l.length} of ${items.length} shown`;
-  $("bNote").textContent = `${b.live ? `Live from the iot benchmarks feed (${(b.total || items.length).toLocaleString()} listed, top ${items.length} by popularity fetched)` : "Offline snapshot of the iot benchmarks feed (the live feed didn't answer)"} · polled ${pol || "date not given"}. Popularity is the number the feed reports for each leaderboard. Names are third-party text.`;
   fk(); }
 
 /* model configs: per model, saved with the settings */
