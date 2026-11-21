@@ -775,7 +775,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
   .fly .spoke{stroke:rgba(232,236,243,.16);stroke-width:1.2}
   .fly .link{fill:none;stroke:rgba(232,236,243,.22);stroke-width:1.2}
   .fly .bead{fill:#E8ECF3}
-  .fly .hub{fill:rgba(20,29,45,.16);stroke:none}
+  .fly .hub{fill:url(#hubground);stroke:none}
   .fly .nd circle.core{fill:#252E40;stroke-width:3}
   .fly .nd circle.halo{fill:none;stroke-width:2.5}
   .fly .nd circle.run{fill:none;stroke-width:2;stroke-dasharray:3 5}
@@ -823,7 +823,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
       <circle class="bead" r="3.5"><animateMotion dur="5s" begin="-3s" repeatCount="indefinite"><mpath href="#lk7"></mpath></animateMotion></circle>
     </g>
 
-    <circle class="hub" cx="280" cy="280" r="92"></circle>
+    <defs><radialGradient id="hubground" cx="42%" cy="38%" r="72%"><stop offset="0" stop-color="#2A3350" stop-opacity=".62"/><stop offset=".6" stop-color="#1B2236" stop-opacity=".5"/><stop offset="1" stop-color="#141D2D" stop-opacity="0"/></radialGradient></defs><circle class="hub" cx="280" cy="280" r="92"></circle>
     <text id="fly-big" class="big" x="280" y="276" text-anchor="middle" fill="#7FC8A0">Holding</text>
     <text class="l2" x="280" y="302" text-anchor="middle">4 of 7 checks pass</text>
     <text id="fly-l3" class="l3" x="280" y="322" text-anchor="middle" fill="#E58474">1 fail · 2 abstain</text>
