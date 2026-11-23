@@ -120,7 +120,7 @@ body.full.stack .side .sh{padding:6px 0;margin:4px 0;border-bottom:1px solid #1E
 .events{position:absolute;right:16px;bottom:44px;text-align:right;font:12.5px var(--mono);color:var(--w-quiet);z-index:2;line-height:1.7}
 .events b{color:var(--purple);font-weight:500}.events b.m{color:var(--green)}
 .zsel{position:absolute;left:16px;bottom:10px;z-index:3;border:1px solid var(--w-line);background:#13151b;color:var(--w-ink);border-radius:99px;padding:5px 14px;font:inherit;font-size:13.5px}
-#scene{position:absolute;inset:0;width:100%;height:100%}
+#scene{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:pan-y}#scene.drag{cursor:grabbing}#scene:focus-visible{outline:2px solid #a78bfa;outline-offset:-2px}
 .pane{position:absolute;inset:0;padding:48px 16px 14px;overflow:auto;display:none}.pane.on{display:block}
 /* instruct */
 .chat{display:flex;flex-direction:column;gap:10px;max-width:760px;margin:0 auto}
@@ -441,12 +441,12 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
           </div>
 
           <div class="view" id="view">
-            <div class="vhead" id="vhead"><span><span class="dot"></span><b id="vTitle">live space</b> · <span id="vAgents" style="color:var(--purple)">● iolin</span></span><span>click a zone to zoom</span></div>
+            <div class="vhead" id="vhead"><span><span class="dot"></span><b id="vTitle">live space</b> · <span id="vAgents" style="color:var(--purple)">● iolin</span></span><span>click a zone to zoom · drag to orbit</span></div>
             <div id="demoTag" class="demo" style="display:none">Demo · pre-recorded replies</div>
             <div class="coach" id="coach" style="display:none"></div>
             <!-- live -->
             <div class="pane on" id="p-live" style="padding:0">
-              <svg id="scene" viewBox="0 0 780 520" preserveAspectRatio="xMidYMid meet"></svg>
+              <svg id="scene" viewBox="0 0 780 520" preserveAspectRatio="xMidYMid meet" tabindex="0" role="img" aria-label="Live space. Drag, or use the left and right arrow keys, to orbit; double-click to reset."></svg>
               <div class="zones" id="zones"></div>
               <div class="events" id="events"></div>
               <select class="zsel" id="zsel"></select>
@@ -1265,10 +1265,18 @@ function renderSetup() { $("dev").innerHTML = [["Mode", LIVE ? '<span class="u-o
 
 /* ---------- render: live scene (isometric) ---------- */
 const ZONES = [["devices","Devices","#7aa2ff"],["files","Project files","#a3a9b8"],["runs","Builds · runs","#f5a524"],["agents","Agent sessions","#a78bfa"],["net","Networking","#34d399"]];
-const iso2 = (x, y, z = 0) => [390 + (x - y) * 0.866 * 30, 250 + (x + y) * 0.5 * 30 - z * 30];
+let yaw = 0;   // drag (or arrow keys) to orbit the live space; 0 = the original isometric view
+const rot = (x, y) => { const c = Math.cos(yaw), n = Math.sin(yaw); return [x * c - y * n, x * n + y * c]; };
+const iso2 = (x, y, z = 0) => { const [X, Y] = rot(x, y); return [390 + (X - Y) * 0.866 * 30, 250 + (X + Y) * 0.5 * 30 - z * 30]; };
+const depth = (x, y) => { const [X, Y] = rot(x, y); return X + Y; };   // larger = nearer the viewer
 const poly = (pts, f, s, o = 1) => `<polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="${f}" stroke="${s}" stroke-width="1" opacity="${o}"/>`;
 function box(x, y, w, d, h, top, side, front, z = 0) {
-  const P = (a, b, c) => iso2(a, b, c); return poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)], top, "#0b0c10") + poly([P(x+w,y,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x+w,y,z+h)], side, "#0b0c10") + poly([P(x,y+d,z),P(x+w,y+d,z),P(x+w,y+d,z+h),P(x,y+d,z+h)], front, "#0b0c10"); }
+  // the two walls turned toward the viewer (at any yaw), then the top; shaded by which way each wall faces
+  const P = (a, b, c) => iso2(a, b, c), walls = [[[x+w,y],[x+w,y+d],[1,0]], [[x,y+d],[x+w,y+d],[0,1]], [[x,y],[x,y+d],[-1,0]], [[x,y],[x+w,y],[0,-1]]];
+  return walls.map(([a, b, nrm]) => { const [nx, ny] = rot(...nrm); return {a, b, nx, ny, k: depth((a[0]+b[0])/2, (a[1]+b[1])/2)}; })
+    .filter(f => f.nx + f.ny > 1e-6).sort((u, v) => u.k - v.k)
+    .map(f => poly([P(f.a[0],f.a[1],z),P(f.b[0],f.b[1],z),P(f.b[0],f.b[1],z+h),P(f.a[0],f.a[1],z+h)], f.nx >= f.ny ? side : front, "#0b0c10")).join("")
+    + poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)], top, "#0b0c10"); }
 function label(x, y, z, text, color = "#cfd3dc") { const [a, b] = iso2(x, y, z); return `<g><rect x="${a - text.length * 3.6 - 6}" y="${b - 19}" width="${text.length * 7.2 + 12}" height="18" rx="4" fill="#0e0f14" opacity=".85"/><text x="${a}" y="${b - 6}" fill="${color}" font-size="11.5" font-family="ui-monospace,Menlo,monospace" text-anchor="middle">${esc(text)}</text></g>`; }
 function renderScene() {
   const hi = z => zone === "all" || zone === z ? 1 : .28; let s = `<defs><radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".9"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient></defs>`;
@@ -1281,30 +1289,51 @@ function renderScene() {
   // network line (dashed) across back
   s += `<g opacity="${hi("net")}"><polyline points="${[iso2(-6,-6,2.6),iso2(6,-6,2.6),iso2(6,6,2.6)].map(p=>p.join(",")).join(" ")}" fill="none" stroke="#34d399" stroke-dasharray="4 5" stroke-width="1.2"/>`;
   [[-3,-6],[0,-6],[3,-6],[6,-3],[6,0]].forEach(([x,y]) => { const [a,b] = iso2(x,y,2.6), [c,d] = iso2(x,y,1.8); s += `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#34d39966"/><circle cx="${a}" cy="${b}" r="3" fill="#34d399"/>`; }); s += `</g>`;
+  // objects are drawn back to front for the current yaw; labels go on top of everything
+  const objs = [], labs = [], put = (x, y, z, svg) => objs.push([depth(x, y), `<g opacity="${hi(z)}">${svg}</g>`]), tag = (z, svg) => labs.push(`<g opacity="${hi(z)}">${svg}</g>`);
   // device (this device)
   const phone = /iPhone|Android/.test(dev.name);
-  s += `<g opacity="${hi("devices")}">` + (phone ? box(-4,-4,1.2,0.4,2,"#c9d2e3","#8792a8","#a4aec2") : box(-4.6,-4.4,2.4,1.6,0.35,"#dfe3ea","#9aa1ae","#b8bec9") + box(-4.6,-4.4,2.4,0.15,1.6,"#2b3140","#1f2430","#3a4256",0.35))
-     + label(-3.6,-3.8, phone ? 2.4 : 2.2, dev.name.toLowerCase()) + `</g>`;
+  put(-3.4, -3.6, "devices", (phone ? box(-4,-4,1.2,0.4,2,"#c9d2e3","#8792a8","#a4aec2") : box(-4.6,-4.4,2.4,1.6,0.35,"#dfe3ea","#9aa1ae","#b8bec9") + box(-4.6,-4.4,2.4,0.15,1.6,"#2b3140","#1f2430","#3a4256",0.35)));
+  tag("devices", label(-3.6,-3.8, phone ? 2.4 : 2.2, dev.name.toLowerCase()));
   // model tower (lit when loaded)
-  const lit = !!loaded; s += `<g opacity="${hi("devices")}">` + box(-2.2,-2.4,1.1,1.1,3.2, lit ? "#2e3546" : "#1b1f29", lit ? "#121620" : "#101319", lit ? "#1b2130" : "#141820")
-     + (lit ? [0.6,1.2,1.8,2.4].map(z => { const [a,b] = iso2(-1.1,-1.8,z); return `<rect x="${a-1}" y="${b-6}" width="3" height="10" fill="#34d399" opacity=".8" transform="translate(${a} ${b}) skewY(-30) translate(${-a} ${-b})"/>`; }).join("") : "")
-     + label(-1.6,-1.8,3.5, loaded ? (loaded === "demo-engine" ? "demo engine" : loaded.split("-").slice(0,3).join(" ").toLowerCase()) : "no model", lit ? "#34d399" : "#8a90a0") + `</g>`;
+  const lit = !!loaded; put(-1.65, -1.85, "devices", box(-2.2,-2.4,1.1,1.1,3.2, lit ? "#2e3546" : "#1b1f29", lit ? "#121620" : "#101319", lit ? "#1b2130" : "#141820")
+     + (lit && Math.abs(yaw) < 0.25 ? [0.6,1.2,1.8,2.4].map(z => { const [a,b] = iso2(-1.1,-1.8,z); return `<rect x="${a-1}" y="${b-6}" width="3" height="10" fill="#34d399" opacity=".8" transform="translate(${a} ${b}) skewY(-30) translate(${-a} ${-b})"/>`; }).join("") : ""));   // the lit windows are drawn on the original front wall only
+  tag("devices", label(-1.6,-1.8,3.5, loaded ? (loaded === "demo-engine" ? "demo engine" : loaded.split("-").slice(0,3).join(" ").toLowerCase()) : "no model", lit ? "#34d399" : "#8a90a0"));
   // files: settings sheet + readme
-  s += `<g opacity="${hi("files")}">` + box(1.4,-4.6,2.2,1.6,0.12,"#4a8f7a","#2c5a4d","#36705f") + box(1.6,-2.4,1.2,1.4,0.6,"#cdd6ff","#8f9ad0","#aab5ea") + label(2.4,-4,.6,"settings.json") + label(2.2,-1.8,1,"README.md") + `</g>`;
+  put(2.5, -3.8, "files", box(1.4,-4.6,2.2,1.6,0.12,"#4a8f7a","#2c5a4d","#36705f")); put(2.2, -1.7, "files", box(1.6,-2.4,1.2,1.4,0.6,"#cdd6ff","#8f9ad0","#aab5ea"));
+  tag("files", label(2.4,-4,.6,"settings.json") + label(2.2,-1.8,1,"README.md"));
   // runs: receipts stack (one slab per receipt, max 12)
-  const n = Math.min(12, receipts.length); s += `<g opacity="${hi("runs")}">`;
+  const n = Math.min(12, receipts.length); let st = "";
   for (let i = 0; i < n; i++) { const r = receipts[receipts.length - n + i], bad = verified[r.run_id] === false;
-    s += box(-4.6,2,2.4,1.8,0.16, bad ? "#f87171" : i === n - 1 ? "#ffd38a" : "#f5a524", bad ? "#9b3b3b" : "#9a6512", bad ? "#c24c4c" : "#c47f19", i * 0.2); }
-  s += label(-3.4,2.9, n * 0.2 + 0.7, receipts.length ? `receipts · ${receipts.length}` : "receipts · 0") + `</g>`;
+    st += box(-4.6,2,2.4,1.8,0.16, bad ? "#f87171" : i === n - 1 ? "#ffd38a" : "#f5a524", bad ? "#9b3b3b" : "#9a6512", bad ? "#c24c4c" : "#c47f19", i * 0.2); }
+  put(-3.4, 2.9, "runs", st); tag("runs", label(-3.4,2.9, n * 0.2 + 0.7, receipts.length ? `receipts · ${receipts.length}` : "receipts · 0"));
   // agents: orb + beams when thinking
-  const [ox, oy] = iso2(3,3,2.6); s += `<g opacity="${hi("agents")}">`;
-  if (thinking) { const [tx, ty] = iso2(-1.6,-1.8,3.2), [rx, ry] = iso2(-3.4,2.9,1); s += `<polygon points="${ox},${oy} ${tx-14},${ty} ${tx+14},${ty+6}" fill="#a78bfa22" stroke="#a78bfa55"/><polygon points="${ox},${oy} ${rx-14},${ry} ${rx+16},${ry+8}" fill="#34d39918" stroke="#34d39955"/>`; }
-  s += `<ellipse cx="${ox}" cy="${oy + 26}" rx="34" ry="12" fill="none" stroke="#a78bfa88"/><circle cx="${ox}" cy="${oy}" r="${thinking ? 26 : 16}" fill="url(#glow)"><animate attributeName="r" values="${thinking ? "20;28;20" : "14;17;14"}" dur="${thinking ? 1.2 : 3}s" repeatCount="indefinite"/></circle><circle cx="${ox}" cy="${oy}" r="5" fill="#d9ccff"/>`
-     + label(3,3,3.4, thinking ? "iolin · working" : loaded ? "iolin · ready" : "iolin · idle", "#a78bfa") + `</g>`;
+  const [ox, oy] = iso2(3,3,2.6); let so = "";
+  if (thinking) { const [tx, ty] = iso2(-1.6,-1.8,3.2), [rx, ry] = iso2(-3.4,2.9,1); so += `<polygon points="${ox},${oy} ${tx-14},${ty} ${tx+14},${ty+6}" fill="#a78bfa22" stroke="#a78bfa55"/><polygon points="${ox},${oy} ${rx-14},${ry} ${rx+16},${ry+8}" fill="#34d39918" stroke="#34d39955"/>`; }
+  so += `<ellipse cx="${ox}" cy="${oy + 26}" rx="34" ry="12" fill="none" stroke="#a78bfa88"/><circle cx="${ox}" cy="${oy}" r="${thinking ? 26 : 16}" fill="url(#glow)"><animate attributeName="r" values="${thinking ? "20;28;20" : "14;17;14"}" dur="${thinking ? 1.2 : 3}s" repeatCount="indefinite"/></circle><circle cx="${ox}" cy="${oy}" r="5" fill="#d9ccff"/>`;
+  put(3, 3, "agents", so); tag("agents", label(3,3,3.4, thinking ? "iolin · working" : loaded ? "iolin · ready" : "iolin · idle", "#a78bfa"));
+  s += objs.sort((u, v) => u[0] - v[0]).map(o => o[1]).join("") + labs.join("");
   $("scene").innerHTML = s;
-  const vb = {all:"0 0 780 520", devices:"90 10 480 320", files:"300 0 460 310", runs:"40 170 480 320", agents:"300 160 470 320", net:"30 0 720 470"}[zone];
+  // zoom follows the zone wherever the current yaw has turned it: the bounds of its tile (floor to z 4), padded, at 3:2
+  const ZR = {devices:[-6,-6,5,5], files:[0,-6,5,5], runs:[-6,0,5,6], agents:[0,0,6,6]};
+  let vb = "0 0 780 520";
+  if (zone === "net") vb = "30 0 720 470";
+  else if (ZR[zone]) { const [x, y, w, d] = ZR[zone], pts = [];
+    for (const [a, b] of [[x,y],[x+w,y],[x+w,y+d],[x,y+d]]) pts.push(iso2(a, b, 0), iso2(a, b, 4));
+    let x0 = Math.min(...pts.map(p => p[0])) - 30, x1 = Math.max(...pts.map(p => p[0])) + 30, y0 = Math.min(...pts.map(p => p[1])) - 30, y1 = Math.max(...pts.map(p => p[1])) + 30;
+    let W = x1 - x0, H = y1 - y0; if (W / H < 1.5) { const nw = H * 1.5; x0 -= (nw - W) / 2; W = nw; } else { const nh = W / 1.5; y0 -= (nh - H) / 2; H = nh; }
+    vb = [x0, y0, W, H].map(v => Math.round(v)).join(" "); }
   $("scene").setAttribute("viewBox", vb);
 }
+// orbit: drag sideways (mouse, pen or touch) or arrow keys; double-click resets; redraws at most once a frame
+(() => { const sc = $("scene"); if (!sc) return; let d = null, raf = 0;
+  const draw = () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; renderScene(); }); };
+  sc.addEventListener("pointerdown", e => { if (e.button > 0) return; d = {x: e.clientX, y0: yaw, id: e.pointerId}; sc.setPointerCapture(e.pointerId); sc.classList.add("drag"); });
+  sc.addEventListener("pointermove", e => { if (!d) return; yaw = d.y0 + (e.clientX - d.x) * 0.012; draw(); });
+  const end = () => { d = null; sc.classList.remove("drag"); }; sc.addEventListener("pointerup", end); sc.addEventListener("pointercancel", end);
+  sc.addEventListener("dblclick", () => { yaw = 0; draw(); });
+  sc.addEventListener("keydown", e => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { yaw += e.key === "ArrowLeft" ? -0.15 : 0.15; draw(); e.preventDefault(); } });
+})();
 function renderZones() { $("zones").innerHTML = ZONES.map(([k, n, c]) => `<div data-z="${k}" class="${zone === k ? "on" : ""}"><i style="background:${c}"></i>${n}</div>`).join("");
   $("zones").querySelectorAll("div").forEach(d => d.onclick = () => { zone = zone === d.dataset.z ? "all" : d.dataset.z; $("zsel").value = zone; renderZones(); renderScene(); });
   $("zsel").innerHTML = `<option value="all">● All zones</option>` + ZONES.map(([k, n]) => `<option value="${k}" ${zone === k ? "selected" : ""}>● ${n}</option>`).join(""); }
