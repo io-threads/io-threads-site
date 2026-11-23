@@ -56,6 +56,8 @@ h1 b{font-weight:400}
 .reads h3{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--site-quiet);font-weight:600;border-top:2px solid var(--site-ink);padding-top:8px;margin:0 0 10px}
 .reads ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}.reads a{color:var(--site-ink);font-weight:500}.reads li span{display:block;color:var(--site-quiet);font-size:13.5px}
 @media (max-width:760px){.issue,.reads{grid-template-columns:minmax(0,1fr)}}
+.steps{list-style:none;padding:0}.steps code,.keep code{font:12.5px var(--mono,ui-monospace,Menlo,monospace)}
+.keep{margin-top:22px;max-width:72ch}.keep h3{font-weight:400;font-size:20px;margin:0 0 4px}.keep p{margin:0;color:#4b4438}
 .privacy{font-size:12.5px;color:var(--site-quiet);margin-top:22px;line-height:1.6}
 
 /* ---------- window: designed at 1140 x 1510, scaled to fit ---------- */
@@ -382,7 +384,7 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
   </div>
   <div class="crumb"><span>iolin</span><span id="crumbState">Live in your browser</span></div>
   <h1><b>iolin.</b> Work that stands guard.<br>Agents that keep their word.</h1>
-  <p class="lede">Run commands, talk to a private model and keep signed records of every run, all on your own device, with the full history you can see and replay.</p>
+  <p class="lede">Every run leaves a signed receipt that you keep and can check yourself, without us. Run commands, talk to a private model and replay the full history, all on your own device.</p>
   <div class="ctas">
     <button class="btn" id="startBtn">Start your session</button>
     <button class="btn ghost" id="fullBtn">Open full screen</button>
@@ -614,6 +616,20 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
   </div>
   <p class="privacy"><b>Privacy, plainly.</b> This page is a demo: replies are pre-recorded and no model is downloaded. Sessions, settings and receipts stay in this browser. If you choose to run a real model here, its files download from Hugging Face the first time, which shows them your IP address. Small models make mistakes. A receipt proves this browser's key signed the record, not that the record is true. Want agents that work with your files, phone approvals or a team host? <a href="/contact.html">Talk to io threads</a>.</p>
 
+  <section class="app-sec loop" aria-labelledby="h-loop">
+    <p class="kick"><span>How a run is checked</span><span>Try each step in the terminal</span></p>
+    <h2 id="h-loop">Run. Receipt. Verify. Verdict.</h2>
+    <ol class="feats steps">
+      <li class="feat"><small>01 · <code>ask</code></small><h3>Run</h3><p>You ask and the model answers on your device. On this demo page the replies are pre-recorded.</p></li>
+      <li class="feat"><small>02 · <code>receipts</code></small><h3>Receipt</h3><p>The model, the settings, a hash of the prompt and of the reply, and the time, signed by a key that stays in this browser.</p></li>
+      <li class="feat"><small>03 · <code>verify</code> · <code>tamper</code></small><h3>Verify</h3><p>The signature has to match the exact record. Change one field with <code>tamper</code> and the check fails.</p></li>
+      <li class="feat"><small>04 · verdict</small><h3>Verdict</h3><p>PASS when the record checks out, FAIL when it doesn't, ABSTAIN when there is nothing real to judge, as with demo replies.</p></li>
+    </ol>
+    <div class="keep">
+      <h3>Yours to keep</h3>
+      <p><code>export</code> saves your sessions, receipts and the public key as one JSON file. To check a receipt without io threads, drop its signature field, write the rest as JSON with sorted keys, and verify it against the public key with any Ed25519 library (P-256 on browsers without Ed25519). No account, server or tool of ours is needed. A receipt proves the key signed the record, not that the answer is right.</p>
+    </div>
+  </section>
   <section class="app-sec" aria-labelledby="h-app">
     <p class="kick"><span>iolin · the app</span><span>No. 01 · Nov 2026</span></p>
     <h2 id="h-app">What held. What broke.</h2>
