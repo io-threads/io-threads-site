@@ -141,7 +141,7 @@ html:root[data-site="dawn"] .fly .bead{fill:#8A4A26}
 
 </style>
 <script>/* Chrome can skip the cross-page fade and report it as an uncaught error; listen before first paint and swallow it. */(function(){function q(e){var t=e.viewTransition;if(t)[t.ready,t.finished,t.updateCallbackDone].forEach(function(p){if(p)p.catch(function(){})})}addEventListener("pagereveal",q);addEventListener("pageswap",q);addEventListener("unhandledrejection",function(e){var r=e.reason;if(r&&/Transition was skipped/.test(r.message||""))e.preventDefault()})})();</script>
-<style id="docs">.docs p code,.docs td code{overflow-wrap:anywhere}:not(pre)>code{overflow-wrap:anywhere;word-break:break-word}.docs{min-width:0;max-width:100%}.docs>*,.docs li{min-width:0}.docs pre,.docs .dt{max-width:calc(100vw - 40px)}.docs h2.dh{font:500 var(--s2)/1.2 var(--f-display);margin:var(--sp6) 0 var(--sp2)}.docs h2.dh:first-child{margin-top:0}.docs p,.docs li{max-width:72ch}.docs pre{overflow-x:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;font:400 .82rem/1.5 var(--f-mono);margin:8px 0}.docs code{font-family:var(--f-mono);font-size:.88em}.docs .dt{overflow-x:auto;margin:8px 0 var(--sp3)}.docs table{border-collapse:collapse;width:100%;font:400 .9rem/1.4 var(--f-display)}.docs th,.docs td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}.docs th{font:500 .74rem/1 var(--f-mono);letter-spacing:.06em;color:var(--muted)}.docs ol{display:grid;gap:var(--sp3);padding-left:1.2em}.docs a{color:inherit;text-underline-offset:3px}</style>
+<style id="docs">.docs p code,.docs td code{overflow-wrap:anywhere}:not(pre)>code{overflow-wrap:anywhere;word-break:break-word}.docs{min-width:0;max-width:100%}.docs>*,.docs li{min-width:0}.docs pre,.docs .dt{max-width:calc(100vw - 40px)}.docs h2.dh{font:500 var(--s2)/1.2 var(--f-display);margin:var(--sp6) 0 var(--sp2)}.docs h2.dh:first-child{margin-top:0}.docs p,.docs li{max-width:72ch}.docs pre{overflow-x:auto;background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;font:400 .82rem/1.5 var(--f-mono);margin:8px 0}.docs code{font-family:var(--f-mono);font-size:.88em}.docs .dt{overflow-x:auto;margin:8px 0 var(--sp3)}.docs table{border-collapse:collapse;width:100%;font:400 .9rem/1.4 var(--f-display)}.docs td:first-child code{overflow-wrap:normal;word-break:normal;white-space:nowrap}.docs th,.docs td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:top}.docs th{font:500 .74rem/1 var(--f-mono);letter-spacing:.06em;color:var(--muted)}.docs ol{display:grid;gap:var(--sp3);padding-left:1.2em}.docs a{color:inherit;text-underline-offset:3px}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@200;300;400;500&display=swap" id="f-head"><style id="type">/* Display headings: one light family on every page. */:root{--f-head:"Hanken Grotesk","Schibsted Grotesk","Helvetica Neue",Arial,sans-serif}h1,.ph-big{font-family:var(--f-head)!important;font-weight:300!important;letter-spacing:-.035em!important;line-height:1.06}h2{font-family:var(--f-head)!important;font-weight:300!important;letter-spacing:-.025em!important}h1 b,h1 strong,h2 b,h2 strong,.ph-big b{font-weight:500}</style><style id="nav-fit">/* Phones: ring logo and every nav item on one line (Join now never wraps alone, nothing overlaps the logo). */
 @media (max-width:560px){.top .wrap{flex-wrap:nowrap!important;gap:8px!important}.top .nav{flex-wrap:nowrap!important;gap:0 clamp(6px,2.1vw,13px)!important;min-width:0;justify-content:flex-end}
 .top .nav a{font-size:clamp(12px,3.5vw,15px)!important;white-space:nowrap;flex:none}.top .nav a.login{padding:6px 8px!important}.top .nav a.login svg{display:none}.top .nav a.btn{padding:7px 10px!important}
@@ -191,7 +191,6 @@ curl https://api.io-threads.com/functions/v1/iot/v1/benchmarks?limit=3</code></p
   <p class="label">Reference</p>
   <div class="stack docs">
     <h2 id="h-ref" class="dh">Reference</h2>
-<p><b>iostem API</b> is the product name; the base path and key prefix keep the <code>iot</code> name so existing integrations never break. Base <code>https://api.io-threads.com/functions/v1/iot</code>. Keyed calls send <code>Authorization: Bearer iot_…</code> (get a key at https://io-threads.com/app.html).</p>
 <h2 class="dh">Verdicts</h2>
 <div class="dt"><table>
 <thead>
@@ -387,17 +386,17 @@ curl https://api.io-threads.com/functions/v1/iot/v1/benchmarks?limit=3</code></p
 <tbody>
 <tr>
 <td><code>lab</code></td>
-<td>published by a lab or research organisation (a Kaggle organisation, or a known Hugging Face lab account)</td>
+<td>published by a lab or research organisation (a Kaggle organisation, or a known Hugging Face lab account). A reasonable default when a rank will be quoted in a sale or a paper; still check that its setup (data split, prompt format, scoring) matches the one you claim.</td>
 <td>official, top labs</td>
 </tr>
 <tr>
 <td><code>community</code></td>
-<td>from an individual, with traction (Kaggle: 5+ votes or 1,000+ views; Hugging Face: 50+ likes)</td>
+<td>from an individual, with traction (Kaggle: 5+ votes or 1,000+ views; Hugging Face: 50+ likes). Useful for niche tasks the labs don't cover; read the method and the test data before quoting a rank, since traction is popularity, not review.</td>
 <td>popular, vetted by use</td>
 </tr>
 <tr>
 <td><code>new</code></td>
-<td>from an individual, little traction yet; check the method before trusting a ranking</td>
+<td>from an individual, little traction yet. Treat it as a lead, not evidence: reproduce the number yourself (or send it to a release gate) before trusting a ranking.</td>
 <td>unvetted, fresh</td>
 </tr>
 </tbody>
