@@ -1396,9 +1396,10 @@ function renderScene() {
     const [gt, gs, gf] = c("Gates");
     put(-0.9, -7.6, "auth", box(-1.0,-8.4,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-7.0,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-8.4,0.2,1.6,0.2,gt,gs,gf,2.2) + dot(-0.9,-7.6,2.8,"Harness"));
     // label where the network line starts (above mac and demo engine), tied to the strip by a leader line
-    const [la, lb] = iso2(-5.3,-6,3.5), [ta, tb] = iso2(-4.4,-7.4,0.4);
-    s += `<g opacity="${hi("auth")}"><line x1="${la}" y1="${lb}" x2="${ta}" y2="${tb}" stroke="#f472b6" stroke-width="1" stroke-dasharray="2 3" opacity=".7"/></g>`;
-    tag("auth", label(-5.3,-6,3.5, `auth access · ${R.filter(r => r[1] === "ok").length} of ${R.length} set`, "#f9a8d4")); }
+    // straight up from the corner where the network line starts: same floor point, so it stays vertical at any yaw
+    const [la, lb] = iso2(-6,-6,4.4), [ta, tb] = iso2(-6,-6,2.6);
+    s += `<g opacity="${hi("auth")}"><line x1="${la}" y1="${lb}" x2="${ta}" y2="${tb}" stroke="#f472b6" stroke-width="1.2" stroke-dasharray="2 3" opacity=".8"/><circle cx="${ta}" cy="${tb}" r="2.5" fill="#f472b6"/></g>`;
+    tag("auth", label(-6,-6,4.4, `auth access · ${R.filter(r => r[1] === "ok").length} of ${R.length} set`, "#f9a8d4")); }
   // device (this device)
   const phone = /iPhone|Android/.test(dev.name);
   put(-3.4, -3.6, "devices", (phone ? box(-4,-4,1.2,0.4,2,"#c9d2e3","#8792a8","#a4aec2") : box(-4.6,-4.4,2.4,1.6,0.35,"#dfe3ea","#9aa1ae","#b8bec9") + box(-4.6,-4.4,2.4,0.15,1.6,"#2b3140","#1f2430","#3a4256",0.35)));
