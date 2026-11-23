@@ -37,7 +37,7 @@ with sync_playwright() as p:
     pg.keyboard.press("Enter"); pg.wait_for_timeout(1200)
     check("tour", "typed name shows in the window", pg.text_content("#tUser") == "riley test", pg.text_content("#tUser") or "")
     coach = pg.inner_text("#coach") if pg.query_selector("#coach") else ""
-    check("demo", "default page is the demo: no model-CDN request, pre-recorded label", not [u for u in NET if any(h in u for h in ("esm.run", "huggingface.co", "cdn.jsdelivr.net"))] and "pre-recorded" in pg.inner_text("#crumbState"), [u for u in NET if "io-threads" not in u and "127.0.0.1" not in u][:3])
+    check("demo", "default page is the demo: no model-CDN request, pre-recorded label", not [u for u in NET if any(h in u for h in ("esm.run", "huggingface.co", "cdn.jsdelivr.net"))] and "pre-recorded" in pg.inner_text("#dev"), [u for u in NET if "io-threads" not in u and "127.0.0.1" not in u][:3])
     check("tour", "step 2 device check explains no WebGPU and offers demo", re.search(r"demo", coach, re.I) and pg.query_selector("#tDemo, #tDemo2"), coach.replace("\n", " ")[:150])
     pg.click("#tDemo" if pg.query_selector("#tDemo") else "#tDemo2"); pg.wait_for_timeout(1500)
     q = pg.input_value("#tQ") if pg.query_selector("#tQ") else ""
@@ -162,7 +162,7 @@ with sync_playwright() as p:
     pg.click('.tab[data-v="projects"]'); pg.wait_for_timeout(300)
     check("demo", "Projects board has template items", len(pg.query_selector_all("#zboard .bi")) >= 8, len(pg.query_selector_all("#zboard .bi")))
     nav = {a.inner_text().strip(): a.get_attribute("href") for a in pg.query_selector_all(".nav a")}
-    check("links", "header nav goes to its pages, not home", nav.get("iot API") == "/api.html" and nav.get("Account") == "/app.html" and nav.get("Enterprise") not in (None, "/", "https://io-threads.com"), nav)
+    check("links", "header nav goes to its pages, not home", nav.get("iostem API") == "/api.html" and nav.get("Account") == "/app.html" and nav.get("Enterprise") not in (None, "/", "https://io-threads.com"), nav)
     pg.click('.tab[data-v="live"]'); pg.wait_for_timeout(300)
 
     # 3. Panels and buttons
