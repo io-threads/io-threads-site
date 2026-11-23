@@ -123,8 +123,17 @@ body.full.stack .side .sh{padding:6px 0;margin:4px 0;border-bottom:1px solid #1E
 .view{position:relative;min-height:0;overflow:hidden}
 .vhead{position:absolute;left:16px;right:16px;top:10px;display:flex;justify-content:space-between;color:var(--w-quiet);font-size:13.5px;z-index:2;pointer-events:none}
 .vhead b{color:var(--w-ink);font-weight:500}
+.authp{position:absolute;left:16px;top:44px;z-index:3;width:min(350px,calc(100% - 32px));max-height:calc(100% - 110px);overflow:auto;border:1px solid var(--w-line);background:rgba(21,23,29,.94);border-radius:12px;padding:10px 12px;font-size:13px;display:grid;gap:6px}
+.authp[hidden]{display:none}.authp .ah{display:flex;justify-content:space-between;gap:8px;color:var(--w-quiet)}.authp .ah b{color:#f9a8d4;font-weight:500}
+.authp .ar{display:grid;grid-template-columns:10px 128px minmax(0,1fr);gap:4px 8px;align-items:baseline;line-height:1.35}.authp .ar b{font-weight:500;color:var(--w-ink)}.authp .ar span{color:var(--w-quiet);overflow-wrap:anywhere}
+.authp .ar i{width:8px;height:8px;border-radius:50%;background:#34d399;align-self:center}.authp .ar.warn i{background:#f87171}.authp .ar.todo i,.authp .ar.set i{background:#f5a524}
+.authp .af label{display:flex;gap:6px;align-items:center;width:100%}.authp .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.authp .ah{align-items:center}.authp .ax{all:unset;cursor:pointer;width:22px;height:22px;border-radius:6px;text-align:center;line-height:22px;color:var(--w-quiet)}.authp .ax:hover{color:var(--w-ink);background:var(--w-raise)}
+.authp .ax:focus-visible,.authp .wbtn:focus-visible,.authp input:focus-visible{outline:2px solid #a78bfa;outline-offset:2px}.authp textarea{width:100%;box-sizing:border-box;background:#0e0f14;color:var(--w-ink);border:1px solid var(--w-line);border-radius:8px;padding:6px;font-size:11.5px}.authp .an{width:100%;font-size:11.5px;opacity:.85}
+.authp .af{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:4px;color:var(--w-quiet);font-size:12px}
+@media (max-width:560px){.authp{top:auto;bottom:60px;max-height:55%}.authp .ar{grid-template-columns:10px minmax(0,1fr)}.authp .ar span{grid-column:2}}
 .zones{position:absolute;right:16px;top:44px;border:1px solid var(--w-line);background:rgba(21,23,29,.92);border-radius:12px;padding:6px;z-index:3;font-size:14px}
-.zones div{padding:6px 12px;border-radius:8px;cursor:pointer;color:var(--w-quiet);display:flex;align-items:center;gap:8px}.zones div.on{background:var(--w-raise);color:var(--w-ink)}
+.zones div:focus-visible{outline:2px solid #a78bfa;outline-offset:1px}.zones div{padding:6px 12px;border-radius:8px;cursor:pointer;color:var(--w-quiet);display:flex;align-items:center;gap:8px}.zones div.on{background:var(--w-raise);color:var(--w-ink)}
 .zones i{width:7px;height:7px;border-radius:50%;display:inline-block}
 .events{position:absolute;right:16px;bottom:44px;text-align:right;font:12.5px var(--mono);color:var(--w-quiet);z-index:2;line-height:1.7}
 .events b{color:var(--purple);font-weight:500}.events b.m{color:var(--green)}
@@ -464,6 +473,7 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
             <div class="pane on" id="p-live" style="padding:0">
               <svg id="scene" viewBox="0 0 780 520" preserveAspectRatio="xMidYMid meet" tabindex="0" role="img" aria-label="Live space. Drag, press and hold, or use the left and right arrow keys, to orbit; double-click to reset."></svg>
               <div class="zones" id="zones"></div>
+              <div class="authp" id="authp" hidden role="region" aria-label="Auth access checklist"></div>
               <div class="events" id="events"></div>
               <select class="zsel" id="zsel"></select>
             </div>
@@ -761,7 +771,7 @@ const gbOf = m => { const v = parseFloat(String(m[2]).replace(/[^\d.]/g, "")); r
 const memOf = m => Math.round((gbOf(m) * 1.25 + 0.4) * 10) / 10;   // weights + runtime + a short context; an estimate, labelled as one
 const ctxK = n => n >= 1024 ? Math.round(n / 1024) + "K" : String(n);
 const slug = m => m[1].toLowerCase().replace(/\s+/g, "-");
-const SKILLS = ["help","status","model","templates","ask","recap","receipts","verify","tamper","set","export","open","sessions","stop","tour"];
+const SKILLS = ["help","status","auth","model","templates","ask","recap","receipts","verify","tamper","set","export","open","sessions","stop","tour"];
 const DEF = {name:"", system:"You are a concise, honest assistant. If unsure, say so.", temperature:0.6, top_p:0.95, max_tokens:768, ctx:4096, preset:"Balanced", model:null, srvHost:"127.0.0.1", srvPort:1234, srvKeyOn:false, srvKey:"", snip:"curl"};
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -848,7 +858,7 @@ function switchTerm(k) { document.querySelectorAll(".ttab").forEach(b => b.class
   $("termPane").style.display = k === "term" ? "block" : "none"; $("outPane").style.display = k === "out" ? "block" : "none"; if (k === "term") $("cmd").focus({preventScroll:true}); }
 
 const HELP = [
-  ["status","device, model, storage and receipts"],["model list | load <small|medium|large|id> | stop","manage your local model"],
+  ["status","device, model, storage and receipts"],["auth | auth template","auth access: keys, network, rules, templates, harness, gates · print the deployment template"],["model list | load <small|medium|large|id> | stop","manage your local model"],
   ["ask <question>","ask the model; reply streams here"],["recap","summarize the current session"],
   ["receipts","list signed receipts"],["verify [n]","check a receipt's signature"],["tamper [n]","edit one word, then check again"],
   ["set name|temp|top_p|max|ctx <value>","change a setting"],["templates | template <name>","list or start an Instruct template"],["sessions | sessions new","list or start sessions"],
@@ -862,6 +872,8 @@ async function run(raw) {
     else if (c0 === "clear") tlog.innerHTML = "";
     else if (c0 === "stop") { if (busy && thinking) { stop = true; out("stopping…"); } else out("nothing running"); }
     else if (c0 === "tour") { await DB.set("tourDone", false); tour(0); }
+    else if (c0 === "auth") { if (arg.trim() === "template") out(`<pre style="white-space:pre-wrap;margin:0">${esc(JSON.stringify(deployTemplate(), null, 2))}</pre>`);
+      else authRows().forEach(([k, st, v]) => out(`<span class="${st === "ok" ? "u-ok" : st === "warn" ? "u-bad" : "u-am"}">${st === "ok" ? "ok  " : st}</span> ${esc(k)} · ${esc(v)}`)); }
     else if (c0 === "status") { out(`device ${esc(dev.name)} · ${esc(dev.browser)} · gpu ${esc(dev.gpu)} · ${esc(dev.store)}`);
       out(`model ${loaded ? `<span class="u-ok">${esc(loaded)}</span> running${engineMode ? ` in the ${engineMode === "worker" ? "background worker" : "page"}` : ""}` : "not loaded"} · receipts ${receipts.length} · sessions ${sessions.length}${DEMO ? ' · <span class="u-am">demo</span>' : ""}`); }
     else if (c0 === "model") await cmdModel(rest);
@@ -924,6 +936,7 @@ async function cmdAgents(rest, raw) {
   catch { return out('<span class="u-bad">unreachable</span> couldn\'t reach the iostem API'); }
   if (r.status === 404) return out('<span class="u-am">not live yet</span> agent scores isn\'t in production yet · type <span class="u-hl">agents</span> for the sample');
   if (!r.ok) return out(`<span class="u-bad">${r.status}</span> ${esc(d.error?.code || "")}: ${esc(d.error?.message || "")}`);
+  checked.harness = d.verdict || null;   // Auth access shows ok only after a real PASS here
   renderArms(d, `POST /v1/agents/scores · ${Math.round(performance.now() - t0)} ms · ${esc(r.headers.get("X-RateLimit-Remaining") ?? "?")} calls left`);
 }
 function renderArms(d, where) {
@@ -1280,7 +1293,7 @@ function renderSetup() { $("dev").innerHTML = [["Mode", LIVE ? '<span class="u-o
   renderPresets(); renderServer(); renderDocs(); }
 
 /* ---------- render: live scene (isometric) ---------- */
-const ZONES = [["devices","Devices","#7aa2ff"],["files","Project files","#a3a9b8"],["runs","Builds · runs","#f5a524"],["agents","Agent sessions","#a78bfa"],["net","Networking","#34d399"]];
+const ZONES = [["auth","Auth access","#f472b6"],["devices","Devices","#7aa2ff"],["files","Project files","#a3a9b8"],["runs","Builds · runs","#f5a524"],["agents","Agent sessions","#a78bfa"],["net","Networking","#34d399"]];
 let yaw = 0;   // drag (or arrow keys) to orbit the live space; 0 = the original isometric view
 const rot = (x, y) => { const c = Math.cos(yaw), n = Math.sin(yaw); return [x * c - y * n, x * n + y * c]; };
 const iso2 = (x, y, z = 0) => { const [X, Y] = rot(x, y); return [390 + (X - Y) * 0.866 * 30, 250 + (X + Y) * 0.5 * 30 - z * 30]; };
@@ -1294,6 +1307,62 @@ function box(x, y, w, d, h, top, side, front, z = 0) {
     .map(f => poly([P(f.a[0],f.a[1],z),P(f.b[0],f.b[1],z),P(f.b[0],f.b[1],z+h),P(f.a[0],f.a[1],z+h)], f.nx >= f.ny ? side : front, "#0b0c10")).join("")
     + poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)], top, "#0b0c10"); }
 function label(x, y, z, text, color = "#cfd3dc") { const [a, b] = iso2(x, y, z); return `<g><rect x="${a - text.length * 3.6 - 6}" y="${b - 19}" width="${text.length * 7.2 + 12}" height="18" rx="4" fill="#0e0f14" opacity=".85"/><text x="${a}" y="${b - 6}" fill="${color}" font-size="11.5" font-family="ui-monospace,Menlo,monospace" text-anchor="middle">${esc(text)}</text></g>`; }
+// Auth access: what a deployment needs before clients and agents run here. Each row is read from this browser's
+// own state (nothing is sent); "warn" rows are gaps to close, "todo" rows are placeholders the deployment must fill.
+const TS_IP = /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}$/, TS_NAME = /\.ts\.net$/i;
+let checked = {harness: null};   // results this tab actually got back (never inferred from a key being set)
+function netKind(h) { h = String(h || "").trim().toLowerCase().replace(/^\[|\]$/g, "");
+  if (!h || h === "127.0.0.1" || h === "localhost" || h === "::1") return "this device";
+  if (TS_IP.test(h)) return "Tailscale address (VPN)";
+  if (TS_NAME.test(h)) return "Tailscale name (Funnel names can be public)";
+  if (/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)|\.local$/.test(h)) return "local network, no VPN";
+  return "public host"; }
+const holes = t => [...new Set((String(t || "").match(/\[[^\]\n]{2,60}\]/g) || []))];
+function authRows() {
+  const host = S.srvHost || "127.0.0.1", nk = netKind(host), local = nk === "this device", bad = Object.values(verified).filter(v => v === false).length;
+  const mine = myTpls(), open = holes($("ask") ? $("ask").value : "");
+  return [
+    ["Signing key", signer ? (bad ? "warn" : "ok") : "warn", signer ? `browser key ${signer.key_id} · ${receipts.length} receipt${receipts.length === 1 ? "" : "s"} signed${bad ? ` · ${bad} failed a check` : ""}` : "no key yet: ask once to create it"],
+    ["iostem API key", iotKey ? "ok" : "todo", iotKey ? "set for this tab only (never stored)" : "not set: needed for live checks, agent scores and gates"],
+    ["Network access", local ? "ok" : nk.startsWith("Tailscale address") ? "set" : nk.startsWith("Tailscale name") ? "set" : "warn",
+      `${local ? "this device" : nk.startsWith("Tailscale address") ? "looks like Tailscale by address; not checked" : nk}${local ? "" : ""} · model server ${host}:${Number(S.srvPort) || 1234}`],
+    ["Server key", S.srvKeyOn && S.srvKey ? "ok" : local ? "set" : "warn", S.srvKeyOn && S.srvKey ? "the model server asks for a key" : local ? "no key: the server is on this device (fine for testing)" : "remote server with no key: turn on 'Require an API key'"],
+    ["Rules", (S.system || "").trim() ? "ok" : "warn", (S.system || "").trim() ? `system prompt set (${(S.system || "").trim().length} chars) · rules version web-p1` : "no system prompt: agents run without written rules"],
+    ["Templates", "ok", `${TEMPLATES.length} built in + ${mine.length} yours · ${TEMPLATES.concat(mine).filter(x => holes(x.prompt).length).length} with [placeholders] filled per run`],
+    ["Open placeholders", open.length ? "warn" : "ok", open.length ? `the prompt still has ${open.slice(0, 3).join(" ")}${open.length > 3 ? " …" : ""}` : "none in the prompt box"],
+    ["Harness", checked.harness === "PASS" ? "ok" : checked.harness === "FAIL" ? "warn" : iotKey ? "set" : "todo",
+      checked.harness ? `agent scores came back ${checked.harness} in this tab (/v1/agents/scores)` : iotKey ? "key set, not checked yet: run agents live in the terminal" : "agent setups are scored by /v1/agents/scores once a key is set"],
+    ["Gates", iotKey ? "set" : "todo", "release go/no-go runs at deployment by /v1/forwardtrain/gates; not run in this browser"]];
+}
+function deployTemplate(withRules = false) {
+  const host = S.srvHost || "127.0.0.1", all = TEMPLATES.concat(myTpls());
+  return {schema: "iothreads.deployment/0.1", made_at: iso(), deployment: "[deployment name]", client: "[client name]", owner: "[who approves changes]",
+    auth: {identity_provider: "[SSO / identity provider]", signing_key_id: signer ? signer.key_id : "[create: ask once in iolin]",
+           iostem_api_key: "[kept in the client's secret store; never in this file]", agent_roles: "[roles and their allowed tools]"},
+    access: {network: netKind(host), vpn: netKind(host).startsWith("Tailscale") ? "tailscale" : "[tailnet or VPN name]", model_server: srvBase(),
+             server_key_required: !!(S.srvKeyOn && S.srvKey), allowlist: "[hosts agents may reach]"},
+    rules: {system_prompt: withRules && (S.system || "").trim() ? (S.system || "").trim() : "[paste your rules here]", system_prompt_chars: (S.system || "").trim().length,
+            rules_version: "web-p1", retention: "[how long receipts are kept]"},
+    harness: {agent_scores: "/v1/agents/scores", floor: "[minimum score]", arms: "[agent setups to compare]"},
+    gates: {release: "/v1/forwardtrain/gates", thresholds: {"[metric]_min": "[value]"}, approver: "[who signs off]"},
+    templates: all.map(x => ({id: x.id, name: x.name, placeholders: holes(x.prompt)})),
+    open_items: authRows().filter(r => r[1] !== "ok").map(r => `${r[0]}: ${r[2]}`)};
+}
+let authSig = "", authRowsNow = null, authWithRules = false;
+function renderAuth() { const el = $("authp"); if (!el) return; const on = zone === "auth"; el.hidden = !on; if (!on) { authSig = ""; return; }
+  const rows = authRowsNow || authRows(), sig = JSON.stringify(rows); if (sig === authSig) return; authSig = sig;   // orbit frames don't rebuild it
+  const ok = rows.filter(r => r[1] === "ok").length, word = {ok: "ok", set: "to check", todo: "to do", warn: "gap"};
+  el.innerHTML = `<div class="ah"><b>Auth access</b><span>${ok} of ${rows.length} set in this browser</span><button class="ax" id="authClose" aria-label="Close Auth access">×</button></div>` +
+    rows.map(([k, st, v]) => `<div class="ar ${st}"><i aria-hidden="true"></i><b>${esc(k)}<span class="sr"> (${word[st] || st})</span></b><span>${esc(v)}</span></div>`).join("") +
+    `<div class="af"><button class="wbtn" id="authCopy">Copy deployment template</button><label><input type="checkbox" id="authRules" ${authWithRules ? "checked" : ""}> include my system prompt (check it has no secrets)</label>
+     <span id="authMsg" aria-live="polite">Placeholders in [brackets] are for the client to fill. It includes your server address and template names: check it before sharing.</span>
+     <textarea id="authJson" class="mono" rows="6" readonly hidden aria-label="Deployment template JSON"></textarea>
+     <span class="an">Read from this browser only. Not a security review; io threads doesn't check any of it.</span></div>`;
+  $("authRules").onchange = e => { authWithRules = e.target.checked; };
+  $("authClose").onclick = () => { zone = "all"; $("zsel").value = "all"; renderZones(); renderScene(); };
+  $("authCopy").onclick = async () => { const t = JSON.stringify(deployTemplate(authWithRules), null, 2);
+    try { await navigator.clipboard.writeText(t); $("authMsg").textContent = "Copied. Check it before sharing, then add it to the client's deployment repo."; }
+    catch { const ta = $("authJson"); ta.value = t; ta.hidden = false; ta.focus(); ta.select(); $("authMsg").textContent = "The browser blocked copying: the template is selected below, press Cmd+C or Ctrl+C."; } }; }
 function renderScene() {
   const hi = z => zone === "all" || zone === z ? 1 : .28; let s = `<defs><radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".9"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient></defs>`;
   // floor grid
@@ -1307,6 +1376,30 @@ function renderScene() {
   [[-3,-6],[0,-6],[3,-6],[6,-3],[6,0]].forEach(([x,y]) => { const [a,b] = iso2(x,y,2.6), [c,d] = iso2(x,y,1.8); s += `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#34d39966"/><circle cx="${a}" cy="${b}" r="3" fill="#34d399"/>`; }); s += `</g>`;
   // objects are drawn back to front for the current yaw; labels go on top of everything
   const objs = [], labs = [], put = (x, y, z, svg) => objs.push([depth(x, y), `<g opacity="${hi(z)}">${svg}</g>`]), tag = (z, svg) => labs.push(`<g opacity="${hi(z)}">${svg}</g>`);
+  // auth access: a strip behind Devices, under the start of the network line; key, VPN shield, template sheets, gate
+  s += tile(-6,-9,5,3,"#f472b6","auth");
+  { const R = authRowsNow = authRows(), st = k => (R.find(r => r[0] === k) || [])[1];
+    const SC = {ok: ["#34d399", "#1f7a58", "#2a9a6f"], set: ["#f5a524", "#9a6512", "#c47f19"], todo: ["#f5a524", "#9a6512", "#c47f19"], warn: ["#f87171", "#9b3b3b", "#c24c4c"]};
+    const c = k => SC[st(k)] || SC.todo, dot = (x, y, z, k) => { const [a, b] = iso2(x, y, z); return `<circle cx="${a}" cy="${b}" r="4" fill="${c(k)[0]}" stroke="#0b0c10"/>`; };
+    // key: a flat ring (bow) and a shaft with one tooth
+    const [kt, ks, kf] = c("Signing key");
+    put(-5.2, -8.2, "auth", box(-5.8,-8.8,0.8,0.18,0.14,kt,ks,kf) + box(-5.8,-8.0,0.8,0.18,0.14,kt,ks,kf) + box(-5.8,-8.8,0.18,0.98,0.14,kt,ks,kf) + box(-5.18,-8.8,0.18,0.98,0.14,kt,ks,kf)
+      + box(-5.0,-8.46,1.1,0.2,0.14,kt,ks,kf) + box(-4.1,-8.46,0.2,0.42,0.14,kt,ks,kf) + dot(-5.4,-8.4,0.9,"Signing key"));
+    // network: a shield (extruded pentagon) for the VPN / network check
+    { const [t, sd] = c("Network access"), cx = -3.9, cy = -8.2, pts = [[0,-.55],[.5,-.3],[.42,.25],[0,.6],[-.42,.25],[-.5,-.3]].map(([dx, dy]) => [cx + dx, cy + dy]);
+      put(cx, cy, "auth", poly(pts.map(([x, y]) => iso2(x, y, 0)), sd, "#0b0c10") + pts.map((q, i) => { const r = pts[(i + 1) % pts.length]; return poly([iso2(q[0],q[1],0), iso2(r[0],r[1],0), iso2(r[0],r[1],0.9), iso2(q[0],q[1],0.9)], sd, "#0b0c10"); }).join("")
+        + poly(pts.map(([x, y]) => iso2(x, y, 0.9)), t, "#0b0c10") + dot(cx, cy, 1.5, "Network access")); }
+    // templates: a stack of sheets; the top sheet takes the open-placeholders state
+    let tp = ""; for (let i = 0; i < 4; i++) tp += box(-2.9,-8.7,1.2,0.9,0.08, i === 3 ? c("Open placeholders")[0] : "#f472b6", "#8a3c66", "#b04e85", i * 0.14);
+    put(-2.3, -8.2, "auth", tp + dot(-2.3,-8.25,0.95,"Templates"));
+    // gate: two posts and a lintel, clear of the sheets, tinted by the Gates state (harness dot on top)
+    const [gt, gs, gf] = c("Gates");
+    put(-0.9, -7.6, "auth", box(-1.0,-8.4,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-7.0,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-8.4,0.2,1.6,0.2,gt,gs,gf,2.2) + dot(-0.9,-7.6,2.8,"Harness"));
+    // label where the network line starts (above mac and demo engine), tied to the strip by a leader line
+    // straight up from the corner where the network line starts: same floor point, so it stays vertical at any yaw
+    const [la, lb] = iso2(-6,-6,4.4), [ta, tb] = iso2(-6,-6,2.6);
+    s += `<g opacity="${hi("auth")}"><line x1="${la}" y1="${lb}" x2="${ta}" y2="${tb}" stroke="#f472b6" stroke-width="1.2" stroke-dasharray="2 3" opacity=".8"/><circle cx="${ta}" cy="${tb}" r="2.5" fill="#f472b6"/></g>`;
+    tag("auth", label(-6,-6,4.4, `auth access · ${R.filter(r => r[1] === "ok").length} of ${R.length} set`, "#f9a8d4")); }
   // device (this device)
   const phone = /iPhone|Android/.test(dev.name);
   put(-3.4, -3.6, "devices", (phone ? box(-4,-4,1.2,0.4,2,"#c9d2e3","#8792a8","#a4aec2") : box(-4.6,-4.4,2.4,1.6,0.35,"#dfe3ea","#9aa1ae","#b8bec9") + box(-4.6,-4.4,2.4,0.15,1.6,"#2b3140","#1f2430","#3a4256",0.35)));
@@ -1331,15 +1424,17 @@ function renderScene() {
   s += objs.sort((u, v) => u[0] - v[0]).map(o => o[1]).join("") + labs.join("");
   $("scene").innerHTML = s;
   // zoom follows the zone wherever the current yaw has turned it: the bounds of its tile (floor to z 4), padded, at 3:2
-  const ZR = {devices:[-6,-6,5,5], files:[0,-6,5,5], runs:[-6,0,5,6], agents:[0,0,6,6]};
-  let vb = "0 0 780 520";
+  const ZR = {auth:[-6,-9,5,3], devices:[-6,-6,5,5], files:[0,-6,5,5], runs:[-6,0,5,6], agents:[0,0,6,6]};
+  let vb = "0 -30 780 550";
   if (zone === "net") vb = "30 0 720 470";
   else if (ZR[zone]) { const [x, y, w, d] = ZR[zone], pts = [];
     for (const [a, b] of [[x,y],[x+w,y],[x+w,y+d],[x,y+d]]) pts.push(iso2(a, b, 0), iso2(a, b, 4));
     let x0 = Math.min(...pts.map(p => p[0])) - 30, x1 = Math.max(...pts.map(p => p[0])) + 30, y0 = Math.min(...pts.map(p => p[1])) - 30, y1 = Math.max(...pts.map(p => p[1])) + 30;
     let W = x1 - x0, H = y1 - y0; if (W / H < 1.5) { const nw = H * 1.5; x0 -= (nw - W) / 2; W = nw; } else { const nh = W / 1.5; y0 -= (nh - H) / 2; H = nh; }
+    if (zone === "auth" && innerWidth > 560) { const pad = W * 0.7; x0 -= pad; W += pad; const nh = W / 1.5; y0 -= (nh - H) / 2; H = nh; }   // room on the left for the checklist panel
     vb = [x0, y0, W, H].map(v => Math.round(v)).join(" "); }
   $("scene").setAttribute("viewBox", vb);
+  renderAuth();
 }
 // orbit: drag sideways (mouse, pen or touch) or arrow keys; double-click resets; redraws at most once a frame
 (() => { const sc = $("scene"); if (!sc) return; let d = null, raf = 0;
@@ -1349,7 +1444,7 @@ function renderScene() {
   const turn = () => { if (!spin) return; yaw += 0.025; renderScene(); spin = requestAnimationFrame(turn); };
   const still = () => { clearTimeout(hold); hold = 0; if (spin) cancelAnimationFrame(spin); spin = 0; };
   sc.addEventListener("pointerdown", e => { if (e.button > 0) return; d = {x: e.clientX, y0: yaw, id: e.pointerId}; sc.setPointerCapture(e.pointerId); sc.classList.add("drag");
-    still(); hold = setTimeout(() => { if (d && !d.moved) spin = requestAnimationFrame(turn); }, 280); });
+    still(); if (!matchMedia("(prefers-reduced-motion: reduce)").matches) hold = setTimeout(() => { if (d && !d.moved) spin = requestAnimationFrame(turn); }, 280); });
   sc.addEventListener("pointermove", e => { if (!d) return; if (Math.abs(e.clientX - d.x) > 4) { d.moved = 1; if (spin || hold) { still(); d.x = e.clientX; d.y0 = yaw; } }
     if (d.moved) { yaw = d.y0 + (e.clientX - d.x) * 0.012; draw(); } });
   const end = () => { d = null; still(); sc.classList.remove("drag"); }; sc.addEventListener("pointerup", end); sc.addEventListener("pointercancel", end);
@@ -1357,9 +1452,11 @@ function renderScene() {
   sc.addEventListener("dblclick", () => { yaw = 0; draw(); });
   sc.addEventListener("keydown", e => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { yaw += e.key === "ArrowLeft" ? -0.15 : 0.15; draw(); e.preventDefault(); } });
 })();
-function renderZones() { $("zones").innerHTML = ZONES.map(([k, n, c]) => `<div data-z="${k}" class="${zone === k ? "on" : ""}"><i style="background:${c}"></i>${n}</div>`).join("");
+function renderZones() { $("zones").innerHTML = ZONES.map(([k, n, c]) => `<div data-z="${k}" class="${zone === k ? "on" : ""}" role="button" tabindex="0" aria-pressed="${zone === k}"><i style="background:${c}"></i>${n}</div>`).join("");
+  $("zones").querySelectorAll("div").forEach(d => d.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); d.click(); } });
   $("zones").querySelectorAll("div").forEach(d => d.onclick = () => { zone = zone === d.dataset.z ? "all" : d.dataset.z; $("zsel").value = zone; renderZones(); renderScene(); });
-  $("zsel").innerHTML = `<option value="all">● All zones</option>` + ZONES.map(([k, n]) => `<option value="${k}" ${zone === k ? "selected" : ""}>● ${n}</option>`).join(""); }
+  $("zsel").innerHTML = `<option value="all">● All zones</option>` + ZONES.map(([k, n]) => `<option value="${k}" ${zone === k ? "selected" : ""}>● ${n}</option>`).join("");
+  $("zsel").onchange = e => { zone = e.target.value; renderZones(); renderScene(); }; }
 
 /* ---------- top-level ---------- */
 /* ---------- Instruct templates ---------- */
