@@ -253,7 +253,7 @@ body.full.stack .mlist,body.full.stack .tcards{grid-template-columns:minmax(0,1f
 .qs li::before{content:counter(q);position:absolute;left:14px;top:11px;width:22px;height:22px;border-radius:50%;border:1px solid #9DBBFF;color:#9DBBFF;font:12px/22px var(--mono);text-align:center}
 .qs b{font-size:14px;font-weight:500}.qs .row{margin:4px 0}.qs .wbtn{padding:5px 11px;font-size:12.5px}
 .mlist.rec{max-height:none;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:4px}
-.bwrap{border:1px solid var(--w-line);border-radius:12px;overflow:auto;max-height:430px;background:#101217;margin-top:10px}
+.bwrap{border:1px solid var(--w-line);border-radius:12px;overflow:auto;max-height:430px;background:#101217;margin-top:10px}.bmore{margin-top:10px;border:1px solid var(--w-line);border-radius:12px;padding:8px 12px}.bmore>summary{cursor:pointer;color:var(--w-quiet);font-size:13px}.bmore[open]>summary{margin-bottom:8px}.bmore .mnote{margin:0 0 8px}.bplan{font-size:13px;color:var(--w-quiet)}.bplan ul{margin:6px 0 0;padding-left:18px}.bplan li{margin:3px 0}
 .btab{width:100%;border-collapse:collapse;font-size:13px}
 .btab th{position:sticky;top:0;background:#101217;text-align:left;font:11px var(--mono);font-weight:400;color:var(--w-dim);padding:8px 10px;border-bottom:1px solid var(--w-line);white-space:nowrap}
 .btab td{padding:7px 10px;border-bottom:1px solid #1c1f27;vertical-align:top;color:#c9ccd4}.btab tr:last-child td{border-bottom:0}
@@ -497,10 +497,18 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
               </section>
               <section class="dsec" id="sx-bench" aria-label="Benchmarks">
               <h3 class="sth">Benchmarks <span id="bMeta"></span></h3>
-              <p class="dlead">The leaderboards where open models are ranked, from the iot benchmarks feed (Kaggle and Hugging Face, polled every 6 hours), in the feed's popularity order. iolin doesn't score models itself: open a leaderboard to see where a model places. A listing, not an endorsement.</p>
               <div class="mlbar"><input id="bQ" type="search" placeholder="Search leaderboards or owners" aria-label="Search leaderboards"><select id="bSrc" aria-label="Source"></select><select id="bTier" aria-label="Tier"></select><select id="bTask" aria-label="Task"></select></div>
               <div class="bwrap"><table class="btab"><thead><tr><th scope="col">#</th><th scope="col">Leaderboard</th><th scope="col">Tier</th><th scope="col">Tasks</th><th scope="col" class="n">Popularity</th></tr></thead><tbody id="bBody"></tbody></table></div>
-              <p class="mnote" id="bNote"></p>
+              <details class="bmore" id="bAbout"><summary>Coming next: more sources, weights and presets</summary>
+                <div class="bplan"><b>Planned, not built yet</b>
+                  <ul>
+                    <li><b>More sources:</b> other public leaderboards, read politely (public pages only, robots.txt honoured, no sign-ins).</li>
+                    <li><b>Weights:</b> choose how much each leaderboard and task counts.</li>
+                    <li><b>Presets:</b> save a set of filters and weights for a task and reuse it.</li>
+                    <li><b>Learning fitness:</b> rankings that learn from your own runs, with how sure they are shown.</li>
+                    <li><b>Agent presets:</b> the same weights applied to agent setups, not only models.</li>
+                  </ul></div>
+              </details>
               </section>
               <section class="dsec" id="sx-presets" aria-label="Presets">
               <h3 class="sth">Presets <span>how the model answers</span></h3>
@@ -1082,10 +1090,18 @@ function renderTree() {
   $("tree").innerHTML = rows.map(([c, n, cls, cmd]) => `<div class="${cls}" data-cmd="${esc(cmd)}"><span class="car">${c}</span>${esc(n)}</div>`).join("");
   $("tree").querySelectorAll("[data-cmd]").forEach(d => d.onclick = () => d.dataset.cmd && run(d.dataset.cmd));
 }
+/* session label: the time if today (local), "Yesterday", else the day ("Mon, Nov 17") */
+function sessWhen(iso) {
+  const d = new Date(iso); if (isNaN(d)) return "";
+  const day = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(new Date()) - day(d)) / 86400000);
+  if (diff === 0) return d.toLocaleTimeString(undefined, {hour: "numeric", minute: "2-digit"});
+  if (diff === 1) return "Yesterday";
+  return d.toLocaleDateString(undefined, {weekday: "short", month: "short", day: "numeric", ...(d.getFullYear() !== new Date().getFullYear() ? {year: "numeric"} : {})});
+}
 function renderSessions() {
-  const today = new Date().toISOString().slice(0,10);
   $("sessions").innerHTML = sessions.slice(-3).reverse().map(s => `<div class="sess ${s.id === cur.id ? "on" : ""}" data-id="${s.id}">
-    <span class="t">${s.created.slice(0,10) === today ? "Today" : new Date(s.created).toLocaleDateString(undefined,{month:"short",day:"numeric"})}</span>
+    <span class="t" title="${esc(new Date(s.created).toLocaleString())}">${sessWhen(s.created)}</span>
     <span class="n">${esc(s.title)}</span>${s.id === cur.id && thinking ? '<span style="color:var(--purple)">●●</span>' : ""}<button class="chip" data-recap="${s.id}">Recap</button></div>`).join("");
   $("sessions").querySelectorAll(".sess").forEach(d => d.onclick = async e => { const s = sessions.find(x => x.id === d.dataset.id); cur = s; await save();
     if (e.target.dataset.recap) run("recap"); renderAll(); });
@@ -1545,9 +1561,7 @@ function renderBench() { const body = $("bBody"); if (!body) return; const fk = 
       const lw = el("div", "lib"); lw.append(el("span", "mnote", "in the library "), c); nm.append(lw); }
     body.append(r); });
   if (!l.length) { const r = el("tr"), d = el("td", "mnote", "No leaderboard matches. Clear the search or a filter."); d.colSpan = 5; r.append(d); body.append(r); }
-  const pol = Object.entries(b.polled || {}).map(([k, v]) => `${BSRC[k] || k} ${String(v).slice(0, 10)}`).join(", ");
   $("bMeta").textContent = `${l.length} of ${items.length} shown`;
-  $("bNote").textContent = `${b.live ? `Live from the iot benchmarks feed (${(b.total || items.length).toLocaleString()} listed, top ${items.length} by popularity fetched)` : "Offline snapshot of the iot benchmarks feed (the live feed didn't answer)"} · polled ${pol || "date not given"}. Popularity is the number the feed reports for each leaderboard. Names are third-party text.`;
   fk(); }
 
 /* model configs: per model, saved with the settings */
