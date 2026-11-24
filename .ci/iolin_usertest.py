@@ -162,7 +162,7 @@ with sync_playwright() as p:
     pg.click('.tab[data-v="projects"]'); pg.wait_for_timeout(300)
     check("demo", "Projects board has template items", len(pg.query_selector_all("#zboard .bi")) >= 8, len(pg.query_selector_all("#zboard .bi")))
     nav = {a.inner_text().strip(): a.get_attribute("href") for a in pg.query_selector_all(".nav a")}
-    check("links", "header nav goes to its pages, not home", nav.get("iostem API") == "/sample-report.html" and nav.get("Account") == "/app.html" and nav.get("Services") not in (None, "/", "https://io-threads.com"), nav)
+    check("links", "header nav goes to its pages, not home", nav.get("iostem API") == "/sample-report.html" and nav.get("Account") == "/app.html" and nav.get("Enterprise") == "/industries.html", nav)
     pg.click('.tab[data-v="live"]'); pg.wait_for_timeout(300)
 
     # 3. Panels and buttons
