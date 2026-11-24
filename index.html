@@ -408,6 +408,10 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
 /* Dawn: the globe's light dots wash out on the kraft page — a soft contrast disc behind the canvas plus a brighter, un-dimmed globe lift it (light theme only; Twilight/Dusk already sit on dark). */
 :root[data-theme="light"] figure.tri-sea::before{content:"";position:absolute;inset:4%;border-radius:50%;z-index:0;pointer-events:none;background:radial-gradient(closest-side,rgba(36,52,92,.32),rgba(36,52,92,.14) 55%,transparent 80%)}
 :root[data-theme="light"] figure.tri-sea>canvas{position:relative;z-index:1;filter:hue-rotate(140deg) saturate(.98) brightness(1.08) contrast(1.06)!important}
+/* Dawn: same lift for the mini "fly" globe (strengthen its backdrop + un-dim), and a gentle un-dim for the ocean band's dots (it sits on its own dark --sea, so no disc there). */
+:root[data-theme="light"] .drop .ghost::after{background:radial-gradient(closest-side,rgba(36,52,92,.30),rgba(36,52,92,.12) 55%,transparent 80%)!important}
+:root[data-theme="light"] .fly .mglobe{filter:brightness(1.08) contrast(1.05) saturate(1.02)}
+:root[data-theme="light"] .osec>canvas{filter:hue-rotate(140deg) saturate(.9) brightness(1.06)!important}
 html .osec{--sea:#2A1416!important}
 html .osec .ocean{--obg:#3A1D1F}
 .fly:not(.fly2){background:#341A1C!important}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fly:not(.fly2){background:transparent!important;border-color:transparent;box-shadow:none}}:root[data-theme="dark"] .fly:not(.fly2){background:transparent!important;border-color:transparent;box-shadow:none}
