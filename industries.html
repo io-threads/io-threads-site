@@ -51,6 +51,7 @@ section.osec::after{content:"";position:absolute;top:0;bottom:0;left:calc(50% - 
   background:linear-gradient(180deg,var(--paper),transparent 70px,transparent calc(100% - 70px),var(--paper))}
 .osec h2{color:#FFFFFF}.osec .label,.osec .fine,.osec .oread{color:rgba(232,238,248,.75)}.osec .fine a{color:#9DBBFF}
 .osec .stack>p:not(.label):not(.fine):not(.oread){color:rgba(232,238,248,.88)}
+@media (prefers-reduced-motion:no-preference){.osec .ocean .sc.ent{animation:sc-in .55s cubic-bezier(.2,.7,.2,1) both}@keyframes sc-in{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}}
 .osec .ojump .chip{color:#E8EEF8;border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04)}
 .osec .ojump .chip:hover{border-color:#9DBBFF}
 .osec .ojump .chip[aria-pressed="true"]{background:#FFFFFF;color:#0E2547;border-color:#FFFFFF}
@@ -1057,18 +1058,23 @@ section.free2{border-bottom:1px solid var(--rule)}
   var names={tech:"01 · Technology and AI",reg:"02 · Regulated and financial",grow:"03 · Growth, media and production"};
   function off(p){return p.getBoundingClientRect().left-T.getBoundingClientRect().left+T.scrollLeft}function tgt(p){return Math.max(0,off(p)-off(P[0]))}
   function go(g){var x=0;if(g!=="all"){var p=document.getElementById("o-"+g);if(p)x=tgt(p)}T.scrollTo({left:x,behavior:still?"auto":"smooth"})}
-  chips.forEach(function(c){c.addEventListener("click",function(){go(c.getAttribute("data-o"))})});
+  chips.forEach(function(c){c.addEventListener("click",function(){var g=c.getAttribute("data-o");go(g);enter(g)})});
   segs.forEach(function(c){c.addEventListener("click",function(){go(c.getAttribute("data-o"))})});
   function step(d){var x=T.scrollLeft,best=null;P.forEach(function(p){var o=tgt(p);if(d>0&&o>x+8&&best===null)best=o;if(d<0&&o<x-8)best=o});T.scrollTo({left:best===null?(d>0?T.scrollWidth:0):best,behavior:still?"auto":"smooth"})}
   document.getElementById("o-prev").addEventListener("click",function(){step(-1)});
   document.getElementById("o-next").addEventListener("click",function(){step(1)});
   T.addEventListener("wheel",function(e){if(!e.shiftKey||Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;var max=T.scrollWidth-T.clientWidth;if((e.deltaY>0&&T.scrollLeft<max-1)||(e.deltaY<0&&T.scrollLeft>1)){e.preventDefault();T.scrollLeft+=e.deltaY}},{passive:false});
-  var tick=false;
+  var tick=false,cur=null;
+  // stepping into an ocean: its cards come in one after another (like services); the sea colour is set by the world script below
+  function enter(g){if(g===cur)return;cur=g;
+    if(still||g==="all")return;var oc=document.getElementById("o-"+g);if(!oc)return;
+    oc.querySelectorAll(".sc").forEach(function(card,i){card.classList.remove("ent");void card.offsetWidth;card.style.animationDelay=(60+i*45)+"ms";card.classList.add("ent")});}
   function upd(){tick=false;var x=T.scrollLeft,c=x+T.clientWidth*.5,active="all",atStart=x<8;
     P.forEach(function(p,i){var o=off(p),f=Math.min(1,Math.max(0,(x+T.clientWidth-o)/(p.offsetWidth)));segs[i].querySelector("i").style.setProperty("--f",f.toFixed(3));
       var on=c>=o&&c<o+p.offsetWidth+16;segs[i].classList.toggle("on",on);if(on)active=p.getAttribute("data-o");
       if(!still){var art=p.querySelector(".oart");if(art)art.style.transform="translateX("+((o-x)*-0.08).toFixed(1)+"px)"}});
     chips.forEach(function(ch){var g=ch.getAttribute("data-o");ch.setAttribute("aria-pressed",(atStart&&g==="all")||(!atStart&&g===active)?"true":"false")});
+    enter(atStart?"all":active);
   }
   function req(){if(!tick){tick=true;requestAnimationFrame(upd)}}
   T.addEventListener("scroll",req,{passive:true});addEventListener("resize",req);upd();
@@ -1171,7 +1177,7 @@ section.free2{border-bottom:1px solid var(--rule)}
   if(still&&strip&&strip.pauseAnimations)strip.pauseAnimations();
   function f(){tk=false;var c=T.scrollLeft+T.clientWidth/2,act=P[0];
     P.forEach(function(p){var o=p.offsetLeft-T.offsetLeft;if(c>=o)act=p});
-    sec.style.setProperty("--sea",SEA[act.getAttribute("data-o")]||SEA.tech);sec.setAttribute("data-env",act.getAttribute("data-o")||"tech");
+    sec.style.setProperty("--sea",SEA[act.getAttribute("data-o")]||SEA.tech,"important");sec.setAttribute("data-env",act.getAttribute("data-o")||"tech");   // important: the o-ring rule pins --sea otherwise
     if(strip&&!still)strip.style.transform="translateX("+(-T.scrollLeft*0.35).toFixed(1)+"px)"}
   function q(){if(!tk){tk=true;requestAnimationFrame(f)}}
   T.addEventListener("scroll",q,{passive:true});addEventListener("resize",q);f();
