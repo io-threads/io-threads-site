@@ -798,6 +798,7 @@ const $ = id => document.getElementById(id);
     env = e;
     if (animate) { win.classList.add("theming"); setTimeout(() => win.classList.remove("theming"), 520); }
     win.dataset.env = e;
+    if (animate && typeof renderScene === "function") renderScene();   // repaint the isometric scene in the new theme
     opts.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.env === e)));
     try { localStorage.setItem("iolin-env", e); } catch {}
   };
@@ -1335,6 +1336,13 @@ function renderSetup() { $("dev").innerHTML = [["Mode", LIVE ? '<span class="u-o
   renderPresets(); renderServer(); renderDocs(); }
 
 /* ---------- render: live scene (isometric) ---------- */
+// Scene structural colours follow the window environment theme (zone accents stay semantic).
+const SCENE_PAL = {
+  twilight: {edge: "#0b0c10", grid: "#1e2230", labelBg: "#0e0f14", ink: "#cfd3dc"},
+  dawn: {edge: "#0b0804", grid: "#2a2015", labelBg: "#140e07", ink: "#efe6da"},
+  dusk: {edge: "#080616", grid: "#231c33", labelBg: "#0e0a1a", ink: "#e6e0f2"},
+};
+let SP = SCENE_PAL.twilight;
 const ZONES = [["auth","Auth access","#f472b6"],["devices","Devices","#7aa2ff"],["files","Project files","#a3a9b8"],["runs","Builds · runs","#f5a524"],["agents","Agent sessions","#a78bfa"],["net","Networking","#34d399"]];
 let yaw = 0;   // drag (or arrow keys) to orbit the live space; 0 = the original isometric view
 const rot = (x, y) => { const c = Math.cos(yaw), n = Math.sin(yaw); return [x * c - y * n, x * n + y * c]; };
@@ -1346,9 +1354,9 @@ function box(x, y, w, d, h, top, side, front, z = 0) {
   const P = (a, b, c) => iso2(a, b, c), walls = [[[x+w,y],[x+w,y+d],[1,0]], [[x,y+d],[x+w,y+d],[0,1]], [[x,y],[x,y+d],[-1,0]], [[x,y],[x+w,y],[0,-1]]];
   return walls.map(([a, b, nrm]) => { const [nx, ny] = rot(...nrm); return {a, b, nx, ny, k: depth((a[0]+b[0])/2, (a[1]+b[1])/2)}; })
     .filter(f => f.nx + f.ny > 1e-6).sort((u, v) => u.k - v.k)
-    .map(f => poly([P(f.a[0],f.a[1],z),P(f.b[0],f.b[1],z),P(f.b[0],f.b[1],z+h),P(f.a[0],f.a[1],z+h)], f.nx >= f.ny ? side : front, "#0b0c10")).join("")
-    + poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)], top, "#0b0c10"); }
-function label(x, y, z, text, color = "#cfd3dc") { const [a, b] = iso2(x, y, z); return `<g><rect x="${a - text.length * 3.6 - 6}" y="${b - 19}" width="${text.length * 7.2 + 12}" height="18" rx="4" fill="#0e0f14" opacity=".85"/><text x="${a}" y="${b - 6}" fill="${color}" font-size="11.5" font-family="ui-monospace,Menlo,monospace" text-anchor="middle">${esc(text)}</text></g>`; }
+    .map(f => poly([P(f.a[0],f.a[1],z),P(f.b[0],f.b[1],z),P(f.b[0],f.b[1],z+h),P(f.a[0],f.a[1],z+h)], f.nx >= f.ny ? side : front, SP.edge)).join("")
+    + poly([P(x,y,z+h),P(x+w,y,z+h),P(x+w,y+d,z+h),P(x,y+d,z+h)], top, SP.edge); }
+function label(x, y, z, text, color = SP.ink) { const [a, b] = iso2(x, y, z); return `<g><rect x="${a - text.length * 3.6 - 6}" y="${b - 19}" width="${text.length * 7.2 + 12}" height="18" rx="4" fill="${SP.labelBg}" opacity=".85"/><text x="${a}" y="${b - 6}" fill="${color}" font-size="11.5" font-family="ui-monospace,Menlo,monospace" text-anchor="middle">${esc(text)}</text></g>`; }
 // Auth access: what a deployment needs before clients and agents run here. Each row is read from this browser's
 // own state (nothing is sent); "warn" rows are gaps to close, "todo" rows are placeholders the deployment must fill.
 const TS_IP = /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.\d{1,3}\.\d{1,3}$/, TS_NAME = /\.ts\.net$/i;
@@ -1406,10 +1414,11 @@ function renderAuth() { const el = $("authp"); if (!el) return; const on = zone 
     try { await navigator.clipboard.writeText(t); $("authMsg").textContent = "Copied. Check it before sharing, then add it to the client's deployment repo."; }
     catch { const ta = $("authJson"); ta.value = t; ta.hidden = false; ta.focus(); ta.select(); $("authMsg").textContent = "The browser blocked copying: the template is selected below, press Cmd+C or Ctrl+C."; } }; }
 function renderScene() {
+  SP = SCENE_PAL[($("win") && $("win").dataset.env) || "twilight"] || SCENE_PAL.twilight;
   const hi = z => zone === "all" || zone === z ? 1 : .28; let s = `<defs><radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".9"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient></defs>`;
   // floor grid
   for (let i = -6; i <= 6; i++) { const [a1,b1] = iso2(i,-6), [a2,b2] = iso2(i,6), [c1,d1] = iso2(-6,i), [c2,d2] = iso2(6,i);
-    s += `<line x1="${a1}" y1="${b1}" x2="${a2}" y2="${b2}" stroke="#1e2230"/><line x1="${c1}" y1="${d1}" x2="${c2}" y2="${d2}" stroke="#1e2230"/>`; }
+    s += `<line x1="${a1}" y1="${b1}" x2="${a2}" y2="${b2}" stroke="${SP.grid}"/><line x1="${c1}" y1="${d1}" x2="${c2}" y2="${d2}" stroke="${SP.grid}"/>`; }
   // zone tiles
   const tile = (x, y, w, d, c, z) => `<g opacity="${hi(z)}">${poly([iso2(x,y),iso2(x+w,y),iso2(x+w,y+d),iso2(x,y+d)], c + "10", c + "55")}</g>`;
   s += tile(-6,-6,5,5,"#7aa2ff","devices") + tile(0,-6,5,5,"#a3a9b8","files") + tile(-6,0,5,6,"#f5a524","runs") + tile(0,0,6,6,"#a78bfa","agents");
@@ -1422,15 +1431,15 @@ function renderScene() {
   s += tile(-6,-9,5,3,"#f472b6","auth");
   { const R = authRowsNow = authRows(), st = k => (R.find(r => r[0] === k) || [])[1];
     const SC = {ok: ["#34d399", "#1f7a58", "#2a9a6f"], set: ["#f5a524", "#9a6512", "#c47f19"], todo: ["#f5a524", "#9a6512", "#c47f19"], warn: ["#f87171", "#9b3b3b", "#c24c4c"]};
-    const c = k => SC[st(k)] || SC.todo, dot = (x, y, z, k) => { const [a, b] = iso2(x, y, z); return `<circle cx="${a}" cy="${b}" r="4" fill="${c(k)[0]}" stroke="#0b0c10"/>`; };
+    const c = k => SC[st(k)] || SC.todo, dot = (x, y, z, k) => { const [a, b] = iso2(x, y, z); return `<circle cx="${a}" cy="${b}" r="4" fill="${c(k)[0]}" stroke="${SP.edge}"/>`; };
     // key: a flat ring (bow) and a shaft with one tooth
     const [kt, ks, kf] = c("Signing key");
     put(-5.2, -8.2, "auth", box(-5.8,-8.8,0.8,0.18,0.14,kt,ks,kf) + box(-5.8,-8.0,0.8,0.18,0.14,kt,ks,kf) + box(-5.8,-8.8,0.18,0.98,0.14,kt,ks,kf) + box(-5.18,-8.8,0.18,0.98,0.14,kt,ks,kf)
       + box(-5.0,-8.46,1.1,0.2,0.14,kt,ks,kf) + box(-4.1,-8.46,0.2,0.42,0.14,kt,ks,kf) + dot(-5.4,-8.4,0.9,"Signing key"));
     // network: a shield (extruded pentagon) for the VPN / network check
     { const [t, sd] = c("Network access"), cx = -3.9, cy = -8.2, pts = [[0,-.55],[.5,-.3],[.42,.25],[0,.6],[-.42,.25],[-.5,-.3]].map(([dx, dy]) => [cx + dx, cy + dy]);
-      put(cx, cy, "auth", poly(pts.map(([x, y]) => iso2(x, y, 0)), sd, "#0b0c10") + pts.map((q, i) => { const r = pts[(i + 1) % pts.length]; return poly([iso2(q[0],q[1],0), iso2(r[0],r[1],0), iso2(r[0],r[1],0.9), iso2(q[0],q[1],0.9)], sd, "#0b0c10"); }).join("")
-        + poly(pts.map(([x, y]) => iso2(x, y, 0.9)), t, "#0b0c10") + dot(cx, cy, 1.5, "Network access")); }
+      put(cx, cy, "auth", poly(pts.map(([x, y]) => iso2(x, y, 0)), sd, SP.edge) + pts.map((q, i) => { const r = pts[(i + 1) % pts.length]; return poly([iso2(q[0],q[1],0), iso2(r[0],r[1],0), iso2(r[0],r[1],0.9), iso2(q[0],q[1],0.9)], sd, SP.edge); }).join("")
+        + poly(pts.map(([x, y]) => iso2(x, y, 0.9)), t, SP.edge) + dot(cx, cy, 1.5, "Network access")); }
     // templates: a stack of sheets; the top sheet takes the open-placeholders state
     let tp = ""; for (let i = 0; i < 4; i++) tp += box(-2.9,-8.7,1.2,0.9,0.08, i === 3 ? c("Open placeholders")[0] : "#f472b6", "#8a3c66", "#b04e85", i * 0.14);
     put(-2.3, -8.2, "auth", tp + dot(-2.3,-8.25,0.95,"Templates"));
