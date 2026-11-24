@@ -74,8 +74,21 @@ h1 b{font-weight:400}
 .win{position:absolute;left:0;top:0;width:1140px;height:1510px;transform-origin:0 0;background:var(--w-bg);color:var(--w-ink);
   border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.4);display:grid;
   grid-template-rows:46px 1fr 32px;font-size:13px}
-.win *::-webkit-scrollbar{width:6px;height:6px}.win *::-webkit-scrollbar-thumb{background:#2a2e38;border-radius:9px}
-.titlebar{display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--w-line);background:#0f1015}
+.win *::-webkit-scrollbar{width:6px;height:6px}.win *::-webkit-scrollbar-thumb{background:var(--w-line);border-radius:9px}
+/* ---- Environment themes for the demo window: Dawn / Twilight (default) / Dusk ---- */
+.win[data-env="dawn"]{--w-bg:#191512;--w-panel:#201a15;--w-raise:#29211a;--w-line:#382e24;--w-ink:#f1e8dd;--w-quiet:#b3a391;--w-dim:#7f7060}
+.win[data-env="twilight"]{--w-bg:#111217;--w-panel:#15171d;--w-raise:#1b1e26;--w-line:#262a34;--w-ink:#dfe2e8;--w-quiet:#8a90a0;--w-dim:#5d6372}
+.win[data-env="dusk"]{--w-bg:#121021;--w-panel:#171427;--w-raise:#1e1933;--w-line:#2c2545;--w-ink:#e7e2f3;--w-quiet:#9a8fb6;--w-dim:#665c84}
+.win.theming,.win.theming *{transition:background-color .45s ease,color .45s ease,border-color .45s ease,fill .45s ease,box-shadow .45s ease!important}
+.envtog{display:flex;align-items:center;gap:6px;position:relative}
+.envtog .eico{all:unset;cursor:pointer;display:grid;place-items:center;width:26px;height:26px;border-radius:7px;color:var(--w-quiet)}
+.envtog .eico:hover,.envtog.open .eico{background:var(--w-raise);color:var(--w-ink)}
+.envtog .eopts{display:none;gap:2px;background:var(--w-raise);border:1px solid var(--w-line);border-radius:8px;padding:2px}
+.envtog.open .eopts{display:flex}
+.envtog .eopts button{all:unset;cursor:pointer;font-size:12px;line-height:1;padding:4px 8px;border-radius:6px;color:var(--w-quiet)}
+.envtog .eopts button[aria-pressed="true"]{background:var(--w-bg);color:var(--w-ink)}
+.envtog .eopts button:hover{color:var(--w-ink)}
+.titlebar{display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--w-line);background:color-mix(in srgb,var(--w-bg) 82%,#000)}
 .lights{display:flex;gap:8px}.lights i{width:12px;height:12px;border-radius:50%;background:#ec6a5e}.lights i:nth-child(2){background:#f4bf4f}.lights i:nth-child(3){background:#61c554}
 .tpath{color:var(--w-quiet);font-size:14px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tpath b{color:var(--w-ink);font-weight:500}
 .presence{display:flex;align-items:center;gap:8px;color:var(--w-quiet)}#avs{display:flex;padding-left:6px}
@@ -171,9 +184,9 @@ body.full.stack .side .sh{padding:6px 0;margin:4px 0;border-bottom:1px solid #1E
 .status .g{color:var(--green)}
 /* full-screen mode */
 body.full{overflow:hidden}
-body.full .stage{position:fixed;inset:0;z-index:50;background:#0b0c10;overflow:auto}
+body.full .stage{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--w-bg) 68%,#000);overflow:auto}
 .closefs{display:none}body.full .closefs{display:block;position:fixed;right:12px;top:12px;z-index:60}
-body.full.stack .stage::before{content:"";display:block;position:sticky;top:0;height:56px;background:#0b0c10;border-bottom:1px solid var(--w-line);z-index:5}
+body.full.stack .stage::before{content:"";display:block;position:sticky;top:0;height:56px;background:color-mix(in srgb,var(--w-bg) 68%,#000);border-bottom:1px solid var(--w-line);z-index:5}
 body.full.stack .closefs{top:8px}
 /* stacked layout for narrow full-screen */
 body.full.stack .win{position:relative;transform:none!important;width:100%;height:auto;border-radius:0;grid-template-rows:auto auto auto}
@@ -403,7 +416,7 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
 <div class="site">
   <div class="nav">
     <a class="brand" href="/" aria-label="io threads home"><svg class="ormark" viewBox="110 82 292 332" aria-hidden="true"><circle class="or-o" cx="256" cy="268" r="140" fill="none" stroke-width="7" pathLength="100"/><line class="or-i" x1="256" y1="88" x2="256" y2="122" stroke-width="7" stroke-linecap="round"/></svg>io</a>
-    <nav><a class="on" href="/iolin/">iolin</a><a href="/api.html">iostem API</a><a href="/services.html">Enterprise</a><a class="acct" href="/app.html">Account</a></nav>
+    <nav><a class="on" href="/iolin/">iolin</a><a href="/api.html">iostem API</a><a href="/services.html">Services</a><a class="acct" href="/app.html">Account</a></nav>
   </div>
   <div class="phead">
     <p class="plabel">iolin</p>
@@ -421,7 +434,7 @@ body.full.stack .fdr:not(.m-cols){max-height:260px}body.full.stack .fbar{flex-wr
       <div class="titlebar">
         <div class="lights"><i></i><i></i><i></i></div>
         <div class="tpath">iolin · <span id="tUser">you</span>/workspace/<b id="tModel">no model</b> · private session</div>
-        <div class="presence"><span id="avs"></span><span id="here">1 here</span></div>
+        <div class="presence"><span id="avs"></span><span id="here">1 here</span><span class="envtog" id="envtog"><button class="eico" id="envBtn" aria-expanded="false" aria-label="Environment theme" title="Environment"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 13h16" stroke-linecap="round"/><circle cx="10" cy="13" r="4"/><path d="M10 4.5V6M4.6 7.6l1 1M15.4 7.6l-1 1" stroke-linecap="round"/></svg></button><span class="eopts" role="group" aria-label="Environment"><button type="button" data-env="dawn">Dawn</button><button type="button" data-env="twilight">Twilight</button><button type="button" data-env="dusk">Dusk</button></span></span></div>
       </div>
 
       <div class="body">
@@ -774,6 +787,26 @@ const slug = m => m[1].toLowerCase().replace(/\s+/g, "-");
 const SKILLS = ["help","status","auth","model","templates","ask","recap","receipts","verify","tamper","set","export","open","sessions","stop","tour"];
 const DEF = {name:"", system:"You are a concise, honest assistant. If unsure, say so.", temperature:0.6, top_p:0.95, max_tokens:768, ctx:4096, preset:"Balanced", model:null, srvHost:"127.0.0.1", srvPort:1234, srvKeyOn:false, srvKey:"", snip:"curl"};
 const $ = id => document.getElementById(id);
+// Environment theme for the demo window: Dawn / Twilight (default) / Dusk. Collapsible, smooth, per-browser.
+(() => {
+  const ENVS = ["dawn", "twilight", "dusk"], win = $("win"), tog = $("envtog"), btn = $("envBtn");
+  if (!win || !tog || !btn) return;
+  const opts = [...tog.querySelectorAll(".eopts button")];
+  let env = "twilight";
+  try { const s = localStorage.getItem("iolin-env"); if (ENVS.includes(s)) env = s; } catch {}
+  const apply = (e, animate) => {
+    env = e;
+    if (animate) { win.classList.add("theming"); setTimeout(() => win.classList.remove("theming"), 520); }
+    win.dataset.env = e;
+    opts.forEach(b => b.setAttribute("aria-pressed", String(b.dataset.env === e)));
+    try { localStorage.setItem("iolin-env", e); } catch {}
+  };
+  apply(env, false);
+  const close = () => { tog.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); };
+  btn.onclick = e => { e.stopPropagation(); const o = tog.classList.toggle("open"); btn.setAttribute("aria-expanded", String(o)); };
+  opts.forEach(b => b.onclick = () => { apply(b.dataset.env, true); close(); });
+  document.addEventListener("click", e => { if (!tog.contains(e.target)) close(); });
+})();
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const t = () => new Date().toTimeString().slice(0,8);
 
@@ -1191,7 +1224,7 @@ function renderProjects() { $("plist").innerHTML = sessions.slice().reverse().ma
   $("plist").querySelectorAll("div").forEach(d => d.onclick = async () => { cur = sessions.find(x => x.id === d.dataset.id); await save(); setView("instruct"); renderAll(); });
   $("projCount").textContent = sessions.length; }
 /* Finder-style thread list (Instruct) */
-let fGroup = "all", fOpen = true, fMode = "list";
+let fGroup = "all", fOpen = true, fMode = "cols";
 try { const m = localStorage.getItem("iolin-fview"); if (["icons","list","cols","gal"].includes(m)) fMode = m; } catch {}
 try { const k = localStorage.getItem("iolin-fdr"); fOpen = k ? k !== "closed" : Math.min(innerWidth, screen.width || innerWidth) >= 900; } catch {}
 const runsIn = s => s.messages.filter(m => m.run_id).length;
@@ -1208,8 +1241,17 @@ function renderFinder() {
   c1.innerHTML = '<p class="fh">Threads</p>' + GROUPS.map(([k, n, c, fn]) => `<button class="fi" role="option" data-g="${k}" aria-selected="${fGroup === k}" style="--c:${c}"><span class="d"></span>${n}<span class="n">${sessions.filter(fn).length + (k === "samples" ? TPL_COUNT() : 0)}</span></button>`).join("");
   c1.querySelectorAll(".fi").forEach(b => b.onclick = () => { fGroup = b.dataset.g; renderFinder(); });
   const g = GROUPS.find(x => x[0] === fGroup) || GROUPS[0], list = sessions.filter(g[3]).sort((a, b) => lastAt(a) < lastAt(b) ? 1 : -1);
-  c2.innerHTML = list.length ? list.map(s => `<button class="fi" role="option" data-id="${s.id}" aria-selected="${s.id === cur.id}" style="--c:${runsIn(s) ? "#7FC8A0" : "#8E96A4"}"><span class="d"></span><span class="tx"><b>${esc(s.title)}</b><span>${esc(lastMsg(s).replace(/\s+/g, " ").slice(0, 90))}</span></span><span class="n">${ago(lastAt(s))}</span></button>`).join("")
-    : '<p class="fh" style="padding:10px 2px">No threads here yet.</p>';
+  const rowHtml = s => `<button class="fi" role="option" data-id="${s.id}" aria-selected="${s.id === cur.id}" style="--c:${runsIn(s) ? "#7FC8A0" : "#8E96A4"}"><span class="d"></span><span class="tx"><b>${esc(s.title)}</b><span>${esc(lastMsg(s).replace(/\s+/g, " ").slice(0, 90))}</span></span><span class="n">${ago(lastAt(s))}</span></button>`;
+  const empty = '<p class="fh" style="padding:10px 2px">No threads here yet.</p>';
+  if (fGroup === "all") {
+    // priority sections so the full list isn't one overloaded column: receipts first, then today, then the rest
+    const isToday = s => (lastAt(s) || "").slice(0, 10) === new Date().toISOString().slice(0, 10);
+    const withRcpt = list.filter(s => runsIn(s) > 0), todayN = list.filter(s => runsIn(s) === 0 && isToday(s)), earlier = list.filter(s => runsIn(s) === 0 && !isToday(s));
+    const sec = (label, arr) => arr.length ? `<p class="fh" style="margin-top:8px">${label}<span class="n">${arr.length}</span></p>` + arr.map(rowHtml).join("") : "";
+    c2.innerHTML = list.length ? sec("With receipts", withRcpt) + sec("Today", todayN) + sec("Earlier", earlier) : empty;
+  } else {
+    c2.innerHTML = list.length ? list.map(rowHtml).join("") : empty;
+  }
   if (fGroup === "samples") c2.innerHTML += '<p class="fh" style="margin-top:10px">Templates</p>' + tplOrdered().map(x => `<button class="fi" data-tpl="${esc(x.id)}" style="--c:${tplPins().includes(x.id) ? "#F0C46A" : x.src === "built-in" ? "#C9A86A" : "#9DBBFF"}"><span class="d"></span><span class="tx"><b>${tplPins().includes(x.id) ? "★ " : ""}${esc(x.name)}</b><span>${esc(x.desc)}</span></span></button>`).join("");
   c2.querySelectorAll(".fi[data-tpl]").forEach(b => b.onclick = () => useTemplate(b.dataset.tpl));
   c2.querySelectorAll(".fi[data-id]").forEach(b => b.onclick = async () => { cur = sessions.find(x => x.id === b.dataset.id); await save(); renderAll(); if (view === "instruct") renderChat(); });

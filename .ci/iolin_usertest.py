@@ -139,7 +139,7 @@ with sync_playwright() as p:
     check("demo", "first tab is named Iot", pg.inner_text('.tab[data-v="live"]').split()[1] == "Iot", pg.inner_text('.tab[data-v="live"]'))
     pg.click('.tab[data-v="instruct"]'); pg.wait_for_timeout(400)
     if pg.get_attribute("#fdrToggle", "aria-expanded") != "true": pg.click("#fdrToggle"); pg.wait_for_timeout(200)
-    check("demo", "Threads open in List view with the four view buttons", pg.evaluate("document.getElementById('fdr').classList.contains('m-list')") and len(pg.query_selector_all(".vsw button")) == 4)
+    check("demo", "Threads open in Columns view with the four view buttons", pg.evaluate("document.getElementById('fdr').classList.contains('m-cols')") and len(pg.query_selector_all(".vsw button")) == 4)
     pg.click('.vsw button[data-m="cols"]'); pg.wait_for_timeout(200)
     rows = pg.query_selector_all("#fdr .c2 .fi[data-id]"); titles = [r.inner_text() for r in rows]
     check("demo", "Finder lists the sample threads above the chat", len(rows) >= 4 and any("Release check" in t for t in titles)
@@ -162,7 +162,7 @@ with sync_playwright() as p:
     pg.click('.tab[data-v="projects"]'); pg.wait_for_timeout(300)
     check("demo", "Projects board has template items", len(pg.query_selector_all("#zboard .bi")) >= 8, len(pg.query_selector_all("#zboard .bi")))
     nav = {a.inner_text().strip(): a.get_attribute("href") for a in pg.query_selector_all(".nav a")}
-    check("links", "header nav goes to its pages, not home", nav.get("iostem API") == "/api.html" and nav.get("Account") == "/app.html" and nav.get("Enterprise") not in (None, "/", "https://io-threads.com"), nav)
+    check("links", "header nav goes to its pages, not home", nav.get("iostem API") == "/api.html" and nav.get("Account") == "/app.html" and nav.get("Services") not in (None, "/", "https://io-threads.com"), nav)
     pg.click('.tab[data-v="live"]'); pg.wait_for_timeout(300)
 
     # 3. Panels and buttons
