@@ -405,6 +405,9 @@ a.mark.mark b{background:none!important;-webkit-text-fill-color:currentColor;col
 :root[data-theme="dark"] h2{text-shadow:0 0 24px rgba(224,122,82,.18)}
 /* Home and shared art (ocean band, globe, loop card) shift from night-blue into the o-ring maroon family; text stays as is. */
 .osec>canvas,figure.tri-sea>canvas{filter:hue-rotate(140deg) saturate(.78) brightness(.92)!important}
+/* Dawn: the globe's light dots wash out on the kraft page — a soft contrast disc behind the canvas plus a brighter, un-dimmed globe lift it (light theme only; Twilight/Dusk already sit on dark). */
+:root[data-theme="light"] figure.tri-sea::before{content:"";position:absolute;inset:4%;border-radius:50%;z-index:0;pointer-events:none;background:radial-gradient(closest-side,rgba(36,52,92,.32),rgba(36,52,92,.14) 55%,transparent 80%)}
+:root[data-theme="light"] figure.tri-sea>canvas{position:relative;z-index:1;filter:hue-rotate(140deg) saturate(.98) brightness(1.08) contrast(1.06)!important}
 html .osec{--sea:#2A1416!important}
 html .osec .ocean{--obg:#3A1D1F}
 .fly:not(.fly2){background:#341A1C!important}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fly:not(.fly2){background:transparent!important;border-color:transparent;box-shadow:none}}:root[data-theme="dark"] .fly:not(.fly2){background:transparent!important;border-color:transparent;box-shadow:none}
