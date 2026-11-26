@@ -4,6 +4,14 @@
    Monthly plans: card only. Square can't store a wallet payment for repeat billing, so a card is saved and Square bills it monthly.
    Card numbers go straight into Square's form; this page and our server only ever see a one-time token. */
 (function () {
+  // The payment config (pay-links.js, loaded right before this file) is frozen before anything reads it, so no script
+  // that runs later can swap a destination in it. .ci/check.py fails if this goes, if join.html loads anything between
+  // the two files, or if any other file writes to IOT_PAY.
+  function deepFreeze(o) {
+    if (o && typeof o === "object" && !Object.isFrozen(o)) { Object.freeze(o); Object.keys(o).forEach(function (k) { deepFreeze(o[k]); }); }
+    return o;
+  }
+  try { deepFreeze(window.IOT_PAY); } catch (e) { /* nothing to freeze */ }
   var P = window.IOT_PAY || {}, cfg = P.sdk || {}, links = P.square || {};
   if (!cfg.appId || !cfg.locationId || !cfg.api) return;
   window.IOT_SQUARE_ON = true;
