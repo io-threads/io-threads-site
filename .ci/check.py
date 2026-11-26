@@ -15,7 +15,7 @@ DIST = pathlib.Path(__file__).resolve().parent.parent  # the repo root is what P
 ALLOWED_SLOTS = {"[YOUR TWO-LINE BACKGROUND]"}
 # Sample data and merch rewards on the sample report, not offer prices (operator 11-15). Any other $ value still fails.
 SAMPLE_PRICES = {"sample-report.html": {"$5,200", "$28", "$64", "$32", "$1"}}
-HONESTY = re.compile(r"trusted by|clients? (say|love|trust)|guarantee|certified|compliant with|world-class|best-in-class|"
+HONESTY = re.compile(r"coming soon|coming to testflight|in-app purchase|trusted by|clients? (say|love|trust)|guarantee|certified|compliant with|world-class|best-in-class|"
                      r"seamless|revolution|cutting-edge|unlock|leverage|most clients|we've helped|our clients|attestation|public data|deterministic|filing-grade|regulatory-grade|certificate|"
                      r"free (?:api|tier|keys?|plan)\b", re.I)   # no free API plan since 2026-11-18 (accounts are free)
 # Allowed only inside an explicit denial (e.g. "doesn't certify compliance").
