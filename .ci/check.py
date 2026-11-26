@@ -61,11 +61,28 @@ class PayParseError(ValueError):
     pass
 
 
+# Characters Python and JavaScript don't agree on (review of fix/payments-redteam): JS ends a // comment at U+2028,
+# U+2029 and \r as well as \n, so `// note<U+2028>window.IOT_PAY.sdk.api = "..."` was stripped here as one comment but
+# RUN by the browser. Fail closed: pay-links.js may not contain any line terminator other than \n, any control
+# character other than \n and \t, any Unicode space, zero-width or bidi character, and its code (outside comments)
+# must be plain ASCII. Read it with read_bytes().decode() (pay_source) so newline translation can't hide a \r.
+PAY_BAD_CHARS = re.compile("[\x00-\x08\x0b-\x1f\x7f-\x9f\u00a0\u1680\u180e\u2000-\u200f\u2028-\u202f\u205f-\u206f\u3000\ufeff\ufff9-\ufffb]")
+
+
+def pay_source(path):
+    """A file's exact text: bytes decoded as UTF-8 (strict), no newline translation."""
+    return path.read_bytes().decode("utf-8")
+
+
 def parse_pay_links(src):
     """pay-links.js as a Python dict, or PayParseError. The file must be exactly `window.IOT_PAY = <object>;` where the
     object holds only identifier or quoted keys (each once) and plain quoted-string or object values."""
+    bad = PAY_BAD_CHARS.search(src)
+    if bad: raise PayParseError(f"character U+{ord(bad.group(0)):04X} at offset {bad.start()} (JS and this check could read the file differently)")
     # Comments may mention anything; only code counts. Strings are matched first so "https://" isn't read as a comment.
-    code = re.sub(r"(\"(?:[^\"\\\n]|\\.)*\"|'(?:[^'\\\n]|\\.)*')|/\*.*?\*/|//[^\n]*", lambda m: m.group(1) or " ", src, flags=re.S)
+    # A // comment ends at any JS line terminator (only \n can remain after the check above, but stay exact).
+    code = re.sub(r"(\"(?:[^\"\\\n\r\u2028\u2029]|\\.)*\"|'(?:[^'\\\n\r\u2028\u2029]|\\.)*')|/\*.*?\*/|//[^\n\r\u2028\u2029]*", lambda m: m.group(1) or " ", src, flags=re.S)
+    if not code.isascii(): raise PayParseError("non-ASCII character outside a comment")
     m = re.fullmatch(r"\s*window\.IOT_PAY\s*=\s*(\{.*\})\s*;?\s*", code, flags=re.S)
     if not m: raise PayParseError("must be exactly one 'window.IOT_PAY = {...};' and nothing else")
     toks, i, body = [], 0, m.group(1)
@@ -173,7 +190,11 @@ def pay_destination_fails(root):
     destination off the allow-list."""
     f = root / "pay-links.js"
     if not f.exists(): return ["pay-links.js: missing"]
-    fails = pay_links_fails(f.read_text()) + pay_use_fails(root)
+    try:
+        src = pay_source(f)
+    except UnicodeDecodeError as e:
+        return [f"pay-links.js: not valid UTF-8 ({e.reason} at byte {e.start})"]
+    fails = pay_links_fails(src) + pay_use_fails(root)
     for g in sorted(root.glob("*.html")) + sorted(root.glob("*.js")) + sorted(root.glob("**/*.html")) + sorted(root.glob("**/*.js")):
         if g == f or ".git" in g.parts or ".ci" in g.parts or ".github" in g.parts: continue
         for m in set(PAY_SHAPES.findall(g.read_text(errors="ignore"))):
@@ -184,7 +205,7 @@ def pay_destination_fails(root):
 def pay_self_test():
     """The pin itself: the real files pass, each kind of swap fails."""
     import shutil, tempfile
-    real = (DIST / "pay-links.js").read_text()
+    real = pay_source(DIST / "pay-links.js")
     sdk_line = 'api: "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1"'
     swaps = {
         "hosted link": real.replace("xIlkX7Cb", "EvIl0000"),
@@ -205,6 +226,12 @@ def pay_self_test():
         "Partner link in Builder.y": real.replace('Builder: { m: "https://square.link/u/xIlkX7Cb", y: "" }', 'Builder: { m: "https://square.link/u/xIlkX7Cb", y: "https://square.link/u/gYnG7De1" }'),
         "extra key": real.replace('portal: "",', 'portal: "", next: "",'),
         "number value": real.replace('portal: ""', "portal: 1"),
+        # second review: JS line terminators Python's // pattern ran past, and characters the two lex differently.
+        "U+2028 after a // comment": real.rstrip() + "\n// note\u2028window.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
+        "U+2029 after a // comment": real.rstrip() + "\n// note\u2029window.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
+        "\\r after a // comment": real.rstrip() + "\n// note\rwindow.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
+        "non-ASCII in code": real.replace('portal: ""', 'portal\u0430: ""'),
+        "zero-width space": real.replace('portal: ""', 'portal:\u200b ""'),
     }
     out = [] if not pay_links_fails(real) else ["pay-links self-test: the real pay-links.js should pass: " + "; ".join(pay_links_fails(real))]
     out += [f"pay-links self-test: a swapped {k} was not caught" for k, v in swaps.items() if v == real or not pay_links_fails(v)]
@@ -228,6 +255,14 @@ def pay_self_test():
             (tmp / n).write_text(v)
             if not pay_use_fails(tmp): out.append(f"pay-links self-test: {k} was not caught")
             (tmp / n).write_text(base[n] if n in base else "")
+        # The whole check on a tree (bytes as written, no newline translation): the terminator swaps must fail there too.
+        if pay_destination_fails(tmp): out.append("pay-links self-test: the real tree should pass: " + "; ".join(pay_destination_fails(tmp)))
+        for k in ("U+2028 after a // comment", "U+2029 after a // comment", "\\r after a // comment"):
+            (tmp / "pay-links.js").write_bytes(swaps[k].encode("utf-8"))
+            if not pay_destination_fails(tmp): out.append(f"pay-links self-test: {k} was not caught on a tree")
+        (tmp / "pay-links.js").write_bytes(b"\xff" + real.encode("utf-8"))
+        if not pay_destination_fails(tmp): out.append("pay-links self-test: invalid UTF-8 was not caught on a tree")
+        (tmp / "pay-links.js").write_bytes(real.encode("utf-8"))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     return out
