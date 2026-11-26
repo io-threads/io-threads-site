@@ -29,6 +29,10 @@ BOUNDS = """z => { const sc = document.getElementById('scene'), [x, y, w, h] = s
   for (const e of els) { const b = e.getBBox(); if (!b.width && !b.height) continue;
     if (b.x < x - .5 || b.y < y - .5 || b.x + b.width > x + w + .5 || b.y + b.height > y + h + .5) bad.push([e.getAttribute('data-sz') || e.tagName, Math.round(b.x), Math.round(b.y), Math.round(b.x + b.width), Math.round(b.y + b.height)]); }
   return {vb: sc.getAttribute('viewBox'), n: els.length, bad}; }"""
+COVER = """z => { const sc = document.getElementById('scene'), w = +sc.getAttribute('viewBox').split(' ')[2]; let a = Infinity, b = -Infinity;
+  for (const e of sc.querySelectorAll(`[data-sz="${z}"]`)) { const r = e.getBBox(); if (!r.width && !r.height) continue; a = Math.min(a, r.x); b = Math.max(b, r.x + r.width); }
+  return (b - a) / w; }"""
+COVERAGE = {}
 LABS = """() => [...document.querySelectorAll('#scene .lab')].map(g => { const b = g.querySelector('rect').getBBox(); return {z: g.dataset.sz, x: b.x, y: b.y, w: b.width, h: b.height, t: g.textContent}; })"""
 
 def nearest_q(a): return min(abs(a - k * Q) for k in range(5))
@@ -70,6 +74,10 @@ def run(p, width, scheme):
             vbs.add(r["vb"]); bad += [(deg, b) for b in r["bad"]]
         check(f"{tag} zone {z}: everything inside the viewBox at every 5°", not bad, bad[:4])
         check(f"{tag} zone {z}: viewBox constant", len(vbs) == 1, vbs)
+        if z != "all":   # the zone's objects and labels at yaw 0 fill a fair share of the frame width
+            pg.evaluate("__iolinScene.setYaw(0)"); cov = pg.evaluate(COVER, z); COVERAGE[(width, scheme, z)] = cov
+            need = 0.35 if width > 560 else 0.25
+            if not (width <= 560 and z == "auth"): check(f"{tag} zone {z}: covers ≥{need:.0%} of the frame width at 0°", cov >= need, round(cov, 3))
     pg.evaluate("__iolinScene.zone('all')")
 
     # 2. corners: labels don't overlap, the focused zone's labels all show, aria text
@@ -150,5 +158,7 @@ with sync_playwright() as p:
         for sch in ("light", "dark"): run(p, w, sch)
     reduced(p)
 srv.shutdown()
+for (w, sch, z), c in sorted(COVERAGE.items()):
+    if sch == "dark": print(f"coverage {w} {z}: {c:.1%}")
 print(f"{N[0] - len(FAILS)}/{N[0]} checks passed")
 sys.exit(1 if FAILS else 0)

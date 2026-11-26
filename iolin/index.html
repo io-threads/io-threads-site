@@ -1381,7 +1381,7 @@ const ZONES = [["auth","Auth access","#f472b6"],["devices","Devices","#7aa2ff"],
 let yaw = 0;   // drag, hold or arrow keys orbit the live space; 0 = the original isometric view; always kept in [0, 2π)
 const TAU = Math.PI * 2, QTR = Math.PI / 2, normYaw = a => ((a % TAU) + TAU) % TAU, angDist = (a, b) => { const d = normYaw(a - b); return Math.min(d, TAU - d); };
 let sceneTurning = false;   // true while a gesture or its settle animation runs (heavy per-render work is done once per gesture)
-const CX = 0, CY = -1.5;   // the scene turns about the middle of everything (grid -6..6 plus the auth strip to y -9)
+let CX = 0, CY = -1.5;   // turning centre: the middle of everything for "all" (grid -6..6 plus the auth strip to y -9), a focused zone's own centre otherwise
 const rotV = (x, y) => { const c = Math.cos(yaw), n = Math.sin(yaw); return [x * c - y * n, x * n + y * c]; };   // directions (wall normals)
 const rot = (x, y) => { const [u, v] = rotV(x - CX, y - CY); return [u + CX, v + CY]; };                          // points, about C
 const iso2 = (x, y, z = 0) => { const [X, Y] = rot(x, y); return [390 + (X - Y) * 0.866 * 30, 250 + (X + Y) * 0.5 * 30 - z * 30]; };
@@ -1414,6 +1414,8 @@ function placeLabels(L) {   // the focused zone's labels go first and are never 
 // Each point sweeps an ellipse about C; labels add their box (and room for two lifts) around their anchor.
 const ZR = {auth:[-6,-9,5,3], devices:[-6,-6,5,5], files:[0,-6,5,5], runs:[-6,0,5,6], agents:[0,0,6,6],
   net: [[-6,-6,2.6],[6,-6,2.6],[6,6,2.6],[-3,-6,1.8],[0,-6,1.8],[3,-6,1.8],[6,-3,1.8],[6,0,1.8]]};   // the network line and its posts
+function zoneCentre(k) { const r = ZR[k]; if (!r) return [0, -1.5]; if (!Array.isArray(r[0])) return [r[0] + r[2] / 2, r[1] + r[3] / 2];
+  const xs = r.map(p => p[0]), ys = r.map(p => p[1]); return [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2]; }
 const zonePts = k => { const r = ZR[k]; if (Array.isArray(r[0])) return r; const [x, y, w, d] = r, p = [];
   for (const [a, b] of [[x,y],[x+w,y],[x+w,y+d],[x,y+d]]) p.push([a, b, 0], [a, b, 4]); return p; };
 const FRAMES = {}, labBucket = t => Math.ceil(t.length / 8) * 8;   // label widths rounded up, so a status word changing rarely moves the frame
@@ -1430,8 +1432,7 @@ function sceneFrame(L) {
   L.filter(l => !ZR[zone] || l.zk === zone).forEach(l => add(l.x, l.y, l.z, (labBucket(l.text) * 7.2 + 12) / 2, 19 + LAB_TRIES * LAB_LIFT));
   const P = ZR[zone] ? 30 : 16; x0 -= P; y0 -= P; x1 += P; y1 += P;
   let W = x1 - x0, H = y1 - y0;
-  if (ZR[zone]) { if (W / H < 1.5) { const nw = H * 1.5; x0 -= (nw - W) / 2; W = nw; } else { const nh = W / 1.5; y0 -= (nh - H) / 2; H = nh; } }
-  if (zone === "auth") { if (wide) { const pad = W * 0.7; x0 -= pad; W += pad; const nh = W / 1.5; y0 -= (nh - H) / 2; H = nh; }   // room on the left for the checklist
+  if (zone === "auth") { if (wide) { const pad = W * 0.7; x0 -= pad; W += pad; }   // room on the left for the checklist
                          else H += H * 0.9; }                                                                                       // narrow: the checklist sits below
   return FRAMES[key] = [Math.floor(x0), Math.floor(y0), Math.ceil(W) + 1, Math.ceil(H) + 1].join(" "); }
 // Auth access: what a deployment needs before clients and agents run here. Each row is read from this browser's
@@ -1491,6 +1492,7 @@ function renderAuth() { const el = $("authp"); if (!el) return; const on = zone 
     try { await navigator.clipboard.writeText(t); $("authMsg").textContent = "Copied. Check it before sharing, then add it to the client's deployment repo."; }
     catch { const ta = $("authJson"); ta.value = t; ta.hidden = false; ta.focus(); ta.select(); $("authMsg").textContent = "The browser blocked copying: the template is selected below, press Cmd+C or Ctrl+C."; } }; }
 function renderScene() {
+  [CX, CY] = zoneCentre(zone);   // a focused zone turns in place; "all" turns about the middle of the space
   SP = SCENE_PAL[($("win") && $("win").dataset.env) || "twilight"] || SCENE_PAL.twilight;
   const hi = z => zone === "all" || zone === z ? 1 : .28; let s = `<defs><radialGradient id="glow"><stop offset="0" stop-color="#a78bfa" stop-opacity=".9"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/></radialGradient></defs>`;
   // floor grid
