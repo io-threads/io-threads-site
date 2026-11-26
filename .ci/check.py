@@ -5,7 +5,7 @@
 
 Checks: honesty grep (sales-copy gate), internal links and anchors resolve,
 one h1 per page, unique titles and descriptions, description length, alt text
-on images, JSON-LD parses, lang set, only allowed slots remain.
+on images, JSON-LD parses, lang set, only allowed slots remain, payment destinations pinned.
 """
 import html, json, pathlib, re, sys
 from html.parser import HTMLParser
@@ -21,6 +21,75 @@ HONESTY = re.compile(r"trusted by|clients? (say|love|trust)|guarantee|certified|
 # Allowed only inside an explicit denial (e.g. "doesn't certify compliance").
 DENIAL = re.compile(r"(isn't|aren't|doesn't|not|no)\b[^.]{0,60}$", re.I)
 
+
+# Payment destinations (purple-team M5). pay-links.js decides where money goes: the hosted square.link checkouts, and
+# for in-page checkout the Square app, location and the server that charges the card. A swapped value sends buyers'
+# money elsewhere, so pay-links.js may hold ONLY these values (plus empty strings). Changing a link, the Square app or
+# location, or the payment server fails CI unless this list is edited in the same commit, in plain sight of review.
+PAY_ALLOWED = {
+    "https://square.link/u/xIlkX7Cb",   # Builder monthly
+    "https://square.link/u/gKoiSiI1",   # Buyer monthly
+    "https://square.link/u/gYnG7De1",   # Partner monthly
+    "sq0idp-1s8ZblRtSjareUcO7Q6X9Q",    # Square application id (production)
+    "L61Q2TYHHTM3G",                    # Square location id
+    "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1",   # production payment server
+}
+PAY_SDK = {"appId": "sq0idp-1s8ZblRtSjareUcO7Q6X9Q", "locationId": "L61Q2TYHHTM3G", "api": "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1"}
+# Values that name a payment destination wherever they appear in a served page or script.
+PAY_SHAPES = re.compile(r"https?://(?:square\.link|checkout\.square\.site|buy\.stripe\.com)/[^\s\"'<>)]*|\b(?:sandbox-)?sq0id[a-z]-[A-Za-z0-9_-]+|"
+                        r"https://[a-z0-9]+\.supabase\.co/functions/v1\b")
+
+
+def pay_links_fails(src, name="pay-links.js"):
+    """Everything wrong with a pay-links.js source against PAY_ALLOWED (empty list = OK)."""
+    fails = []
+    # Comments may mention anything; only code counts. Strings are matched first so "https://" isn't read as a comment.
+    code = re.sub(r"(\"(?:[^\"\\\n]|\\.)*\"|'(?:[^'\\\n]|\\.)*')|/\*.*?\*/|//[^\n]*", lambda m: m.group(1) or " ", src, flags=re.S)
+    # Plain data only: one object literal of quoted strings, so no value can be built from pieces or fetched.
+    for bad, why in (("`", "template string"), ("+", "string joined with +"), ("(", "function call"), ("\\", "escape in a string")):
+        if bad in code: fails.append(f"{name}: {why} - payment config must be plain quoted strings")
+    if len(re.findall(r"\bIOT_PAY\b", code)) != 1 or not re.match(r"\s*window\.IOT_PAY\s*=\s*\{", code):
+        fails.append(f"{name}: must be exactly one 'window.IOT_PAY = {{...}}' assignment")
+    for v in re.findall(r"\"([^\"]*)\"|'([^']*)'", code):
+        v = v[0] or v[1]
+        if v and v not in PAY_ALLOWED:
+            fails.append(f"{name}: payment value {v!r} is not on the allow-list (PAY_ALLOWED in .ci/check.py)")
+    for k, want in PAY_SDK.items():
+        m = re.search(r"\bsdk\s*:\s*\{[^}]*\b" + k + r"\s*:\s*\"([^\"]*)\"", code)
+        if not m or m.group(1) != want:
+            fails.append(f"{name}: sdk.{k} must be {want!r} (got {m.group(1) if m else 'nothing'!r})")
+    return fails
+
+
+def pay_destination_fails(root):
+    """pay-links.js pinned, and no other served page or script carries a payment destination off the allow-list."""
+    f = root / "pay-links.js"
+    if not f.exists(): return ["pay-links.js: missing"]
+    fails = pay_links_fails(f.read_text())
+    for g in sorted(root.glob("*.html")) + sorted(root.glob("*.js")) + sorted(root.glob("**/*.html")) + sorted(root.glob("**/*.js")):
+        if g == f or ".git" in g.parts or ".ci" in g.parts or ".github" in g.parts: continue
+        for m in set(PAY_SHAPES.findall(g.read_text(errors="ignore"))):
+            if m not in PAY_ALLOWED: fails.append(f"{g.relative_to(root)}: payment destination {m!r} is not on the allow-list (PAY_ALLOWED in .ci/check.py)")
+    return sorted(set(fails))
+
+
+def pay_self_test():
+    """The pin itself: the real file passes, each kind of swap fails."""
+    real = (DIST / "pay-links.js").read_text()
+    swaps = {
+        "hosted link": real.replace("xIlkX7Cb", "EvIl0000"),
+        "app id": real.replace("sq0idp-1s8ZblRtSjareUcO7Q6X9Q", "sq0idp-AttackerApp000000000"),
+        "location": real.replace("L61Q2TYHHTM3G", "LATTACKER0000"),
+        "api": real.replace("tckvatqkjfrvavleunzk.supabase.co", "evil.example"),
+        "api blanked to an allowed value": real.replace('api: "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1"', 'api: "L61Q2TYHHTM3G"'),
+        "built string": real.replace('"L61Q2TYHHTM3G"', '"L61Q2" + "TYHHTM3G"'),
+        "fetched": real.rstrip() + "\nfetch(\"/x\");",
+        "second assignment": real.rstrip() + "\nwindow.IOT_PAY = {};",
+        "stripe link": real.replace('Builder: { m: "", y: "" }', 'Builder: { m: "https://buy.stripe.com/evil", y: "" }', 1),
+    }
+    out = [] if not pay_links_fails(real) else ["pay-links self-test: the real pay-links.js should pass"]
+    out += [f"pay-links self-test: a swapped {k} was not caught" for k, v in swaps.items() if not pay_links_fails(v)]
+    return out
 
 class P(HTMLParser):
     def __init__(s):
@@ -97,6 +166,7 @@ def main():
     if "@view-transition" in css and css.index("@view-transition") < css.index("prefers-reduced-motion:no-preference"):
         fails.append("style.css: @view-transition declared before the reduced-motion guard")
     if any((DIST / n).exists() for n in ("kit.html",)): fails.append("dist/kit.html: preview-only page leaked into production")
+    fails += pay_self_test() + pay_destination_fails(DIST)
     for need in ("robots.txt", "sitemap.xml", "404.html", "index.html", "assets/og-card.png"):
         if not (DIST / need).exists(): fails.append(f"missing {need}")
     for x in notes: print("NOTE", x)
