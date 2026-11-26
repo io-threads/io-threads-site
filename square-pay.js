@@ -127,8 +127,11 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
     function fail(e) { msg.className = "sq-msg err"; msg.textContent = (e && e.message) || "That didn't go through. Nothing was charged."; go.disabled = false; }
     function validEmail(v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v || ""); }
     function needEmail() { if (validEmail(em.value.trim())) return true; fail({ message: monthly ? "Add your email first: it's where your membership and monthly invoices go." : "Add your email first: it's where your access goes." }); em.focus(); return false; }
-    function finish(t, kind, tt) {
+    // The Turnstile token is taken only once tokenize() succeeds, so a closed wallet sheet or a rejected card form
+    // doesn't spend it (human() already checked, synchronously, that there is one).
+    function finish(t, kind) {
       if (t.status !== "OK") throw new Error((t.errors && t.errors[0] && t.errors[0].message) || "Payment was cancelled.");
+      var tt = takeTs();
       var mail = em.value.trim();
       msg.className = "sq-msg"; msg.textContent = monthly ? "Starting your membership…" : "Processing…";
       if (!monthly) return send("/charge-lifetime", { sourceId: t.token, email: mail, idempotencyKey: idem }, tt);
@@ -141,13 +144,15 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
     // the first one may already have been spent on the server, and Square's idempotency rests on the key, not on it.
     var last = null, pending = null;
     function send(path, body, tt) { last = { path: path, body: body }; return post(path, withTs(body, tt)); }
-    function run(p, kind, tt) { handle(p.then(function (t) { return finish(t, kind, tt); })); }
+    function run(p, kind) { handle(p.then(function (t) { return finish(t, kind); })); }
     function replay() { if (!human()) return; msg.className = "sq-msg"; handle(post(pending.path, withTs(pending.body, takeTs()))); }
     function handle(reply) {
       go.disabled = true; msg.className = "sq-msg"; msg.textContent = "Processing…";
       reply.then(function (r) {
         pending = null;
-        if (!r.ok) { if (!r.keep) idem = key(); throw new Error(r.error || "That didn't go through. Nothing was charged."); }
+        // A refused security check (captcha) means the server stopped before Square: keep the key and resend this exact
+        // request (with a fresh Turnstile token) on the next click, since an earlier, lost try may already have charged.
+        if (!r.ok) { if (r.captcha) pending = last; else if (!r.keep) idem = key(); throw new Error(r.error || "That didn't go through. Nothing was charged."); }
         var mail = em.value.trim();
         if (!monthly) return done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + mail + ".");
         // Wallet (r.invoiced): the first month is already paid. Card (r.activating): the card is saved and the plan starts
@@ -170,14 +175,14 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
             "refresh-expired": "auto",
             callback: function (t) { tsToken = t; tsFailed = false; },
             "expired-callback": function () { tsToken = ""; },
-            "error-callback": function () { tsToken = ""; } });
+            "error-callback": function () { tsToken = ""; tsFailed = true; } });
         }).catch(function () { tsFailed = true; });
         p.googlePay(req).then(function (g) { google = g; gp.hidden = false; or1.hidden = false; return g.attach("#sq-gpay-" + id, { buttonColor: "white", buttonType: "plain", buttonSizeMode: "fill" }); }).catch(function () {});
       }).catch(function () { fail({ message: "Payments didn't load. Use Pay with Square below." }); });
     }
     pay.addEventListener("click", function () { setTimeout(function () { if (!box.hidden) init(); }, 0); });
     // Apple requires the sheet to open straight from the tap: the email check is synchronous, tokenize() comes next.
-    function wallet(w) { if (pending) return replay(); if (!w || !needEmail() || !human()) return; var p = w.tokenize(); run(p, "wallet", takeTs()); }
+    function wallet(w) { if (pending) return replay(); if (!w || !needEmail() || !human()) return; var p = w.tokenize(); run(p, "wallet"); }
     ap.addEventListener("click", function () { wallet(apple); });
     ap.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wallet(apple); } });
     gp.addEventListener("click", function () { wallet(google); });
@@ -186,7 +191,7 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
       if (!cardObj || !needEmail() || !human()) return;
       var v = monthly ? { intent: "STORE", customerInitiated: true, sellerKeyedIn: false, billingContact: { email: em.value.trim() } }
         : { amount: o.amount, currencyCode: "USD", intent: "CHARGE", customerInitiated: true, sellerKeyedIn: false, billingContact: { email: em.value.trim() } };
-      run(cardObj.tokenize(v), "card", takeTs());
+      run(cardObj.tokenize(v), "card");
     });
   }
 

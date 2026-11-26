@@ -205,7 +205,7 @@ header.top a.mark.mark b{font-size:20px;font-weight:400;letter-spacing:normal}
     <h2 id="h-b" class="label">Your browser and our providers</h2>
     <p>Signing in stores a session token in your browser's storage: local storage if you choose "Keep me signed in", otherwise session storage, which clears when the browser closes. It isn't a cookie and isn't used for tracking.</p>
     <p>iolin web (io-threads.com/iolin/) runs the model on your own device. Model files download from Hugging Face and the app library loads from jsDelivr, so those services see your IP address. Your name, chats, receipts and signing key stay in your browser's storage; we don't receive them. "Erase everything" in iolin deletes them.</p>
-    <p>Square processes payments and receives your card details; we never see the full card number. Supabase runs our database, sign-in and server functions. GitHub hosts the website. Fonts load from Google Fonts, which receives your IP address. These providers keep standard logs, such as IP addresses and requests, for security.</p>
+    <p>Square processes payments and receives your card details; we never see the full card number. Supabase runs our database, sign-in and server functions. GitHub hosts the website. Fonts load from Google Fonts, which receives your IP address. When our bot check is switched on, Cloudflare Turnstile runs on sign-in and checkout and receives browser signals and your IP address for that check. These providers keep standard logs, such as IP addresses and requests, for security.</p>
   </div>
 </section>
 
