@@ -1362,6 +1362,22 @@ header.top .nav a,header.top .nav .btn,header.top a.mark.mark b{font-family:-app
 header.top .nav a{font-size:15px;font-weight:400;letter-spacing:normal}
 header.top a.mark.mark b{font-size:20px;font-weight:400;letter-spacing:normal}
 </style>
+<style id="glass">/* sample tables as iolin-style glass windows: see-through box, blur, title bar with window dots; colours follow Dawn / Twilight / Dusk */
+:root{--g-bg:rgba(230,216,191,.42);--g-bar:rgba(230,216,191,.62);--g-line:rgba(43,33,24,.16);--g-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 10px 28px -14px rgba(43,33,24,.35)}
+:root[data-theme="dark"]{--g-bg:rgba(42,20,22,.46);--g-bar:rgba(42,20,22,.70);--g-line:rgba(255,236,226,.13);--g-shadow:0 1px 0 rgba(255,236,226,.06) inset,0 14px 34px -16px rgba(0,0,0,.7)}
+:root[data-site="twilight"]{--g-bg:rgba(17,20,28,.46);--g-bar:rgba(17,20,28,.70);--g-line:rgba(157,187,255,.15);--g-shadow:0 1px 0 rgba(157,187,255,.07) inset,0 14px 34px -16px rgba(0,0,0,.7)}
+:root[data-site="dawn"]{--g-bg:rgba(230,216,191,.42);--g-bar:rgba(230,216,191,.62);--g-line:rgba(43,33,24,.16);--g-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 10px 28px -14px rgba(43,33,24,.35)}
+.smp-panel .smp-facts,.smp-panel .gt{position:relative;background:var(--g-bg);border:1px solid var(--g-line);border-radius:10px;box-shadow:var(--g-shadow);-webkit-backdrop-filter:blur(14px) saturate(1.15);backdrop-filter:blur(14px) saturate(1.15);padding:44px 16px 14px;transition:background-color .35s ease,border-color .35s ease,box-shadow .35s ease}
+.smp-panel .smp-facts::before,.smp-panel .gt::before{content:"";position:absolute;left:0;right:0;top:0;height:30px;border-bottom:1px solid var(--g-line);border-radius:10px 10px 0 0;background:radial-gradient(circle at 16px 15px,#ec6a5e 4.5px,transparent 5px),radial-gradient(circle at 32px 15px,#f4bf4f 4.5px,transparent 5px),radial-gradient(circle at 48px 15px,#61c554 4.5px,transparent 5px),var(--g-bar)}
+.smp-panel .smp-facts::after,.smp-panel .gt::after{position:absolute;top:0;left:64px;right:12px;height:30px;line-height:30px;font:500 .72rem/30px var(--f-mono,ui-monospace,monospace);letter-spacing:.04em;color:var(--muted);text-align:center;padding-right:52px;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.smp-panel .smp-facts::after{content:"run.json"}
+.smp-panel .gt::after{content:"gates · verdicts"}
+.smp-panel .gt{gap:0}.smp-panel .gt li{padding:10px 0;border-top:1px solid var(--g-line)}
+.smp-panel .gt li:first-child{border-top:0;padding-top:2px}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.smp-panel .smp-facts,.smp-panel .gt{background:var(--g-bar)}}
+@media (prefers-reduced-transparency:reduce){.smp-panel .smp-facts,.smp-panel .gt{background:var(--g-bar);backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media (max-width:520px){.smp-panel .smp-facts,.smp-panel .gt{padding:40px 12px 12px}.smp-panel .smp-facts::after,.smp-panel .gt::after{display:none}}
+</style>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>

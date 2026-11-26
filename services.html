@@ -205,6 +205,7 @@ header.top a.mark.mark b{font-size:20px;font-weight:400;letter-spacing:normal}
       <li><span class="lc">GPU</span><b>Compute execution</b><a class="more" href="#gpu">Learn more</a><span class="d">Utilization, memory bandwidth, cost per job and per token</span></li>
       <li><span class="lc">HW</span><b>Connected devices</b><a class="more" href="#hw">Learn more</a><span class="d">On-device models, firmware, device-to-cloud</span></li>
       <li><span class="lc">EA · SEC</span><b>Models and agents</b><a class="more" href="#ea">Learn more</a><span class="d">Accuracy claims, adversarial security, drift</span></li>
+      <li><span class="lc">RD · ERA</span><b>Agent runs: reconstruction</b><a class="more" href="#rd">Learn more</a><span class="d">Which model, inputs, tools and permissions a run used, rebuilt from your records</span></li>
       <li><span class="lc">GATE</span><b>People: approvals</b><a class="more" href="#gate">Learn more</a><span class="d">Who approved each action, and the agreed definition of ready</span></li>
       <li><span class="lc">FRAC</span><b>The whole</b><a class="more" href="#frac">Learn more</a><span class="d">One owner across every layer, every release</span></li>
     </ol>
@@ -226,6 +227,8 @@ function q(){if(!t){t=true;requestAnimationFrame(f)}}addEventListener("scroll",q
           <tr><td><a href="#dx"><b>Diagnostic</b></a></td><td>Someone asks who checked your number, and there's a date on the answer</td><td class="o opt"><a class="more" href="#dx">Learn more</a></td></tr>
           <tr><td><a href="#ea"><b>Eval audit</b></a></td><td>An enterprise buyer wants proof behind your accuracy claim</td><td class="o opt"><a class="more" href="#ea">Learn more</a></td></tr>
           <tr><td><a href="#sec"><b>AI security assessment</b></a></td><td>An agent with tool or data access shipped and nobody tried to break it</td><td class="o opt"><a class="more" href="#sec">Learn more</a></td></tr>
+          <tr><td><a href="#rd"><b>Reconstruction diagnostic</b></a></td><td>Someone asks what an agent did on one decision, and you have to show them</td><td class="o opt"><a class="more" href="#rd">Learn more</a></td></tr>
+          <tr><td><a href="#era"><b>Execution reconstruction assessment</b></a></td><td>A review or an incident needs every agent run rebuilt, not just one</td><td class="o opt"><a class="more" href="#era">Learn more</a></td></tr>
           <tr><td><a href="#gpu"><b>GPU execution cost management</b></a></td><td>The GPU bill grows faster than usage, and nobody can say which job spent it</td><td class="o opt"><a class="more" href="#gpu">Learn more</a></td></tr>
           <tr><td><a href="#hw"><b>Connected hardware check</b></a></td><td>A device works on the bench and is about to ship, or update, in volume</td><td class="o opt"><a class="more" href="#hw">Learn more</a></td></tr>
           <tr><td><a href="#gate"><b>Launch gating</b></a></td><td>A launch date with no agreed definition of ready</td><td class="o opt"><a class="more" href="#gate">Learn more</a></td></tr>
@@ -378,6 +381,26 @@ function q(){if(!t){t=true;requestAnimationFrame(f)}}addEventListener("scroll",q
         <dt>When</dt><dd>An agent with write access to tools or customer data has shipped, or is about to. Or a customer's security questionnaire asks something you can't answer.</dd>
         <dt>We check</dt><dd>Actions outside a user's role or the agent's allowlist, instructions hidden in tool results, data leaving through tool calls, skipped approvals, instructions carrying over between sessions, state lost over long tasks, and whether logs are complete enough to audit.</dd>
         <dt>You get</dt><dd>Adversarial testing in an environment you authorize in writing, a findings report with hardening steps (allowlists, checkpoints, rollback, escalation), and a versioned record of the scope.</dd>
+      </dl>
+    </article>
+
+    <article class="detail" id="rd">
+      <div class="hd"><h3>Reconstruction diagnostic <span class="code-tag">RD</span></h3><a class="more" href="contact.html">Book a demo</a></div>
+      <dl class="facts">
+        <dt>For</dt><dd>The owner of an agent that made a decision someone now questions, and the person who has to answer for it.</dd>
+        <dt>When</dt><dd>A customer, a reviewer or your counsel asks which model, inputs, tools and permissions were behind one consequential agent decision.</dd>
+        <dt>We check</dt><dd>Whether your own logs and traces can rebuild that one run: the model and its version, the prompt and inputs, each tool call and its result, and the permissions in force at the time. Where a piece is missing, we say so.</dd>
+        <dt>You get</dt><dd>The rebuilt run as a signed record you can check yourself, a list of what couldn't be rebuilt and why, and what to record so the next run can be.</dd>
+      </dl>
+    </article>
+
+    <article class="detail" id="era">
+      <div class="hd"><h3>Execution reconstruction assessment <span class="code-tag">ERA</span></h3><a class="more" href="contact.html">Book a demo</a></div>
+      <dl class="facts">
+        <dt>For</dt><dd>The head of platform or risk, ahead of a security or compliance review, or after an incident that touched many runs.</dd>
+        <dt>When</dt><dd>One rebuilt run isn't enough: you need to know how many of your agents' runs can be rebuilt across every gateway, model server and tracing tool you use.</dd>
+        <dt>We check</dt><dd>A sample of runs across your agents: whether each rebuilds end to end, whether a replay matches what was recorded (we report the first point where it doesn't), whether records arrive in order and unaltered, and how long they're kept.</dd>
+        <dt>You get</dt><dd>The share of sampled runs that rebuild fully, each failure with its first point of difference, a ranked list of gaps to close, and a signed record of the sample. It shows what your records show, not that they are true.</dd>
       </dl>
     </article>
 
