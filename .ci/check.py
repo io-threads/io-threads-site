@@ -28,7 +28,11 @@ DENIAL = re.compile(r"(isn't|aren't|doesn't|not|no)\b[^.]{0,60}$", re.I)
 # PAY_EXPECTED exactly: every key in its slot, every value a plain string, no duplicate keys, nothing else. Changing a
 # link, the Square app or location, or the payment server fails CI unless PAY_EXPECTED is edited in the same commit, in
 # plain sight of review.
-PAY_SDK = {"appId": "sq0idp-1s8ZblRtSjareUcO7Q6X9Q", "locationId": "L61Q2TYHHTM3G", "api": "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1"}
+# turnstileSiteKey: the public Cloudflare Turnstile site key square-pay.js renders in the checkout. "" = no widget (the
+# server skips the check while TURNSTILE_SECRET is unset). Once set, it is pinned like every other value: put the exact key
+# here in the same commit that sets it in pay-links.js, so a swapped key (someone else's widget) fails CI.
+PAY_SDK = {"appId": "sq0idp-1s8ZblRtSjareUcO7Q6X9Q", "locationId": "L61Q2TYHHTM3G", "api": "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1",
+           "turnstileSiteKey": ""}
 PAY_EXPECTED = {
     "stripe": {"Builder": {"m": "", "y": ""}, "Buyer": {"m": "", "y": ""}, "Partner": {"m": "", "y": ""}, "Lifetime": ""},
     "square": {
@@ -224,7 +228,8 @@ def pay_destination_fails(root, expected=None):
 # PAY_EXPECTED together, the documented way), and CI then failed with "a swapped ... was not caught". The fixture keeps
 # every slot the swaps need (a filled Square link per plan, an empty Stripe link, an empty portal, the sdk line) and is
 # checked against PAY_FIXTURE_EXPECTED. The live file is still checked against PAY_EXPECTED by pay_destination_fails.
-PAY_FIXTURE_SDK = {"appId": "sq0idp-FixtureApp0000000000000", "locationId": "LFIXTURE00000", "api": "https://fixtureproject00000000.supabase.co/functions/v1"}
+PAY_FIXTURE_SDK = {"appId": "sq0idp-FixtureApp0000000000000", "locationId": "LFIXTURE00000", "api": "https://fixtureproject00000000.supabase.co/functions/v1",
+                   "turnstileSiteKey": "0x4AAAAAAAFixtureKey00"}
 PAY_FIXTURE_EXPECTED = {
     "stripe": {"Builder": {"m": "", "y": ""}, "Buyer": {"m": "", "y": ""}, "Partner": {"m": "", "y": ""}, "Lifetime": ""},
     "square": {"Builder": {"m": "https://square.link/u/FixBld01", "y": ""}, "Buyer": {"m": "https://square.link/u/FixBuy02", "y": ""},
@@ -237,7 +242,7 @@ window.IOT_PAY = {
   stripe: { Builder: { m: "", y: "" }, Buyer: { m: "", y: "" }, Partner: { m: "", y: "" }, Lifetime: "" },
   square: { Builder: { m: "https://square.link/u/FixBld01", y: "" }, Buyer: { m: "https://square.link/u/FixBuy02", y: "" }, Partner: { m: "https://square.link/u/FixPrt03", y: "" }, Lifetime: "" },
   portal: "",
-  sdk: { appId: "sq0idp-FixtureApp0000000000000", locationId: "LFIXTURE00000", api: "https://fixtureproject00000000.supabase.co/functions/v1" }
+  sdk: { appId: "sq0idp-FixtureApp0000000000000", locationId: "LFIXTURE00000", api: "https://fixtureproject00000000.supabase.co/functions/v1", turnstileSiteKey: "0x4AAAAAAAFixtureKey00" }
 };
 """
 
@@ -271,7 +276,7 @@ def pay_self_test():
         "(a) second api key after the pinned one": _swap(fx, sdk_line, sdk_line + ", api: window.name"),
         "(b) appId read from the page": _swap(fx, sdk_line, sdk_line + ", appId: document.referrer"),
         "(c) Builder link read from the page": _swap(fx, f'm: "{b_m}"', "m: document.referrer"),
-        "(d) second sdk key": _swap(fx, sdk_line + " }", sdk_line + " }, sdk: window.name"),
+        "(d) second sdk key": _swap(fx, '" }\n};', '" }, sdk: window.name\n};'),
         "Builder and Buyer links swapped": _swap(fx, b_id, "TMPSWAP0") and fx.replace(b_id, "TMPSWAP0").replace(y_id, b_id).replace("TMPSWAP0", y_id),
         "Partner link in Builder.y": _swap(fx, f'Builder: {{ m: "{b_m}", y: "" }}', f'Builder: {{ m: "{b_m}", y: "{p_m}" }}'),
         "extra key": _swap(fx, 'portal: "",', 'portal: "", next: "",'),
@@ -282,6 +287,11 @@ def pay_self_test():
         "\\r after a // comment": fx.rstrip() + "\n// note\rwindow.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
         "non-ASCII in code": _swap(fx, 'portal: ""', 'portal\u0430: ""'),
         "zero-width space": _swap(fx, 'portal: ""', 'portal:\u200b ""'),
+        # Turnstile site key: pinned once set; swapped, blanked, read from the page or missing all fail.
+        "turnstile key swapped": _swap(fx, X["sdk"]["turnstileSiteKey"], "0x4AAAAAAAAttackerKey0"),
+        "turnstile key blanked": _swap(fx, f'"{X["sdk"]["turnstileSiteKey"]}"', '""'),
+        "turnstile key read from the page": _swap(fx, f'"{X["sdk"]["turnstileSiteKey"]}"', "window.name"),
+        "turnstile key missing": _swap(fx, f', turnstileSiteKey: "{X["sdk"]["turnstileSiteKey"]}"', ""),
     }
     out = [] if not fails_fx(fx) else ["pay-links self-test: the fixture should pass: " + "; ".join(fails_fx(fx))]
     for k, v in swaps.items():
