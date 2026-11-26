@@ -4,14 +4,15 @@
    Monthly plans: card only. Square can't store a wallet payment for repeat billing, so a card is saved and Square bills it monthly.
    Card numbers go straight into Square's form; this page and our server only ever see a one-time token. */
 (function () {
-  // The payment config (pay-links.js, loaded right before this file) is frozen before anything reads it, so no script
-  // that runs later can swap a destination in it. .ci/check.py fails if this goes, if join.html loads anything between
-  // the two files, or if any other file writes to IOT_PAY.
+  // The payment config (pay-links.js, loaded right before this file) is frozen before anything reads it, and the
+  // window.IOT_PAY binding is locked (not writable, not configurable), so no script that runs later can swap a
+  // destination in it or replace the whole object (join.html reads it again for the hosted links). .ci/check.py fails
+  // if the lock goes, if join.html loads anything between the two files, or if any other file writes to IOT_PAY.
   function deepFreeze(o) {
     if (o && typeof o === "object" && !Object.isFrozen(o)) { Object.freeze(o); Object.keys(o).forEach(function (k) { deepFreeze(o[k]); }); }
     return o;
   }
-  try { deepFreeze(window.IOT_PAY); } catch (e) { /* nothing to freeze */ }
+  try { Object.defineProperty(window, "IOT_PAY", { value: deepFreeze(window.IOT_PAY), writable: false, configurable: false, enumerable: true }); } catch (e) { /* already locked */ }
   var P = window.IOT_PAY || {}, cfg = P.sdk || {}, links = P.square || {};
   if (!cfg.appId || !cfg.locationId || !cfg.api) return;
   window.IOT_SQUARE_ON = true;
@@ -115,9 +116,12 @@ function sqButton(href) { return el('<a class="sq-sq" href="' + href + '"><svg v
         if (!r.ok) { if (!r.keep) idem = key(); throw new Error(r.error || "That didn't go through. Nothing was charged."); }
         var mail = em.value.trim();
         if (!monthly) return done(box, "Lifetime is yours.", "Payment received. Square emails your receipt, and we'll email your access to " + mail + ".");
-        done(box, "Welcome to " + (o.name || o.plan) + ".", r.invoiced
-          ? "First month paid. Square emails an invoice each month to " + mail + ", payable with Apple Pay, Google Pay or card."
-          : "Your membership is active and billed monthly to this card. Square emails your receipt to " + mail + ".");
+        // Wallet (r.invoiced): the first month is already paid. Card (r.activating): the card is saved and the plan starts
+        // only when Square confirms the first payment (the server records nothing as paid until then), so never say
+        // "active" yet.
+        if (r.invoiced) done(box, "Welcome to " + (o.name || o.plan) + ".", "First month paid. Square emails an invoice each month to " + mail + ", payable with Apple Pay, Google Pay or card.");
+        else if (r.activating) done(box, "Card saved.", "Your " + (o.name || o.plan) + " membership starts as soon as Square confirms the first payment, usually within a minute. Square emails the receipt to " + mail + ".");
+        else done(box, "Welcome to " + (o.name || o.plan) + ".", "Your membership is active and billed monthly to this card. Square emails your receipt to " + mail + ".");
       }).catch(function (e) { if (e && e.unknown) pending = last; fail(e); });
     }
     function init() {

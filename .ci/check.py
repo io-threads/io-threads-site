@@ -144,20 +144,32 @@ def _pay_diff(want, got, path=""):
     return [] if got == want else [f"{path} must be {want!r} (got {got!r})"]
 
 
-def pay_links_fails(src, name="pay-links.js"):
-    """Everything wrong with a pay-links.js source against PAY_EXPECTED (empty list = OK)."""
+def pay_links_fails(src, name="pay-links.js", expected=None):
+    """Everything wrong with a pay-links.js source against PAY_EXPECTED, or `expected` (the self-test's fixture)
+    (empty list = OK)."""
     try:
         tree = parse_pay_links(src)
     except PayParseError as e:
         return [f"{name}: {e} - payment config must be plain quoted strings (PAY_EXPECTED in .ci/check.py)"]
-    return [f"{name}: {d} (PAY_EXPECTED in .ci/check.py)" for d in _pay_diff(PAY_EXPECTED, tree)]
+    return [f"{name}: {d} (PAY_EXPECTED in .ci/check.py)" for d in _pay_diff(PAY_EXPECTED if expected is None else expected, tree)]
 
 
 # A write to the payment config: assignment (= += ||= ...), Object.assign/defineProperty/defineProperties/setPrototypeOf
-# or Reflect.set/defineProperty with IOT_PAY in the arguments, or delete.
-PAY_WRITE = re.compile(r"\bIOT_PAY\b(?:\s*(?:\.\s*[A-Za-z_$][\w$]*|\[[^\]]*\]))*\s*(?:[-+*/%&|^]|\|\||&&|\?\?|<<|>>>?|\*\*)?=(?!=)"
-                       r"|\b(?:Object\.(?:assign|defineProperty|defineProperties|setPrototypeOf)|Reflect\.(?:set|defineProperty|deleteProperty))\s*\([^)]*\bIOT_PAY\b"
+# or Reflect.set/defineProperty with IOT_PAY in the arguments, or delete. Also the whole object replaced through a
+# quoted key (window["IOT_PAY"] = ..., third review: `"]` after IOT_PAY got past the first alternative).
+_ASSIGN = r"\s*(?:[-+*/%&|^]|\|\||&&|\?\?|<<|>>>?|\*\*)?=(?!=)"
+PAY_WRITE = re.compile(r"\bIOT_PAY\b(?:\s*(?:\.\s*[A-Za-z_$][\w$]*|\[[^\]]*\]))*" + _ASSIGN
+                       + r"|[\"'`]IOT_PAY[\"'`]\s*\](?:\s*(?:\.\s*[A-Za-z_$][\w$]*|\[[^\]]*\]))*" + _ASSIGN
+                       + r"|\b(?:Object\.(?:assign|defineProperty|defineProperties|setPrototypeOf)|Reflect\.(?:set|defineProperty|deleteProperty))\s*\([^)]*\bIOT_PAY\b"
                        r"|\bdelete\s+[\w$.\[\]\s]*\bIOT_PAY\b")
+# Any computed or quoted write onto the global object, in any served file (third review): window["IOT_"+"PAY"] = ...
+# never names IOT_PAY, so the reader allow-list can't see it. Nothing on the site needs one.
+# (Up to the first "]=" in the statement, so a nested bracket like self[["IOT","PAY"].join("_")] = ... is caught too.)
+GLOBAL_BRACKET_WRITE = re.compile(r"\b(?:window|self|globalThis|top|parent|frames)\s*\[[^;\n]*?\]" + _ASSIGN)
+# square-pay.js locks the window.IOT_PAY binding as well as freezing the object, so no later script can replace it
+# (deepFreeze alone left `window.IOT_PAY = {...}` working). This exact statement is the one IOT_PAY write it may make.
+PAY_LOCK = re.compile(r'Object\.defineProperty\(\s*window\s*,\s*"IOT_PAY"\s*,\s*\{\s*value:\s*deepFreeze\(window\.IOT_PAY\)\s*,'
+                      r'\s*writable:\s*false\s*,\s*configurable:\s*false\s*,\s*enumerable:\s*true\s*\}\s*\)')
 PAY_LOAD = re.compile(r'<script src="pay-links\.js"></script>\s*<script src="square-pay\.js"></script>')
 
 
@@ -168,7 +180,10 @@ def pay_use_fails(root):
     for g in sorted(set(root.glob("**/*.html")) | set(root.glob("**/*.js"))):
         if ".git" in g.parts or ".ci" in g.parts or ".github" in g.parts or g == root / "pay-links.js": continue
         src, rel = g.read_text(errors="ignore"), str(g.relative_to(root))
+        for m in GLOBAL_BRACKET_WRITE.finditer(src):
+            fails.append(f"{rel}: computed write to the global object ({m.group(0)[:60]!r}); it could replace IOT_PAY without naming it")
         if not re.search(r"IOT_PAY", src): continue
+        if rel == "square-pay.js": src = PAY_LOCK.sub("", src, count=1)   # its one allowed write: the lock
         if rel not in PAY_READERS:
             fails.append(f"{rel}: mentions IOT_PAY; only pay-links.js (writes) and {', '.join(sorted(PAY_READERS))} (read) may")
             continue
@@ -180,89 +195,137 @@ def pay_use_fails(root):
         if len(PAY_LOAD.findall(j)) != 1 or j.count('src="pay-links.js"') != 1 or j.count('src="square-pay.js"') != 1:
             fails.append('join.html: must load <script src="pay-links.js"></script> then <script src="square-pay.js"></script> once, nothing in between')
     sp = root / "square-pay.js"
-    if sp.exists() and "deepFreeze(window.IOT_PAY)" not in sp.read_text(errors="ignore"):
-        fails.append("square-pay.js: must freeze window.IOT_PAY before reading it (deepFreeze(window.IOT_PAY))")
+    if sp.exists() and not PAY_LOCK.search(sp.read_text(errors="ignore")):
+        fails.append('square-pay.js: must freeze window.IOT_PAY and lock the binding before reading it '
+                     '(Object.defineProperty(window, "IOT_PAY", { value: deepFreeze(window.IOT_PAY), writable: false, configurable: false, enumerable: true }))')
     return fails
 
 
-def pay_destination_fails(root):
+def pay_destination_fails(root, expected=None):
     """pay-links.js pinned, IOT_PAY written nowhere else, and no other served page or script carries a payment
-    destination off the allow-list."""
+    destination off the allow-list. `expected`: the self-test's fixture instead of PAY_EXPECTED."""
     f = root / "pay-links.js"
     if not f.exists(): return ["pay-links.js: missing"]
     try:
         src = pay_source(f)
     except UnicodeDecodeError as e:
         return [f"pay-links.js: not valid UTF-8 ({e.reason} at byte {e.start})"]
-    fails = pay_links_fails(src) + pay_use_fails(root)
+    allowed = PAY_ALLOWED if expected is None else set(_pay_values(expected))
+    fails = pay_links_fails(src, expected=expected) + pay_use_fails(root)
     for g in sorted(root.glob("*.html")) + sorted(root.glob("*.js")) + sorted(root.glob("**/*.html")) + sorted(root.glob("**/*.js")):
         if g == f or ".git" in g.parts or ".ci" in g.parts or ".github" in g.parts: continue
         for m in set(PAY_SHAPES.findall(g.read_text(errors="ignore"))):
-            if m not in PAY_ALLOWED: fails.append(f"{g.relative_to(root)}: payment destination {m!r} is not on the allow-list (PAY_EXPECTED in .ci/check.py)")
+            if m not in allowed: fails.append(f"{g.relative_to(root)}: payment destination {m!r} is not on the allow-list (PAY_EXPECTED in .ci/check.py)")
     return sorted(set(fails))
 
 
+# The self-test runs on this fixed fixture, never on the live pay-links.js (third review): swaps built by replacing the
+# live file's literal values stopped applying as soon as the operator rotated a link (edit pay-links.js and
+# PAY_EXPECTED together, the documented way), and CI then failed with "a swapped ... was not caught". The fixture keeps
+# every slot the swaps need (a filled Square link per plan, an empty Stripe link, an empty portal, the sdk line) and is
+# checked against PAY_FIXTURE_EXPECTED. The live file is still checked against PAY_EXPECTED by pay_destination_fails.
+PAY_FIXTURE_SDK = {"appId": "sq0idp-FixtureApp0000000000000", "locationId": "LFIXTURE00000", "api": "https://fixtureproject00000000.supabase.co/functions/v1"}
+PAY_FIXTURE_EXPECTED = {
+    "stripe": {"Builder": {"m": "", "y": ""}, "Buyer": {"m": "", "y": ""}, "Partner": {"m": "", "y": ""}, "Lifetime": ""},
+    "square": {"Builder": {"m": "https://square.link/u/FixBld01", "y": ""}, "Buyer": {"m": "https://square.link/u/FixBuy02", "y": ""},
+               "Partner": {"m": "https://square.link/u/FixPrt03", "y": ""}, "Lifetime": ""},
+    "portal": "",
+    "sdk": PAY_FIXTURE_SDK,
+}
+PAY_FIXTURE = """/* self-test fixture, same layout as pay-links.js */
+window.IOT_PAY = {
+  stripe: { Builder: { m: "", y: "" }, Buyer: { m: "", y: "" }, Partner: { m: "", y: "" }, Lifetime: "" },
+  square: { Builder: { m: "https://square.link/u/FixBld01", y: "" }, Buyer: { m: "https://square.link/u/FixBuy02", y: "" }, Partner: { m: "https://square.link/u/FixPrt03", y: "" }, Lifetime: "" },
+  portal: "",
+  sdk: { appId: "sq0idp-FixtureApp0000000000000", locationId: "LFIXTURE00000", api: "https://fixtureproject00000000.supabase.co/functions/v1" }
+};
+"""
+
+
+def _swap(src, old, new, count=-1):
+    """src with old replaced; None when old isn't there (the case no longer applies to the fixture)."""
+    return src.replace(old, new, count) if old in src else None
+
+
 def pay_self_test():
-    """The pin itself: the real files pass, each kind of swap fails."""
+    """The pin itself, on the fixture: the fixture passes, each kind of swap fails. Then the real join.html,
+    square-pay.js and theme.js with the fixture as pay-links.js: they pass, each kind of write elsewhere fails."""
     import shutil, tempfile
-    real = pay_source(DIST / "pay-links.js")
-    sdk_line = 'api: "https://tckvatqkjfrvavleunzk.supabase.co/functions/v1"'
+    fx, X = PAY_FIXTURE, PAY_FIXTURE_EXPECTED
+    fails_fx = lambda v: pay_links_fails(v, expected=X)
+    b_m, y_m, p_m = (X["square"][k]["m"] for k in ("Builder", "Buyer", "Partner"))
+    b_id, y_id = b_m.rsplit("/", 1)[1], y_m.rsplit("/", 1)[1]
+    sdk_line = f'api: "{X["sdk"]["api"]}"'
+    loc, app, api_host = X["sdk"]["locationId"], X["sdk"]["appId"], X["sdk"]["api"].split("/")[2]
     swaps = {
-        "hosted link": real.replace("xIlkX7Cb", "EvIl0000"),
-        "app id": real.replace("sq0idp-1s8ZblRtSjareUcO7Q6X9Q", "sq0idp-AttackerApp000000000"),
-        "location": real.replace("L61Q2TYHHTM3G", "LATTACKER0000"),
-        "api": real.replace("tckvatqkjfrvavleunzk.supabase.co", "evil.example"),
-        "api blanked to an allowed value": real.replace(sdk_line, 'api: "L61Q2TYHHTM3G"'),
-        "built string": real.replace('"L61Q2TYHHTM3G"', '"L61Q2" + "TYHHTM3G"'),
-        "fetched": real.rstrip() + "\nfetch(\"/x\");",
-        "second assignment": real.rstrip() + "\nwindow.IOT_PAY = {};",
-        "stripe link": real.replace('Builder: { m: "", y: "" }', 'Builder: { m: "https://buy.stripe.com/evil", y: "" }', 1),
+        "hosted link": _swap(fx, b_id, "EvIl0000"),
+        "app id": _swap(fx, app, "sq0idp-AttackerApp000000000"),
+        "location": _swap(fx, loc, "LATTACKER0000"),
+        "api": _swap(fx, api_host, "evil.example"),
+        "api blanked to an allowed value": _swap(fx, sdk_line, f'api: "{loc}"'),
+        "built string": _swap(fx, f'"{loc}"', f'"{loc[:5]}" + "{loc[5:]}"'),
+        "fetched": fx.rstrip() + "\nfetch(\"/x\");",
+        "second assignment": fx.rstrip() + "\nwindow.IOT_PAY = {};",
+        "stripe link": _swap(fx, 'Builder: { m: "", y: "" }', 'Builder: { m: "https://buy.stripe.com/evil", y: "" }', 1),
         # review of fix/payments-redteam: bare identifiers and duplicate keys got past the old regex pin.
-        "(a) second api key after the pinned one": real.replace(sdk_line, sdk_line + ", api: window.name"),
-        "(b) appId read from the page": real.replace(sdk_line, sdk_line + ", appId: document.referrer"),
-        "(c) Builder link read from the page": real.replace('m: "https://square.link/u/xIlkX7Cb"', "m: document.referrer"),
-        "(d) second sdk key": real.replace(sdk_line + " }", sdk_line + " }, sdk: window.name"),
-        "Builder and Buyer links swapped": real.replace("xIlkX7Cb", "TMPSWAP0").replace("gKoiSiI1", "xIlkX7Cb").replace("TMPSWAP0", "gKoiSiI1"),
-        "Partner link in Builder.y": real.replace('Builder: { m: "https://square.link/u/xIlkX7Cb", y: "" }', 'Builder: { m: "https://square.link/u/xIlkX7Cb", y: "https://square.link/u/gYnG7De1" }'),
-        "extra key": real.replace('portal: "",', 'portal: "", next: "",'),
-        "number value": real.replace('portal: ""', "portal: 1"),
+        "(a) second api key after the pinned one": _swap(fx, sdk_line, sdk_line + ", api: window.name"),
+        "(b) appId read from the page": _swap(fx, sdk_line, sdk_line + ", appId: document.referrer"),
+        "(c) Builder link read from the page": _swap(fx, f'm: "{b_m}"', "m: document.referrer"),
+        "(d) second sdk key": _swap(fx, sdk_line + " }", sdk_line + " }, sdk: window.name"),
+        "Builder and Buyer links swapped": _swap(fx, b_id, "TMPSWAP0") and fx.replace(b_id, "TMPSWAP0").replace(y_id, b_id).replace("TMPSWAP0", y_id),
+        "Partner link in Builder.y": _swap(fx, f'Builder: {{ m: "{b_m}", y: "" }}', f'Builder: {{ m: "{b_m}", y: "{p_m}" }}'),
+        "extra key": _swap(fx, 'portal: "",', 'portal: "", next: "",'),
+        "number value": _swap(fx, 'portal: ""', "portal: 1"),
         # second review: JS line terminators Python's // pattern ran past, and characters the two lex differently.
-        "U+2028 after a // comment": real.rstrip() + "\n// note\u2028window.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
-        "U+2029 after a // comment": real.rstrip() + "\n// note\u2029window.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
-        "\\r after a // comment": real.rstrip() + "\n// note\rwindow.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
-        "non-ASCII in code": real.replace('portal: ""', 'portal\u0430: ""'),
-        "zero-width space": real.replace('portal: ""', 'portal:\u200b ""'),
+        "U+2028 after a // comment": fx.rstrip() + "\n// note\u2028window.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
+        "U+2029 after a // comment": fx.rstrip() + "\n// note\u2029window.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
+        "\\r after a // comment": fx.rstrip() + "\n// note\rwindow.IOT_PAY.sdk.api = \"https://evil.example/f\";\n",
+        "non-ASCII in code": _swap(fx, 'portal: ""', 'portal\u0430: ""'),
+        "zero-width space": _swap(fx, 'portal: ""', 'portal:\u200b ""'),
     }
-    out = [] if not pay_links_fails(real) else ["pay-links self-test: the real pay-links.js should pass: " + "; ".join(pay_links_fails(real))]
-    out += [f"pay-links self-test: a swapped {k} was not caught" for k, v in swaps.items() if v == real or not pay_links_fails(v)]
+    out = [] if not fails_fx(fx) else ["pay-links self-test: the fixture should pass: " + "; ".join(fails_fx(fx))]
+    for k, v in swaps.items():
+        if v is None or v == fx: out.append(f"pay-links self-test: case {k!r} no longer applies to the fixture (update PAY_FIXTURE)")
+        elif not fails_fx(v): out.append(f"pay-links self-test: a swapped {k} was not caught")
     # Other files: the real tree passes; writes to IOT_PAY elsewhere, extra readers and a script slipped in between fail.
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="iot-paycheck-"))
     try:
-        for n in ("pay-links.js", "square-pay.js", "join.html", "theme.js"):
+        for n in ("square-pay.js", "join.html", "theme.js", "terms-gate.js"):
             if (DIST / n).exists(): shutil.copy(DIST / n, tmp / n)
-        base = {n: (tmp / n).read_text() for n in ("join.html", "square-pay.js", "theme.js") if (tmp / n).exists()}
+        (tmp / "pay-links.js").write_bytes(fx.encode("utf-8"))
+        base = {n: (tmp / n).read_text() for n in ("join.html", "square-pay.js", "theme.js", "terms-gate.js") if (tmp / n).exists()}
         if pay_use_fails(tmp): out.append("pay-links self-test: the real join.html / square-pay.js should pass: " + "; ".join(pay_use_fails(tmp)))
         inline = '<script>window.IOT_PAY.sdk.api="https://evil.example/f";window.IOT_PAY.square.Builder.m="https://evil.example/pay";</script>'
+        whole = '<script>window["IOT_PAY"]={stripe:{},square:{Builder:{m:"https://evil.example/pay"}}};</script>'
         cases = {
-            "inline override between the two scripts": ("join.html", base["join.html"].replace('<script src="pay-links.js"></script>', '<script src="pay-links.js"></script>' + inline)),
-            "override later in join.html": ("join.html", base["join.html"].replace("</body>", inline + "</body>")),
-            "IOT_PAY touched in theme.js": ("theme.js", base.get("theme.js", "") + '\nwindow.IOT_PAY.sdk.locationId="LATTACKER0000";'),
-            "Object.assign in square-pay.js": ("square-pay.js", base["square-pay.js"] + "\nObject.assign(window.IOT_PAY.sdk, {api: location.hash});"),
-            "bracket write in join.html": ("join.html", base["join.html"].replace("</body>", "<script>window.IOT_PAY['sdk']['api'] ||= x</script></body>")),
-            "square-pay.js no longer freezes": ("square-pay.js", base["square-pay.js"].replace("deepFreeze(window.IOT_PAY)", "window.IOT_PAY")),
+            "inline override between the two scripts": ("join.html", '<script src="pay-links.js"></script>', '<script src="pay-links.js"></script>' + inline),
+            "override later in join.html": ("join.html", "</body>", inline + "</body>"),
+            "IOT_PAY touched in theme.js": ("theme.js", None, '\nwindow.IOT_PAY.sdk.locationId="LATTACKER0000";'),
+            "Object.assign in square-pay.js": ("square-pay.js", None, "\nObject.assign(window.IOT_PAY.sdk, {api: location.hash});"),
+            "bracket write in join.html": ("join.html", "</body>", "<script>window.IOT_PAY['sdk']['api'] ||= x</script></body>"),
+            # third review: the whole object replaced through a quoted or computed name, after terms-gate.js.
+            "window[\"IOT_PAY\"]= in join.html": ("join.html", "</body>", whole + "</body>"),
+            "window['IOT_PAY'].sdk= in join.html": ("join.html", "</body>", "<script>window['IOT_PAY'].sdk={api:'https://evil.example/f'}</script></body>"),
+            "computed name in terms-gate.js": ("terms-gate.js", None, '\nwindow["IOT_"+"PAY"]={square:{Builder:{m:"https://evil.example/pay"}}};'),
+            "computed name via self in join.html": ("join.html", "</body>", '<script>self[["IOT","PAY"].join("_")]={}</script></body>'),
+            "square-pay.js no longer freezes": ("square-pay.js", "deepFreeze(window.IOT_PAY)", "window.IOT_PAY"),
+            "square-pay.js no longer locks the binding": ("square-pay.js", "writable: false", "writable: true"),
         }
-        for k, (n, v) in cases.items():
+        for k, (n, old, new) in cases.items():
+            if n not in base: out.append(f"pay-links self-test: case {k!r} no longer applies ({n} missing)"); continue
+            v = base[n] + new if old is None else _swap(base[n], old, new, 1)
+            if v is None or v == base[n]: out.append(f"pay-links self-test: case {k!r} no longer applies ({n} changed)"); continue
             (tmp / n).write_text(v)
             if not pay_use_fails(tmp): out.append(f"pay-links self-test: {k} was not caught")
-            (tmp / n).write_text(base[n] if n in base else "")
+            (tmp / n).write_text(base[n])
         # The whole check on a tree (bytes as written, no newline translation): the terminator swaps must fail there too.
-        if pay_destination_fails(tmp): out.append("pay-links self-test: the real tree should pass: " + "; ".join(pay_destination_fails(tmp)))
+        if pay_destination_fails(tmp, expected=X): out.append("pay-links self-test: the real tree should pass: " + "; ".join(pay_destination_fails(tmp, expected=X)))
         for k in ("U+2028 after a // comment", "U+2029 after a // comment", "\\r after a // comment"):
             (tmp / "pay-links.js").write_bytes(swaps[k].encode("utf-8"))
-            if not pay_destination_fails(tmp): out.append(f"pay-links self-test: {k} was not caught on a tree")
-        (tmp / "pay-links.js").write_bytes(b"\xff" + real.encode("utf-8"))
-        if not pay_destination_fails(tmp): out.append("pay-links self-test: invalid UTF-8 was not caught on a tree")
-        (tmp / "pay-links.js").write_bytes(real.encode("utf-8"))
+            if not pay_destination_fails(tmp, expected=X): out.append(f"pay-links self-test: {k} was not caught on a tree")
+        (tmp / "pay-links.js").write_bytes(b"\xff" + fx.encode("utf-8"))
+        if not pay_destination_fails(tmp, expected=X): out.append("pay-links self-test: invalid UTF-8 was not caught on a tree")
+        (tmp / "pay-links.js").write_bytes(fx.encode("utf-8"))
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     return out
