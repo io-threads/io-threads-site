@@ -1,0 +1,19 @@
+{
+  "name": "iolin",
+  "short_name": "iolin",
+  "description": "iolin by io threads: a private model that runs in your browser, with a signed receipt for every run.",
+  "id": "/iolin/",
+  "start_url": "/iolin/?source=homescreen",
+  "scope": "/iolin/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#11141C",
+  "background_color": "#11141C",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"},
+    {"src": "icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png"}
+  ]
+}
