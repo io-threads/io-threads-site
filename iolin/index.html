@@ -166,6 +166,32 @@ body.full.stack .side .sh{padding:6px 0;margin:4px 0;border-bottom:1px solid var
 .vers div:hover{background:var(--w-raise)}.vers .n{color:var(--w-quiet);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pass{color:var(--green);font:12px var(--mono)}.abst{color:var(--amber);font:12px var(--mono)}.fail{color:var(--red);font:12px var(--mono)}
 .tasks div{display:grid;grid-template-columns:64px 1fr auto;gap:6px;font:13.5px var(--mono);padding:6px 4px}.tasks .k{color:#f2a07b}.tasks .v{color:var(--w-ink2,#c9ccd4);font-family:inherit}
+/* Spend: tokens and cost vs budgets, for this browser (and a paired host). Same field names as the iolin host. */
+.spend{border:1px solid var(--w-line);border-radius:12px;padding:10px 12px;background:var(--w-field,#13151b);display:grid;gap:8px;font-size:12.5px}
+.spend .spsrc{display:flex;gap:4px;align-items:center;justify-content:space-between}.spend .spsrc .seg{display:flex;gap:2px;border:1px solid var(--w-line);border-radius:8px;padding:2px}
+.spend .seg button{all:unset;cursor:pointer;padding:2px 8px;border-radius:6px;color:var(--w-quiet);font-size:12px}.spend .seg button[aria-pressed="true"]{background:var(--w-raise);color:var(--w-ink)}
+.spend .lbl{color:var(--w-dim);font-size:11.5px;line-height:1.35}
+.spend .sptoday{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.spend .sptoday div{border:1px solid var(--w-line);border-radius:8px;padding:5px 7px}
+.spend .sptoday b{display:block;font-size:16px;font-weight:400;font-variant-numeric:tabular-nums}.spend .sptoday span{color:var(--w-quiet);font-size:11px}
+.spend .spb{display:grid;gap:3px}.spend .spb .h{display:flex;justify-content:space-between;gap:6px;min-width:0}.spend .spb .h span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.spend .spb .h span:last-child{color:var(--w-quiet);font-variant-numeric:tabular-nums;white-space:nowrap}
+.spend .spb .tr{height:6px;border-radius:99px;background:var(--w-line);overflow:hidden}.spend .spb .tr i{display:block;height:100%;border-radius:99px;background:var(--green)}
+.spend .spb.warn .tr i{background:var(--amber)}.spend .spb.over .tr i{background:var(--red)}.spend .st{font:11px var(--mono);text-transform:uppercase}
+.spend .spb.ok .st{color:var(--green)}.spend .spb.warn .st{color:var(--amber)}.spend .spb.over .st{color:var(--red)}
+.spend .spk{height:34px;width:100%;display:block}.spend .spk text{font:9px var(--mono);fill:var(--w-dim)}
+.spend .spact{display:grid;gap:2px}.spend .spact button{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;padding:3px 4px;border-radius:6px;width:100%}
+.spend .spact button:hover{background:var(--w-raise)}.spend .spact .n{color:var(--w-quiet);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.spend .spact code{font:11px var(--mono);color:var(--w-dim)}
+.spend .tag{font:11px var(--mono);border-radius:5px;padding:0 5px;border:1px solid currentColor}.spend .tag.stop,.spend .tag.approve_denied{color:var(--red)}.spend .tag.downgrade,.spend .tag.cache_hit{color:var(--green)}
+.spend .tag.approved,.spend .tag.approve,.spend .tag.warn{color:var(--amber)}
+.spend .spask{border:1px solid var(--amber);border-radius:10px;padding:8px;display:grid;gap:6px;background:color-mix(in srgb,var(--amber) 9%,transparent)}.spend .spask b{font-weight:600}
+.spend .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.spend .wbtn{padding:5px 10px;font-size:12.5px}
+.spend button:focus-visible,.spend input:focus-visible,.spend select:focus-visible{outline:2px solid var(--w-acc,#9dbbff);outline-offset:2px}
+.spend .sped{display:grid;gap:8px;border-top:1px solid var(--w-line);padding-top:8px}
+.spend .spr{border:1px solid var(--w-line);border-radius:9px;padding:7px;display:grid;grid-template-columns:1fr 1fr;gap:5px 6px}.spend .spr.bad{border-color:var(--red)}
+.spend .spr label{display:grid;gap:2px;color:var(--w-quiet);font-size:11px;min-width:0}.spend .spr label[hidden]{display:none}.spend .spr .full{grid-column:1/-1}
+.spend .spr input,.spend .spr select,.spend .sphost input{background:var(--w-bg);border:1px solid var(--w-line);color:var(--w-ink);border-radius:7px;padding:4px 6px;font:inherit;font-size:12.5px;min-width:0;width:100%;box-sizing:border-box}
+.spend .err{color:var(--red);font-size:11.5px;grid-column:1/-1}.spend .ok2{color:var(--green);font-size:11.5px}
+.spend .sphost{display:grid;gap:5px}.spend .sphost label{display:grid;gap:2px;color:var(--w-quiet);font-size:11px}
 /* main */
 .main{display:grid;grid-template-rows:auto 1fr 320px;min-width:0;min-height:0}
 .proj{padding:12px 16px 10px;border-bottom:1px solid var(--w-line)}
@@ -564,6 +590,9 @@ body.full::before{display:none}
             <div class="agents"><div style="color:var(--w-quiet)">Agents on <span id="pv2">v1</span></div><div id="agentLine"><span class="dot" style="background:var(--purple)"></span><b>iolin</b> <span style="color:var(--w-quiet)">waiting for a model</span></div></div>
           </div>
           <div class="vers" id="vers"></div>
+
+          <div class="sh"><span>Spend</span><span id="spMeta">browser only</span></div>
+          <div class="spend" id="spend"></div>
 
           <div class="sh"><span>Tasks</span><span>status</span></div>
           <div class="tasks" id="tasks"></div>
@@ -1016,7 +1045,7 @@ function switchTerm(k) { termTab = k; document.querySelectorAll(".ttab").forEach
 const HELP = [
   ["status","device, model, storage and receipts"],["auth | auth template","auth access: keys, network, rules, templates, harness, gates · print the deployment template"],["model list | load <small|medium|large|id> | stop","manage your local model"],
   ["ask <question>","ask the model; reply streams here"],["recap","summarize the current session"],
-  ["receipts","list signed receipts"],["verify [n]","check a receipt's signature"],["tamper [n]","edit one word, then check again"],
+  ["receipts","list signed receipts"],["spend | spend set | spend approve|deny | spend events","tokens and cost today vs budgets (this browser; a paired host under Spend) · edit budgets · decide an over-budget run · signed budget events"],["verify [n]","check a receipt's signature"],["tamper [n]","edit one word, then check again"],
   ["set name|temp|top_p|max|ctx <value>","change a setting"],["templates | template <name>","list or start an Instruct template"],["sessions | sessions new","list or start sessions"],
   ["agents | agents live | agents {json}","which agent setup is best on a task (iostem API agent scores)"],["agents key <iot_…> | agents forget","use your iot key in this tab only"],["feed connect <token> | feed watch | feed stop","show a terminal from your own machine (local_feed.py), live in Output"],["open <file>","open a workspace file in Output"],["export","download your workspace"],["demo on|off","pre-recorded replies (default); off opens the real-model page"],["stop","stop the reply in progress"],["tour","replay the getting-started tour"],["clear","clear the terminal"]];
 
@@ -1044,6 +1073,7 @@ async function run(raw, src = "") {
     else if (c0 === "sessions") { if (rest[0] === "new") { cur = newSession(); sessions.push(cur); await save(); renderAll(); out(`started session ${cur.id.slice(0,8)}`); }
       else sessions.forEach(s => out(`${s.id === cur.id ? '<span class="u-ok">●</span>' : " "} ${esc(s.title)} · ${s.messages.length} messages · ${s.created.slice(0,10)}`)); }
     else if (c0 === "agents") await cmdAgents(rest, cmd);
+    else if (c0 === "spend" || c0 === "budgets") await cmdSpend(c0 === "budgets" ? ["budgets", ...rest] : rest);
     else if (c0 === "feed" || c0 === "bus") await cmdFeed(rest);
     else if (c0 === "open") openFile(arg);
     else if (c0 === "export") { await exportAll(); out(`artifact <span class="u-hl">iolin-workspace.json</span> saved · private key not included`); }
@@ -1088,9 +1118,12 @@ async function cmdAgents(rest, raw) {
   let body = AGENTS_SAMPLE.body;
   if (sub !== "live") { try { body = JSON.parse(raw.slice(raw.indexOf("{"))); } catch { return out('usage: agents | agents live | agents {"arms":[{"id":"a","pass":9,"fail":1}]} · agents key iot_…'); } }
   if (!iotKey) return out("set your key first: agents key iot_… (kept in this tab only)");
+  const sctx = {kind: "iostem", mode: "cloud", device: "browser:" + signer.key_id, agent: APP_ID}, sg = spGate(sctx, []);
+  if (sg.action !== "none") { await spRecord(sctx, {}, {made: false, action: "stop", budget_id: sg.budget?.id || null}); return out(`<span class="u-bad">refused</span> over budget: ${esc(sg.reason)} · nothing was sent`); }
   const t0 = performance.now(); let r, d;
   try { r = await fetch(API_BASE + "/agents/scores", {method: "POST", headers: {"Content-Type": "application/json", Authorization: "Bearer " + iotKey}, body: JSON.stringify(body)}); d = await r.json().catch(() => ({})); }
   catch { return out('<span class="u-bad">unreachable</span> couldn\'t reach the iostem API'); }
+  await spRecord(sctx, {tokens_in: 0, tokens_out: 0, usage_source: "iostem call (no model tokens)", usage_reason: null}, {made: true});
   if (r.status === 404) return out('<span class="u-am">not live yet</span> agent scores isn\'t in production yet · type <span class="u-hl">agents</span> for the sample');
   if (!r.ok) return out(`<span class="u-bad">${r.status}</span> ${esc(d.error?.code || "")}: ${esc(d.error?.message || "")}`);
   checked.harness = d.verdict || null;   // Auth access shows ok only after a real PASS here
@@ -1216,7 +1249,7 @@ async function loadModel() {
 async function stopModel() { if (engine) await engine.unload(); engine = null; loaded = null; $("bar").style.width = "0%"; renderAll(); ev(me(), "stop model"); }
 
 /* ---------- ask + receipt ---------- */
-async function signRun(sess, messages, text, status, started, ms, model = loaded, finished = iso()) {
+async function signRun(sess, messages, text, status, started, ms, model = loaded, finished = iso(), spend = null) {
   const run_id = crypto.randomUUID();
   const body = { schema:"iothreads.receipt/0.1", receipt_type:"host-signed", alg:signer.alg, run_id, host_id:"browser:" + signer.key_id, agent_id:APP_ID,
     session_id: sess.id, model_manifest:{model_id:model, runtime: model === "demo-engine" ? "demo-engine" : "webllm@0.2.85/webgpu", evidence_status:"declared"},
@@ -1225,33 +1258,442 @@ async function signRun(sess, messages, text, status, started, ms, model = loaded
     input_digest: await sha(canonical(messages)), output_digest: await sha(text), tool_events:[], action_receipts:[], status,
     timestamps:{started, finished, duration_ms: String(ms), chars_out: String(text.length)},
     evidence_status:{model_identity:"declared", output:"observed", tool_events:"none"},
-    limits:"Signed by a key held in this browser. Proves this browser's key signed this record, not that the events occurred.", key_id:signer.key_id, signed_at: iso() };
+    limits:"Signed by a key held in this browser. Proves this browser's key signed this record, not that the events occurred.", key_id:signer.key_id, signed_at: iso(),
+    spend: spend || spField(null, null, "none", false) };
   const r = {...body, signature: b64(await crypto.subtle.sign(signAlgo(signer.alg), signer.priv, enc.encode(canonical(body))))};
   await DB.set(run_id, r, "receipts"); receipts.push(r); verified[run_id] = await verify(r);
   return r;
 }
 async function ask(q, from, recap = false) {
   if (!engine) { out(`no model running · type <span class="u-hl">model load</span>${gpuOk ? "" : " or <span class=\"u-hl\">demo on</span>"}`); return; }
-  if (busy) return out("busy · wait for the current reply"); busy = true; stop = false; thinking = true; $("stopGen").disabled = false; renderScene();
+  if (busy) return out("busy · wait for the current reply");
+  if (spPending) return out(`waiting for your approval of an over-budget run · <span class="u-hl">spend approve</span> or <span class="u-hl">spend deny</span>, or the card under Spend`);
+  // spend gate, before the model runs, the same three ways as the host: stop, switch to a smaller model, or ask you
+  const ctx = spCtx(recap), served = spServed(); let d = spGate(ctx, served), action = "none", dgFrom = null, apId = null;
+  if (d.action === "approve") {
+    if (!(await spWaitApproval(d, recap ? "Recap of the session" : q))) return spRefuse(q, from, recap, ctx, d, "approve_denied");
+    if (busy) return out("busy · wait for the current reply");
+    action = "approved"; apId = d.budget?.id || null; d = spGate(ctx, served, {approved: true}); }
+  if (d.action === "stop") return spRefuse(q, from, recap, ctx, d, "stop");
+  if (d.action === "downgrade") { dgFrom = ctx.model;
+    out(`<span class="u-am">budget ${esc(d.downgrade_budget)}</span> ${esc(d.reason)} · switching to <span class="u-hl">${esc(d.model)}</span>`);
+    await spSwitch(d.model);
+    if (loaded !== d.model || !engine) return spRefuse(q, from, recap, ctx, {...d, reason: d.reason + `; ${d.model} didn't start`}, "stop");
+    Object.assign(ctx, spCtx(recap)); action = "downgrade"; }
+  busy = true; stop = false; thinking = true; $("stopGen").disabled = false; renderScene();
   if (!recap) { cur.messages.push({role:"user", content:q}); if (cur.title === "New session") cur.title = q.slice(0, 40); }
   asking = recap ? "Recap of the session" : q; renderBoard();
   renderChat(); let bub = addBubble("a", ""); bub.classList.add("typing");
   const tl = from === "term" ? out("") : null; ev("iolin", recap ? "recap · working" : "answering · working");
-  const messages = [{role:"system", content:S.system}, ...cur.messages.map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
-  const started = iso(), t0 = performance.now(); let text = "", status = "completed", paint = 0;
-  try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), top_p:Number(S.top_p ?? 0.95), max_tokens:Number(S.max_tokens)});
-    for await (const ch of st) { if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; if (text) bub.classList.remove("typing"); if (!paint) paint = requestAnimationFrame(() => { paint = 0; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }); }
+  const messages = [{role:"system", content:S.system}, ...cur.messages.filter(m => !m.refused).map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
+  const started = iso(), t0 = performance.now(); let text = "", status = "completed", paint = 0, usage = null;
+  try { const st = await engine.chat.completions.create({messages, stream:true, temperature:Number(S.temperature), top_p:Number(S.top_p ?? 0.95), max_tokens:Number(S.max_tokens), ...(engine !== demoEngine ? {stream_options:{include_usage:true}} : {})});
+    for await (const ch of st) { if (ch.usage) usage = ch.usage; if (stop) { engine.interruptGenerate(); status = "stopped"; break; } text += ch.choices?.[0]?.delta?.content || ""; if (text) bub.classList.remove("typing"); if (!paint) paint = requestAnimationFrame(() => { paint = 0; bub.firstChild.textContent = text; if (tl) tl.textContent = text; }); }
     if (paint) { cancelAnimationFrame(paint); paint = 0; }
     if (!text.trim()) text = status === "stopped" ? "(stopped before the reply started)" : loaded === "demo-engine" ? demoReply(q) : "(the model returned no text; try again or pick another model in Setup)";
     bub.classList.remove("typing"); bub.firstChild.textContent = text; if (tl) tl.textContent = text;
   } catch (e) { errors++; status = "failed"; text = text || "error: " + e.message; bub.classList.remove("typing"); bub.firstChild.textContent = text; if (tl) tl.textContent = text; }
   const ms = Math.round(performance.now() - t0);
-  const r = await signRun(cur, messages, text, status, started, ms), run_id = r.run_id;
+  // tokens only from what the model reported (WebLLM usage); the demo counts its own text and is not billed
+  const u = loaded === "demo-engine" ? {tokens_in: demoTokens(messages.map(m => m.content).join(" ")), tokens_out: demoTokens(text), usage_source: "demo-count", usage_reason: "demo engine: words and punctuation of its own text; demo, not billed"}
+    : usage && Number.isInteger(usage.prompt_tokens) && Number.isInteger(usage.completion_tokens) ? {tokens_in: usage.prompt_tokens, tokens_out: usage.completion_tokens, usage_source: "webllm usage", usage_reason: null}
+    : {tokens_in: null, tokens_out: null, usage_source: null, usage_reason: status === "stopped" ? "stopped before the model reported usage" : "the model reported no usage"};
+  const row = await spRecord(ctx, u, {made: true, action, downgraded_from: dgFrom, budget_id: d.budget?.id || apId});
+  const r = await signRun(cur, messages, text, status, started, ms, loaded, iso(), spField(row, d, action, true)), run_id = r.run_id; row.run_id = run_id; await spSave();
   if (!recap) { cur.messages.push({role:"assistant", content:text, run_id, ms, model:loaded}); cur.updated = iso(); }
   await save(); busy = false; thinking = false; $("stopGen").disabled = true;
   out(`receipt <span class="u-hl">v${receipts.length}</span> ${run_id.slice(0,8)} signed · ${ms} ms · check ${verified[run_id] ? '<span class="u-ok">PASS</span>' : '<span class="u-bad">FAIL</span>'}`);
   ev("iolin", `receipt v${receipts.length} · check ${verified[run_id] ? "PASS" : "FAIL"}`, "m");
   if (view !== "instruct" && !recap) { unread++; } renderAll();
+}
+
+/* ---------- spend: tokens and cost vs budgets (the same rules and field names as the iolin host, host/spend.py) ----------
+   Browser: every run in this tab is metered from the model's own reported usage (WebLLM's usage field; the demo engine
+   counts the words and punctuation of its own text, labelled demo, not billed). Runs here cost 0: the model runs in
+   this browser and the page makes no cloud model calls. Budgets are per UTC day and checked before a run: stop, switch
+   to a smaller model this page offers, or wait for you to approve on an inline card. Saved in this browser only.
+   Host: with a paired iolin host and its console token (kept in this tab's memory only, like the iot key), the panel
+   reads GET /v1/spend and edits GET/PUT /v1/admin/budgets. */
+const SP_SCOPES_HOST = ["host", "device", "agent", "tenant", "model", "task_kind", "cloud", "iostem"];
+const SP_SCOPES_BROWSER = ["host", "model", "task_kind", "iostem"];
+const SP_MATCHED = ["device", "agent", "tenant", "model", "task_kind"];
+const SP_ACTIONS = ["stop", "approve", "downgrade"];        // most restrictive first
+const SP_UNITS = ["tokens", "cost_micros", "calls"];
+const SP_ID = /^[A-Za-z0-9_.-]{1,40}$/;
+const SP_SCOPE_LABEL = {host: "all runs", device: "device", agent: "agent", tenant: "tenant", model: "model", task_kind: "task kind", cloud: "cloud calls", iostem: "iostem API calls"};
+const SP_UNIT_LABEL = {tokens: "tokens", cost_micros: "cost", calls: "calls"};
+const SP_PRICES = {currency: "USD", local_default: {in_per_mtok: 0, out_per_mtok: 0}, cloud_default: null, models: {}, iostem: {per_call: 0}};
+let SPD = {budgets: [], ledger: [], events: [], warned: {}, hostUrl: ""};   // browser spend state, IndexedDB kv "spend"
+let spHost = {url: "", token: "", data: null, budgets: null, ledger: [], models: [], err: "", at: 0};   // token: this tab only
+let spSrc = "browser", spEdit = null, spPending = null, spPriceDigest = "", spSig = "", spHostOpen = false;
+const utcDay = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
+const nf = n => n == null ? "—" : Number(n).toLocaleString("en-US");
+const microsStr = m => { if (m == null) return ""; const s = String(m).padStart(7, "0"); return s.slice(0, -6) + "." + s.slice(-6).replace(/0+$/, "").padEnd(2, "0"); };
+const spMicros = v => { const m = /^(\d{1,9})(?:\.(\d{1,6}))?$/.exec(String(v).trim()); return m ? Number(m[1]) * 1e6 + Number((m[2] || "").padEnd(6, "0")) : null; };
+const fmtCost = (m, cur = "USD") => m == null ? "unpriced" : `${microsStr(m)} ${cur}`;
+const fmtUnit = (unit, v, cur) => unit === "cost_micros" ? fmtCost(v, cur) : `${nf(v)} ${SP_UNIT_LABEL[unit]}`;
+const demoTokens = s => (String(s).match(/[A-Za-z0-9]+|[^\sA-Za-z0-9]/g) || []).length;   // the demo's own count: words and punctuation
+async function spSave() { try { await DB.set("spend", {budgets: SPD.budgets, ledger: SPD.ledger.slice(-2000), events: SPD.events.slice(-200), warned: SPD.warned, hostUrl: SPD.hostUrl}); } catch (e) { console.warn("iolin: spend not saved", e); } }
+function spModelIds() { if (webllm) { try { const ids = new Set(webllm.prebuiltAppConfig.model_list.map(m => m.model_id)), l = CURATED.filter(m => ids.has(m[0])); if (l.length) return l.map(m => m[0]); } catch {} } return CURATED.map(m => m[0]); }
+const spServed = () => loaded === "demo-engine" || DEMO ? ["demo-engine"] : gpuOk ? spModelIds() : [];
+const spCtx = recap => ({kind: "model", model: loaded, mode: loaded === "demo-engine" ? "demo" : "local-browser", task_kind: recap ? "recap" : "ask", device: "browser:" + signer.key_id, agent: APP_ID});
+
+// a ledger row counts for budget b (for this call's subject) if it is the same kind of call; refused runs and cache hits never count
+function spRowIn(b, ctx, r) {
+  if (b.scope === "iostem") return r.kind === "iostem";
+  if (r.kind === "iostem") return false;
+  if (b.scope === "host") return true;
+  if (b.scope === "cloud") return r.mode === "cloud";
+  return r[b.scope] === ctx[b.scope];
+}
+function spApplies(b, ctx) {
+  if (b.scope === "iostem") return ctx.kind === "iostem";
+  if (ctx.kind === "iostem") return false;
+  if (b.scope === "host") return true;
+  if (b.scope === "cloud") return ctx.mode === "cloud";
+  const v = ctx[b.scope]; return v != null && (b.match === "*" || b.match === v);
+}
+function spUsed(b, ctx, day = utcDay()) {
+  const u = {tokens: 0, cost_micros: 0, calls: 0, unmetered: 0};
+  for (const r of SPD.ledger) { if (r.day !== day || !r.made || r.cache_hit || !spRowIn(b, ctx, r)) continue;
+    u.calls++; if (r.tokens_in == null || r.tokens_out == null) u.unmetered++; else u.tokens += r.tokens_in + r.tokens_out; u.cost_micros += r.cost_micros || 0; }
+  return u;
+}
+function spCheck(ctx, {approved = false, handled = []} = {}) {
+  const checked = [], over = [];
+  for (const b of SPD.budgets) { if (!spApplies(b, ctx)) continue;
+    const used = spUsed(b, ctx), subj = SP_MATCHED.includes(b.scope) ? ctx[b.scope] ?? null : b.scope;
+    for (const unit of SP_UNITS) { const lim = b[unit]; if (lim == null) continue; const u = used[unit];
+      const dec = u >= lim ? "over" : lim && u * 100 >= lim * b.warn_pct ? "warn" : "ok";
+      const e = {id: b.id, scope: b.scope, subject: subj, unit, used: u, limit: lim, decision: dec};
+      if (unit === "tokens" && used.unmetered) e.unmetered_calls = used.unmetered;
+      checked.push(e);
+      if (dec === "over") { let act = b.action; if (act === "downgrade" && b.hard_stop_pct && u * 100 >= lim * b.hard_stop_pct) act = "stop"; over.push([SP_ACTIONS.indexOf(act), act, b, e]); } } }
+  const out = {action: "none", model: ctx.model, budgets_checked: checked, reason: null, budget: null};
+  const o = over.filter(x => !(approved && x[1] === "approve") && !(x[1] === "downgrade" && handled.includes(x[2].id))).sort((a, c) => a[0] - c[0]);
+  if (!o.length) return out;
+  const [, act, b, e] = o[0];
+  Object.assign(out, {action: act, budget: e, reason: `budget ${b.id} (${b.scope}${e.subject === b.scope ? "" : ":" + e.subject}) ${e.unit} used ${e.used} of ${e.limit}`});
+  if (act === "downgrade") Object.assign(out, {downgrade_to: b.downgrade_to, downgrade_budget: b.id});
+  return out;
+}
+// check plus the downgrade: switch to the budget's model if this page can run it, then check again for that model
+function spGate(ctx, served, opts = {}) {
+  const d = spCheck(ctx, opts); if (d.action !== "downgrade") return d;
+  const target = d.downgrade_to, key = e => `${e.id}|${e.unit}|${e.subject}`;
+  if (target === ctx.model) { const d2 = spCheck(ctx, {...opts, handled: [d.downgrade_budget]}); return d2.action === "none" ? {...d, action: "none", already_downgraded: true} : d2; }
+  if (!served.includes(target)) return {...d, action: "stop", reason: d.reason + `; switch target ${target} is not a model this page can run now (${served.join(", ") || "none"})`};
+  const d2 = spCheck({...ctx, model: target}, {...opts, handled: [d.downgrade_budget]}), seen = new Set(d.budgets_checked.map(key));
+  const both = d.budgets_checked.concat(d2.budgets_checked.filter(e => !seen.has(key(e))));
+  if (d2.action === "stop" || d2.action === "approve") return {...d2, budgets_checked: both};
+  return {...d, model: target, downgraded_from: ctx.model, budgets_checked: both};
+}
+async function spEvent(kind, fields) {
+  const body = {schema: "iothreads.event/0.1", event: kind, alg: signer.alg, key_id: signer.key_id, host_id: "browser:" + signer.key_id, at: iso(), ...fields};
+  const e = {...body, signature: b64(await crypto.subtle.sign(signAlgo(signer.alg), signer.priv, enc.encode(canonical(body))))};
+  SPD.events.push(e); await spSave(); return e;
+}
+async function spRecord(ctx, usage, x) {
+  const demo = ctx.model === "demo-engine", iot = ctx.kind === "iostem";
+  const row = {t: Date.now(), day: utcDay(), run_id: x.run_id || null, kind: ctx.kind, model: ctx.model || null, mode: ctx.mode || null, task_kind: ctx.task_kind || null,
+    device: ctx.device || null, agent: ctx.agent || null, tokens_in: x.made ? usage.tokens_in : 0, tokens_out: x.made ? usage.tokens_out : 0,
+    usage_source: x.made ? usage.usage_source : null, usage_reason: x.made ? usage.usage_reason : "no model call",
+    cost_micros: x.made && ctx.mode === "cloud" && !iot ? null : 0, currency: SP_PRICES.currency,
+    price_source: !x.made ? "no call" : iot ? "iostem call: not priced in this browser" : demo ? "demo engine: not billed" : "runs in this browser: cost 0",
+    made: !!x.made, cache_hit: false, action: x.action || "none", budget_id: x.budget_id || null, downgraded_from: x.downgraded_from || null, demo};
+  SPD.ledger.push(row); if (SPD.ledger.length > 2000) SPD.ledger = SPD.ledger.slice(-2000);
+  if (x.made) await spWarnCheck(ctx);
+  await spSave(); return row;
+}
+// the receipt's spend object: integers and strings only (cost in micro-units), the host's field names
+function spField(row, d, action_taken, made) {
+  const r = row || {};
+  return {model_calls: made ? 1 : 0, model: made ? r.model ?? null : null, tokens_in: made ? r.tokens_in ?? null : 0, tokens_out: made ? r.tokens_out ?? null : 0,
+    usage_source: r.usage_source ?? null, usage_reason: made ? r.usage_reason ?? null : "no model call", cost_micros: made ? r.cost_micros ?? null : 0,
+    currency: SP_PRICES.currency, cost_unit: "micro (1e-6 of currency)", price_source: made ? r.price_source ?? null : "no call", price_table_digest: spPriceDigest,
+    budgets_checked: (d?.budgets_checked || []).map(e => ({...e})), action_taken, ...(d?.downgraded_from ? {downgraded_from: d.downgraded_from} : {})};
+}
+// after a call: a budget that just reached its warn % (or its limit) gets one signed spend_warning event per UTC day
+async function spWarnCheck(ctx) {
+  const day = utcDay();
+  for (const k of Object.keys(SPD.warned)) if (!k.endsWith("|" + day)) delete SPD.warned[k];
+  for (const e of spCheck(ctx).budgets_checked) { if (e.decision === "ok") continue;
+    const k = [e.id, e.unit, e.subject, day].join("|"); if (SPD.warned[k]) continue; SPD.warned[k] = Date.now();
+    await spEvent("spend_warning", {budget_id: e.id, scope: e.scope, subject: e.subject, unit: e.unit, used: e.used, limit: e.limit, state: e.decision});
+    out(`<span class="u-am">budget ${esc(e.id)}</span> ${e.decision === "over" ? "reached" : "at " + Math.floor(e.used * 100 / Math.max(1, e.limit)) + "%"} · ${esc(fmtUnit(e.unit, e.used))} of ${esc(fmtUnit(e.unit, e.limit))} today (UTC)`); }
+}
+function spWaitApproval(d, what) {
+  return new Promise(res => { spPending = {d, what, at: Date.now(), res};
+    out(`<span class="u-am">needs your approval</span> ${esc(d.reason)} · Approve or Deny on the card under Spend, or type <span class="u-hl">spend approve</span> / <span class="u-hl">spend deny</span>`);
+    ev("iolin", "over budget · waiting for you"); spOpenSection(); renderAll(); });
+}
+async function spDecide(ok) {
+  const p = spPending; if (!p) return false; spPending = null;
+  await spEvent("spend_approval", {verdict: ok ? "approve" : "deny", reason: p.d.reason, budget_id: p.d.budget?.id ?? null, asked: String(p.what).slice(0, 80)});
+  out(ok ? `approved once · the run goes ahead (stop budgets still apply)` : `denied · nothing runs`); p.res(ok); renderAll(); return true;
+}
+async function spSwitch(id) {
+  if ($("model") && ![...$("model").options].some(o => o.value === id)) await fillModels();
+  $("model").value = id; await loadModel();
+}
+async function spRefuse(q, from, recap, ctx, d, how) {
+  const text = how === "stop" ? `refused: over budget: ${d.reason}` : "refused: you denied the over-budget run";
+  const messages = [{role: "system", content: S.system}, ...cur.messages.filter(m => !m.refused).map(m => ({role: m.role, content: m.content})), {role: "user", content: q}];
+  const row = await spRecord(ctx, {}, {made: false, action: how, budget_id: d.budget?.id || null});
+  const at = iso(), r = await signRun(cur, messages, text, "refused", at, 0, ctx.model, at, spField(null, d, how, false));
+  row.run_id = r.run_id; await spSave();
+  if (!recap) { cur.messages.push({role: "user", content: q, refused: true}); cur.messages.push({role: "assistant", content: text, run_id: r.run_id, ms: 0, model: ctx.model, refused: true}); cur.updated = iso(); }
+  await save();
+  out(`<span class="u-bad">${how === "stop" ? "refused" : "denied"}</span> ${esc(text)} · receipt <span class="u-hl">v${receipts.length}</span> ${r.run_id.slice(0, 8)} · action_taken ${how} · check ${verified[r.run_id] ? '<span class="u-ok">PASS</span>' : '<span class="u-bad">FAIL</span>'}`);
+  ev("iolin", `${how === "stop" ? "over budget · refused" : "denied"} · receipt v${receipts.length}`);
+  if (view === "instruct") renderChat(); renderAll(); return r;
+}
+function spOpenSection() { const sec = $("spend")?.closest(".sec"); if (sec?.hidden) document.querySelector(`.side [aria-controls="${sec.id}"]`)?.click(); }
+
+/* per budget and unit, used vs limit today (UTC); a '*' budget is shown for every subject seen today */
+function spStatus() {
+  const out = [], d0 = utcDay();
+  for (const b of SPD.budgets) {
+    let subs = [null];
+    if (SP_MATCHED.includes(b.scope)) { subs = b.match === "*" ? [...new Set(SPD.ledger.filter(r => r.day === d0 && r.made && r[b.scope] != null).map(r => r[b.scope]))] : [b.match]; if (!subs.length) subs = ["*"]; }
+    for (const s of subs) { const ctx = {kind: b.scope === "iostem" ? "iostem" : "model", mode: b.scope === "cloud" ? "cloud" : "", [b.scope]: s}, used = spUsed(b, ctx, d0);
+      for (const unit of SP_UNITS) { const lim = b[unit]; if (lim == null) continue; const u = used[unit];
+        out.push({id: b.id, scope: b.scope, subject: s ?? b.scope, unit, used: u, limit: lim, state: u >= lim ? "over" : lim && u * 100 >= lim * b.warn_pct ? "warn" : "ok", action: b.action, downgrade_to: b.downgrade_to || null}); } } }
+  return out;
+}
+function spBrowserView() {
+  const d0 = utcDay(), rows = SPD.ledger.filter(r => r.day === d0 && r.made), sum = (L, k) => L.reduce((a, r) => a + (r[k] || 0), 0);
+  const days = [...Array(7)].map((_, i) => { const day = utcDay(Date.now() - (6 - i) * 864e5), L = SPD.ledger.filter(r => r.day === day && r.made); return {day, tokens: sum(L, "tokens_in") + sum(L, "tokens_out")}; });
+  const acts = SPD.ledger.filter(r => ["stop", "downgrade", "approved", "approve_denied"].includes(r.action)).map(r => ({kind: r.action, at: r.t, rid: r.run_id,
+      label: r.action === "downgrade" ? `${r.downgraded_from || "?"} → ${r.model}` : r.action === "approved" ? `approved by you${r.budget_id ? " · " + r.budget_id : ""}` : `${r.budget_id || "budget"} · ${r.task_kind || r.kind}`}))
+    .concat(SPD.events.filter(e => e.event === "spend_warning").map(e => ({kind: e.state === "over" ? "over" : "warn", at: Date.parse(e.at), label: `${e.budget_id} ${e.state === "over" ? "reached" : "warning"} · ${fmtUnit(e.unit, e.used)}`})))
+    .sort((a, c) => c.at - a.at).slice(0, 5);
+  return {src: "browser", currency: SP_PRICES.currency, today: {tin: sum(rows, "tokens_in"), tout: sum(rows, "tokens_out"), cost: sum(rows, "cost_micros"), calls: rows.length,
+      demo: rows.filter(r => r.demo).length, unmetered: rows.filter(r => r.tokens_in == null).length, cache_hits: 0}, bars: spStatus(), days, acts,
+    pending: spPending ? [{id: "", reason: spPending.d.reason, what: spPending.what}] : []};
+}
+function spHostView() {
+  const d = spHost.data || {}, t = d.today || {}, B = (spHost.budgets?.budgets || []).reduce((m, b) => (m[b.id] = b, m), {});
+  const bars = (d.budgets || []).flatMap(b => Object.keys(b.limit || {}).map(unit => { const u = b.used?.[unit] ?? 0, lim = b.limit[unit], w = b.warn_pct ?? B[b.id]?.warn_pct ?? 80;
+    return {id: b.id, scope: b.scope, subject: b.subject, unit, used: u, limit: lim, state: u >= lim ? "over" : lim && u * 100 >= lim * w ? "warn" : "ok", action: b.action, downgrade_to: b.downgrade_to || null}; }));
+  const days = Object.entries(d.last_7_days?.by_day || {}).map(([day, v]) => ({day, tokens: (v.tokens_in || 0) + (v.tokens_out || 0)}));
+  const acts = (spHost.ledger || []).filter(r => r.cache_hit || r.downgraded_from).map(r => ({kind: r.cache_hit ? "cache_hit" : "downgrade", at: Date.parse(r.at) || r.t * 1000, rid: r.run_id, host: r,
+    label: r.cache_hit ? `cache hit · ${r.model || ""}` : `${r.downgraded_from} → ${r.model}`})).sort((a, c) => c.at - a.at).slice(0, 5);
+  return {src: "host", currency: d.currency || "USD", today: {tin: t.tokens_in || 0, tout: t.tokens_out || 0, cost: t.cost_micros ?? 0, calls: t.calls || 0, demo: 0, unmetered: t.unmetered_calls || 0, cache_hits: t.cache_hits || 0},
+    bars, days, acts, pending: (d.pending_approvals || []).map(a => ({id: a.id, reason: a.reason || "", what: a.run_id || ""}))};
+}
+const spView = () => spSrc === "host" && spHost.data ? spHostView() : spBrowserView();
+
+function spRowOf(b) {
+  const unit = SP_UNITS.find(u => b[u] != null) || "tokens", keep = {};
+  SP_UNITS.forEach(u => { if (u !== unit && b[u] != null) keep[u] = b[u]; });
+  return {id: b.id, scope: b.scope, match: b.match || "", unit, limit: unit === "cost_micros" ? microsStr(b[unit]) : String(b[unit] ?? ""), action: b.action || "stop",
+    downgrade_to: b.downgrade_to || "", hard_stop_pct: b.hard_stop_pct == null ? "" : String(b.hard_stop_pct), warn_pct: String(b.warn_pct ?? 80), note: b.note || "", keep};
+}
+function spValidate(rows, src) {
+  const scopes = src === "host" ? SP_SCOPES_HOST : SP_SCOPES_BROWSER, seen = new Set(), budgets = [], errs = {};
+  rows.forEach((r, i) => { const e = [], id = String(r.id).trim(), match = String(r.match || "").trim(), matched = SP_MATCHED.includes(r.scope);
+    if (!SP_ID.test(id)) e.push("Name: 1 to 40 of A-Z a-z 0-9 _ . -"); else if (seen.has(id)) e.push("Name: already used by another budget"); seen.add(id);
+    if (!scopes.includes(r.scope)) e.push("Scope: pick one");
+    if (matched && (!match || match.length > 200)) e.push(`Match: a ${SP_SCOPE_LABEL[r.scope]}, or * for each one separately`);
+    const v = String(r.limit).trim(); let lim = null;
+    if (r.unit === "cost_micros") { lim = spMicros(v); if (lim == null) e.push("Limit: an amount like 2.50 (up to 6 decimals)"); }
+    else if (/^\d{1,15}$/.test(v)) lim = Number(v); else e.push(`Limit: a whole number of ${SP_UNIT_LABEL[r.unit] || "units"}`);
+    if (!SP_UNITS.includes(r.unit)) e.push("Unit: tokens, cost or calls");
+    if (!SP_ACTIONS.includes(r.action)) e.push("Action: stop, approve or switch model");
+    if (r.scope === "iostem" && r.action !== "stop") e.push("An iostem call can only stop (it can't wait or switch model)");
+    if (src === "browser" && r.scope === "iostem" && r.unit !== "calls") e.push("iostem budgets count calls in this browser");
+    if (src === "browser" && r.scope === "cloud") e.push("This page makes no cloud model calls");
+    const w = String(r.warn_pct).trim(); if (!/^\d{1,3}$/.test(w) || +w < 1 || +w > 100) e.push("Warn at: 1 to 100 %");
+    let dg = null, hs = null;
+    if (r.action === "downgrade") { dg = String(r.downgrade_to || "").trim();
+      if (!dg) e.push("Switch to: pick a smaller model"); else if (src === "browser" && !spModelIds().includes(dg)) e.push("Switch to: a model this page offers");
+      const h = String(r.hard_stop_pct || "").trim(); if (h) { if (!/^\d{1,5}$/.test(h) || +h < 100) e.push("Hard stop: 100 % or more, or blank"); else hs = +h; } }
+    if (e.length) { errs[i] = e; return; }
+    const b = {id, scope: r.scope, match: matched ? match : null, period: "day", tokens: null, cost_micros: null, calls: null, ...r.keep, action: r.action, warn_pct: +w, note: String(r.note || "").slice(0, 200)};
+    b[r.unit] = lim; if (r.action === "downgrade") Object.assign(b, {downgrade_to: dg, hard_stop_pct: hs});
+    budgets.push(b); });
+  return {budgets, errs};
+}
+function spOpenEditor(src = spSrc) {
+  const list = src === "host" ? (spHost.budgets?.budgets || []) : SPD.budgets;
+  spEdit = {src, rows: list.map(spRowOf), errs: {}, msg: "", cls: ""}; spOpenSection(); renderSpend(true);
+  requestAnimationFrame(() => $("spend").querySelector(".sped [data-k]")?.focus({preventScroll: true}));
+}
+async function spSaveEdit() {
+  const {budgets, errs} = spValidate(spEdit.rows, spEdit.src);
+  spEdit.errs = errs; if (Object.keys(errs).length) { spEdit.msg = `Fix ${Object.keys(errs).length === 1 ? "the budget" : Object.keys(errs).length + " budgets"} marked in red. Nothing was saved.`; spEdit.cls = "err"; return renderSpend(true); }
+  const before = spEdit.src === "host" ? (spHost.budgets?.budgets || []) : SPD.budgets;
+  if (spEdit.src === "host") {
+    const body = {budgets: budgets.map(b => { const o = {id: b.id, scope: b.scope, period: "day", tokens: b.tokens, cost_micros: b.cost_micros, calls: b.calls, action: b.action, warn_pct: b.warn_pct, note: b.note};
+      if (b.match != null) o.match = b.match; if (b.action === "downgrade") { o.downgrade_to = b.downgrade_to; if (b.hard_stop_pct != null) o.hard_stop_pct = b.hard_stop_pct; } return o; })};
+    let res; try { res = await spHostFetch("/v1/admin/budgets", {method: "PUT", body: JSON.stringify(body)}); }
+    catch (e) { spEdit.msg = `The host refused the change: ${e.message}. Nothing changed on the host.`; spEdit.cls = "err"; return renderSpend(true); }
+    await spEvent("budget_change", {source: "host", host: spHost.url, budgets: body.budgets, digest: await sha(canonical(body.budgets)), previous_digest: await sha(canonical(before)), warnings: (res.warnings || []).map(String)});
+    out(`host budgets saved · PUT /v1/admin/budgets · ${body.budgets.length} budget${body.budgets.length === 1 ? "" : "s"}${res.warnings?.length ? " · " + esc(res.warnings.join("; ")) : ""}`);
+    spEdit = null; await spHostRefresh();
+  } else {
+    SPD.budgets = budgets;
+    await spEvent("budget_change", {source: "browser", budgets, digest: await sha(canonical(budgets)), previous_digest: await sha(canonical(before))});
+    out(`budgets saved in this browser · ${budgets.length} budget${budgets.length === 1 ? "" : "s"} · signed event <span class="u-hl">budget_change</span> (spend events)`);
+    spEdit = null;
+  }
+  ev(me(), "budgets changed", "m"); renderAll();
+}
+async function spHostFetch(path, opt = {}) {
+  const r = await fetch(spHost.url + path, {...opt, cache: "no-store", signal: AbortSignal.timeout(5000), headers: {"X-Iolin-Console": spHost.token, ...(opt.body ? {"Content-Type": "application/json"} : {})}});
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`${r.status}${r.status === 401 ? " (check the console token)" : ""}${typeof j.detail === "string" ? " " + j.detail : j.detail?.message ? " " + j.detail.message : ""}`);
+  return j;
+}
+async function spHostRefresh() {
+  if (!spHost.url || !spHost.token) return;
+  try {
+    const [d, b] = await Promise.all([spHostFetch("/v1/spend"), spHostFetch("/v1/admin/budgets")]);
+    spHost.data = d; spHost.budgets = b; spHost.err = ""; spHost.at = Date.now();
+    try { spHost.ledger = (await spHostFetch("/v1/spend/ledger?since=" + utcDay(Date.now() - 6 * 864e5) + "&limit=500")).rows || []; } catch { spHost.ledger = []; }
+    try { const s = await (await fetch(spHost.url + "/v1/status", {cache: "no-store", signal: AbortSignal.timeout(3000)})).json(); spHost.models = (s.runtime?.models || []).map(m => typeof m === "string" ? m : m?.id || m?.name).filter(Boolean); } catch { spHost.models = []; }
+  } catch (e) {
+    spHost.data = null; spHost.err = e.name === "TypeError" || e.name === "TimeoutError"
+      ? `No answer this page could read from ${spHost.url}. The host only answers on its own machine and sends no headers that let another site read it, so open iolin from that machine or use its console.`
+      : `The host answered ${e.message}.`;
+    if (spSrc === "host") spSrc = "browser";
+  }
+  renderAll();
+}
+async function spHostConnect() {
+  const u = ($("spHostUrl")?.value || "").trim(), tok = ($("spHostTok")?.value || "").trim();
+  let url; try { url = new URL(u); } catch {}
+  if (!url || !/^https?:$/.test(url.protocol)) { spHost.err = "Host: a full address like http://127.0.0.1:18787"; return renderSpend(true); }
+  if (["8787", "8811", "8812"].includes(url.port)) { spHost.err = "That port is reserved; the iolin host listens on 18787 by default."; return renderSpend(true); }
+  if (!tok) { spHost.err = "Console token: paste it from ~/.iolin/console.token (kept in this tab only)."; return renderSpend(true); }
+  spHost.url = url.origin; spHost.token = tok; SPD.hostUrl = url.origin; await spSave();
+  await spHostRefresh(); if (spHost.data) { spSrc = "host"; out(`host <span class="u-ok">${esc(spHost.url)}</span> paired for spend · token kept in this tab only, not saved`); }
+  if (spHost.data) spEdit = null;   // paired: the panel shows the host; Set budgets then edits the host's set
+  renderAll();
+}
+function spHostForget() { spHost = {url: "", token: "", data: null, budgets: null, ledger: [], models: [], err: "", at: 0}; spSrc = "browser"; if (spEdit?.src === "host") spEdit = null; out("host forgotten · spend shows this browser only"); renderAll(); }
+async function spHostDecide(id, verdict) {
+  try { await spHostFetch("/v1/approvals/" + encodeURIComponent(id), {method: "POST", body: JSON.stringify({verdict})}); out(`host approval ${esc(id)} · ${verdict}`); await spEvent("spend_approval", {source: "host", approval_id: id, verdict}); }
+  catch (e) { out(`<span class="u-bad">host refused</span> ${esc(e.message)}`); }
+  await spHostRefresh();
+}
+
+function renderSpend(force) {
+  const box = $("spend"); if (!box || !signer) return;
+  const v = spView(), paired = !!spHost.data, cur$ = v.currency, t0 = v.today;
+  const meta = paired ? (spSrc === "host" ? "host" : "browser · host paired") : "browser only";
+  const bar = b => { const pct = b.limit ? Math.min(100, Math.floor(b.used * 100 / b.limit)) : 100, sub = b.subject && b.subject !== b.scope ? `:${b.subject}` : "";
+    return `<div class="spb ${b.state}"><div class="h"><span title="${esc(b.id)} · ${esc(SP_SCOPE_LABEL[b.scope] || b.scope)}${esc(sub)}"><b>${esc(b.id)}</b> · ${esc(SP_SCOPE_LABEL[b.scope] || b.scope)}${esc(sub)}</span><span>${esc(b.unit === "cost_micros" ? microsStr(b.used) + " / " + fmtCost(b.limit, cur$) : nf(b.used) + " / " + nf(b.limit) + " " + SP_UNIT_LABEL[b.unit])}</span></div>`
+      + `<div class="tr" role="progressbar" aria-label="${esc(b.id)} ${esc(SP_UNIT_LABEL[b.unit])} today" aria-valuemin="0" aria-valuemax="${b.limit}" aria-valuenow="${Math.min(b.used, b.limit)}" aria-valuetext="${pct}%, ${b.state}"><i style="width:${Math.max(pct, b.used ? 2 : 0)}%"></i></div>`
+      + `<div class="h"><span class="lbl">${b.action === "downgrade" ? `then switch to ${esc(b.downgrade_to || "?")}` : b.action === "approve" ? "then ask you first" : "then stop"}</span><span class="st">${b.state} · ${pct}%</span></div></div>`; };
+  const mx = Math.max(1, ...v.days.map(d => d.tokens)), bw = 270 / 7;
+  const spark = `<svg class="spk" viewBox="0 0 270 34" preserveAspectRatio="none" role="img" aria-label="Tokens per UTC day, last 7 days: ${v.days.map(d => `${d.day.slice(5)} ${d.tokens}`).join(", ")}">`
+    + v.days.map((d, i) => { const h = d.tokens ? Math.max(2, d.tokens / mx * 22) : 1; return `<rect x="${i * bw + 4}" y="${24 - h}" width="${bw - 10}" height="${h}" rx="1.5" style="fill:${i === 6 ? "var(--purple)" : "var(--w-quiet)"}" opacity="${d.tokens ? .9 : .35}"/><text x="${i * bw + bw / 2 - 1}" y="33" text-anchor="middle">${d.day.slice(8)}</text>`; }).join("") + "</svg>";
+  const TAG = {stop: "stop", downgrade: "switched", approved: "approved", approve_denied: "denied", cache_hit: "cache hit", warn: "warn", over: "reached"};
+  const acts = v.acts.length ? v.acts.map((a, i) => `<button type="button" data-k="spa${i}" data-spa="${i}" title="${a.rid ? "Open receipt " + esc(a.rid.slice(0, 8)) : "Budget warning (signed event)"}"><span class="tag ${a.kind === "over" ? "stop" : a.kind}">${TAG[a.kind] || esc(a.kind)}</span><span class="n">${esc(a.label)}</span><code>${a.rid ? esc(a.rid.slice(0, 8)) : hm(a.at)}</code></button>`).join("")
+    : `<span class="lbl">No stops, switches or approvals yet${v.src === "browser" ? ". This browser has no response cache, so no cache hits." : "."}</span>`;
+  const pend = v.pending.map(p => `<div class="spask" role="group" aria-label="Approve an over-budget run"><span><b>Over budget.</b> ${esc(p.reason)}${p.what ? ` · ${v.src === "host" ? "run" : "asked"}: ${esc(String(p.what).slice(0, 60))}` : ""}</span>`
+    + `<div class="row"><button type="button" class="wbtn pri" data-k="spok${esc(p.id)}" ${p.id ? `data-ap="${esc(p.id)}" data-vd="approve"` : 'data-sp="approve"'}>Approve this run</button><button type="button" class="wbtn" data-k="spno${esc(p.id)}" ${p.id ? `data-ap="${esc(p.id)}" data-vd="deny"` : 'data-sp="deny"'}>Deny</button></div></div>`).join("");
+  const src = paired ? `<div class="spsrc"><div class="seg" role="group" aria-label="Spend source"><button type="button" data-k="srcb" data-src="browser" aria-pressed="${spSrc === "browser"}">Browser</button><button type="button" data-k="srch" data-src="host" aria-pressed="${spSrc === "host"}">Host</button></div><span class="lbl">${esc(spHost.url.replace(/^https?:\/\//, ""))}</span></div>` : "";
+  const note = v.src === "host" ? `Host numbers from GET /v1/spend at ${hm(spHost.at)} (UTC day ${esc(spHost.data?.today?.day || utcDay())}). Stops are in the host's signed admin events.`
+    : `Browser only: runs in this browser, UTC day ${utcDay()}. Runs here cost 0 (the model runs on this device; no cloud calls).${t0.demo ? " Demo tokens are counted from the demo's own text: demo, not billed." : ""}${t0.unmetered ? ` ${t0.unmetered} run${t0.unmetered === 1 ? "" : "s"} unmetered (no usage reported).` : ""}`;
+  let html = `${src}<div class="sptoday"><div><b>${nf(t0.tin)}</b><span>tokens in</span></div><div><b>${nf(t0.tout)}</b><span>tokens out</span></div><div><b>${esc(microsStr(t0.cost))}</b><span>cost · ${esc(cur$)}</span></div></div>`
+    + `<span class="lbl">${nf(t0.calls)} run${t0.calls === 1 ? "" : "s"} today${v.src === "host" ? ` · ${nf(t0.cache_hits)} cache hit${t0.cache_hits === 1 ? "" : "s"}${t0.unmetered ? ` · ${nf(t0.unmetered)} unmetered` : ""}` : t0.demo ? ` · ${t0.demo} demo, not billed` : ""}</span>`
+    + pend + (v.bars.length ? v.bars.map(bar).join("") : `<span class="lbl">No budgets ${v.src === "host" ? "on this host" : "in this browser"}. Set one to stop, switch model or ask you before a run.</span>`)
+    + spark + `<div class="spact" aria-label="Last spend actions">${acts}</div>`
+    + `<div class="row"><button type="button" class="wbtn" data-k="spset" data-sp="edit" aria-expanded="${!!spEdit}">${spEdit ? "Close budgets" : "Set budgets"}</button>${paired ? `<button type="button" class="wbtn" data-k="sprf" data-sp="refresh">Refresh host</button>` : ""}</div>`
+    + `<span class="lbl">${note}</span>` + (spEdit ? spEditorHtml() : "") + `<span class="osr" id="spSay" role="status">${esc(spEdit?.msg || "")}</span>`;
+  $("spMeta").textContent = meta;
+  if (!force && html === spSig) return; spSig = html;
+  const a = document.activeElement, fk = box.contains(a) ? a.dataset.k : null, sel = fk && "selectionStart" in a ? [a.selectionStart, a.selectionEnd] : null;
+  box.innerHTML = html;
+  if (fk) { const n = box.querySelector(`[data-k="${CSS.escape(fk)}"]`); if (n) { n.focus({preventScroll: true}); if (sel && n.setSelectionRange) try { n.setSelectionRange(...sel); } catch {} } }
+}
+function spEditorHtml() {
+  const E = spEdit, host = E.src === "host", scopes = host ? SP_SCOPES_HOST : SP_SCOPES_BROWSER, ids = host ? spHost.models : spModelIds();
+  const opt = (vals, cur, lab = x => x) => vals.map(x => `<option value="${esc(x)}"${x === cur ? " selected" : ""}>${esc(lab(x))}</option>`).join("");
+  const mname = id => (CURATED.find(m => m[0] === id) || [0, id])[1];
+  const row = (r, i) => { const matched = SP_MATCHED.includes(r.scope), dg = r.action === "downgrade", er = E.errs[i];
+    return `<div class="spr${er ? " bad" : ""}" data-row="${i}" role="group" aria-label="Budget ${i + 1}">`
+      + `<label>Name<input data-k="id${i}" data-f="id" value="${esc(r.id)}" maxlength="40" spellcheck="false" autocomplete="off"></label>`
+      + `<label>Scope<select data-k="sc${i}" data-f="scope">${opt(scopes, r.scope, x => SP_SCOPE_LABEL[x])}</select></label>`
+      + `<label class="full"${matched ? "" : " hidden"}>Match (${esc(SP_SCOPE_LABEL[r.scope] || "")}, or * for each)<input data-k="mt${i}" data-f="match" value="${esc(r.match)}" spellcheck="false" autocomplete="off"${r.scope === "model" ? ` list="spModels"` : ""}></label>`
+      + `<label>Unit<select data-k="un${i}" data-f="unit">${opt(SP_UNITS, r.unit, x => SP_UNIT_LABEL[x])}</select></label>`
+      + `<label>Limit per day${r.unit === "cost_micros" ? " (USD)" : ""}<input data-k="lm${i}" data-f="limit" value="${esc(r.limit)}" inputmode="${r.unit === "cost_micros" ? "decimal" : "numeric"}" autocomplete="off"></label>`
+      + `<label>Then<select data-k="ac${i}" data-f="action">${opt(SP_ACTIONS, r.action, x => ({stop: "stop", approve: "ask me first", downgrade: "switch model"})[x])}</select></label>`
+      + `<label>Warn at %<input data-k="wp${i}" data-f="warn_pct" value="${esc(r.warn_pct)}" inputmode="numeric" autocomplete="off"></label>`
+      + `<label class="full"${dg ? "" : " hidden"}>Switch to (a smaller model)${host ? `<input data-k="dg${i}" data-f="downgrade_to" value="${esc(r.downgrade_to)}" list="spModels" spellcheck="false" autocomplete="off">`
+          : `<select data-k="dg${i}" data-f="downgrade_to"><option value="">choose a model</option>${opt(ids, r.downgrade_to, mname)}</select>`}</label>`
+      + `<label${dg ? "" : " hidden"}>Hard stop at % (blank: none)<input data-k="hs${i}" data-f="hard_stop_pct" value="${esc(r.hard_stop_pct)}" inputmode="numeric" autocomplete="off"></label>`
+      + `<div class="row${dg ? "" : " full"}" style="align-self:end;justify-content:flex-end"><button type="button" class="wbtn" data-k="rm${i}" data-rm="${i}" aria-label="Remove budget ${esc(r.id || i + 1)}">Remove</button></div>`
+      + (Object.keys(r.keep).length ? `<span class="lbl full">Also limits ${esc(Object.entries(r.keep).map(([u, x]) => fmtUnit(u, x)).join(", "))} (kept as they are)</span>` : "")
+      + (!host && r.unit === "cost_micros" ? `<span class="lbl full">Runs in this browser cost 0, so this limit only fills if a priced call is added later.</span>` : "")
+      + (!host && dg && DEMO ? `<span class="lbl full">In the demo only the demo engine runs, so a switch stops instead. Switching needs a real model (?live=1).</span>` : "")
+      + (er ? `<span class="err" id="spErr${i}">${er.map(esc).join(" · ")}</span>` : "") + `</div>`; };
+  const hostBox = spHost.data ? `<div class="sphost"><span class="lbl">Editing ${host ? `the host's budgets (${esc(spHost.url)}): Save sends PUT /v1/admin/budgets` : "this browser's budgets"}.</span><div class="row"><button type="button" class="wbtn" data-k="hfg" data-sp="forget">Forget host</button></div></div>`
+    : `<details class="sphost"${spHost.err || spHostOpen ? " open" : ""}><summary class="lbl" style="cursor:pointer" data-k="hsum">Pair an iolin host (optional)</summary>
+      <label>Host address<input id="spHostUrl" data-k="hurl" value="${esc(spHost.url || SPD.hostUrl || "http://127.0.0.1:18787")}" spellcheck="false" autocomplete="off"></label>
+      <label>Console token (kept in this tab only, never saved)<input id="spHostTok" data-k="htok" type="password" autocomplete="off" spellcheck="false"></label>
+      <div class="row"><button type="button" class="wbtn" data-k="hcon" data-sp="connect">Connect</button></div>${spHost.err ? `<span class="err">${esc(spHost.err)}</span>` : ""}</details>`;
+  return `<div class="sped" role="region" aria-label="Set budgets"><datalist id="spModels">${(host ? spHost.models : spModelIds()).map(x => `<option value="${esc(x)}">`).join("")}</datalist>`
+    + `<span class="lbl">Per UTC day. A run starts only while every budget that applies is under its limit; the strictest wins (stop, then ask, then switch).</span>`
+    + (E.rows.length ? E.rows.map(row).join("") : `<span class="lbl">No budgets yet.</span>`)
+    + `<div class="row"><button type="button" class="wbtn" data-k="spadd" data-sp="add">Add budget</button><button type="button" class="wbtn pri" data-k="spsave" data-sp="save">Save</button><button type="button" class="wbtn" data-k="spcan" data-sp="cancel">Cancel</button></div>`
+    + (E.msg ? `<span class="${E.cls || "lbl"}">${esc(E.msg)}</span>` : "") + hostBox + `</div>`;
+}
+function spBind() {
+  const box = $("spend"); if (!box || box.dataset.bound) return; box.dataset.bound = 1;
+  box.addEventListener("click", async e => {
+    const sm = e.target.closest(".sphost summary"); if (sm) { spHostOpen = !sm.parentElement.open; return; }
+    const t = e.target.closest("button"); if (!t || !box.contains(t)) return;
+    if (t.dataset.src) { spSrc = t.dataset.src; if (spEdit) spEdit = null; return renderAll(); }
+    if (t.dataset.ap) return spHostDecide(t.dataset.ap, t.dataset.vd);
+    if (t.dataset.rm != null) { spEdit.rows.splice(+t.dataset.rm, 1); spEdit.errs = {}; spEdit.msg = "Removed. Save to keep the change."; spEdit.cls = ""; return renderSpend(true); }
+    if (t.dataset.spa != null) { const a = spView().acts[+t.dataset.spa]; if (!a) return;
+      if (a.host) return showOutput(JSON.stringify(a.host, null, 1));
+      if (a.rid) return run("open " + a.rid.slice(0, 8)); return run("spend events"); }
+    const k = t.dataset.sp;
+    if (k === "approve" || k === "deny") return spDecide(k === "approve");
+    if (k === "edit") { if (spEdit) { spEdit = null; return renderSpend(true); } return spOpenEditor(); }
+    if (k === "refresh") return spHostRefresh();
+    if (k === "connect") return spHostConnect();
+    if (k === "forget") return spHostForget();
+    if (!spEdit) return;
+    if (k === "add") { const n = spEdit.rows.length + 1; spEdit.rows.push({id: "day" + (n > 1 ? n : ""), scope: "host", match: "", unit: "tokens", limit: "", action: "stop", downgrade_to: "", hard_stop_pct: "", warn_pct: "80", note: "", keep: {}});
+      spEdit.msg = ""; renderSpend(true); return box.querySelector(`[data-k="lm${n - 1}"]`)?.focus({preventScroll: true}); }
+    if (k === "save") return spSaveEdit();
+    if (k === "cancel") { spEdit = null; return renderSpend(true); }
+  });
+  const upd = (e, re) => { const f = e.target.dataset.f, row = e.target.closest("[data-row]"); if (!f || !row || !spEdit) return;
+    const r = spEdit.rows[+row.dataset.row]; r[f] = e.target.value;
+    if (f === "unit") { delete r.keep[r.unit]; r.limit = ""; }
+    if (f === "scope" && SP_MATCHED.includes(r.scope) && !r.match) r.match = "*";
+    if (f === "scope" && r.scope === "iostem") { r.action = "stop"; if (!host()) r.unit = "calls"; }
+    if (re) renderSpend(true); };
+  const host = () => spEdit?.src === "host";
+  box.addEventListener("input", e => { if (e.target.tagName !== "SELECT") upd(e, false); });
+  box.addEventListener("change", e => { if (e.target.tagName === "SELECT") upd(e, true); });
+}
+async function cmdSpend(a) {
+  const sub = a[0] || "";
+  if (sub === "approve" || sub === "deny") {
+    if (spPending) { await spDecide(sub === "approve"); return; }
+    if (spHost.data?.pending_approvals?.length) { const id = a[1] || spHost.data.pending_approvals[0].id; return spHostDecide(id, sub); }
+    return out("nothing is waiting for approval");
+  }
+  if (sub === "set" || sub === "edit") { spOpenEditor(); return out("budget editor open under Spend in the sidebar"); }
+  if (sub === "budgets") return showOutput(JSON.stringify(spSrc === "host" && spHost.budgets ? spHost.budgets : {budgets: SPD.budgets, prices: SP_PRICES, where: "this browser only"}, null, 1));
+  if (sub === "events") { if (!SPD.events.length) return out("no spend events yet · budget changes, warnings and approvals are signed here");
+    for (const e of SPD.events.slice(-8)) { const ok = await verify(e); out(`${esc(e.at)}  <span class="u-hl">${esc(e.event)}</span>  ${esc(e.budget_id || e.verdict || e.source || "")}  ${ok ? '<span class="u-ok">VALID</span>' : '<span class="u-bad">INVALID</span>'}`); }
+    return; }
+  if (sub === "host") { if (a[1] === "off" || a[1] === "forget") return spHostForget(); spOpenEditor(); return out("pair a host under Spend → Set budgets → Pair an iolin host · the console token is never typed here, so it stays out of the terminal"); }
+  const v = spView();
+  out(`spend · ${v.src === "host" ? "host " + esc(spHost.url) : "this browser only"} · UTC ${utcDay()} · tokens in ${nf(v.today.tin)} · out ${nf(v.today.tout)} · cost ${esc(fmtCost(v.today.cost, v.currency))}${v.today.demo ? ' · <span class="u-am">demo, not billed</span>' : ""}`);
+  if (!v.bars.length) out(`no budgets · <span class="u-hl">spend set</span> opens the editor under Spend`);
+  v.bars.forEach(b => out(`<span class="${b.state === "over" ? "u-bad" : b.state === "warn" ? "u-am" : "u-ok"}">${b.state.padEnd(4)}</span> ${esc(b.id)} · ${esc(SP_SCOPE_LABEL[b.scope] || b.scope)}${b.subject !== b.scope ? ":" + esc(b.subject) : ""} · ${esc(fmtUnit(b.unit, b.used, v.currency))} of ${esc(fmtUnit(b.unit, b.limit, v.currency))} · then ${b.action === "downgrade" ? "switch to " + esc(b.downgrade_to) : b.action === "approve" ? "ask you" : "stop"}`));
+  v.pending.forEach(p => out(`<span class="u-am">waiting</span> ${esc(p.reason)} · <span class="u-hl">spend approve</span> / <span class="u-hl">spend deny</span>`));
+  spOpenSection(); $("spend")?.scrollIntoView({block: "nearest"});
 }
 
 /* ---------- files ---------- */
@@ -1265,6 +1707,7 @@ function openFile(name) {
   out(`no file <span class="u-hl">${esc(name)}</span> · try open settings.json`);
 }
 async function exportAll() { const data = {app:APP_ID, exported_at:iso(), settings:S, sessions, receipts, signing_public_key:{alg:signer.alg, key_id:signer.key_id, pub_b64:signer.pub_b64},
+  spend:{budgets:SPD.budgets, ledger:SPD.ledger, events:SPD.events, note:"this browser only; a host's console token is never saved"},
   note:"Private keys never leave the browser."}; const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], {type:"application/json"})); a.download = "iolin-workspace.json"; a.click(); exportedAt = Date.now(); ev(me(), "export workspace"); renderBoard(); }
 
@@ -1334,7 +1777,7 @@ function renderTasks() {
   $("tasks").innerHTML = rows.map(([k, v, s, c]) => `<div data-cmd="${c}" style="cursor:pointer"><span class="k">${k}</span><span class="v">→ ${esc(v)}</span>${s}</div>`).join("");
   $("tasks").querySelectorAll("[data-cmd]").forEach(d => d.onclick = () => run(d.dataset.cmd));
 }
-function renderSide() { renderTree(); renderSessions(); renderProd(); renderVers(); renderTasks(); renderBoard(); }
+function renderSide() { renderTree(); renderSessions(); renderProd(); renderVers(); renderSpend(); renderTasks(); renderBoard(); }
 
 /* ---------- board (bottom panel) ----------
    Every card is derived from this tab's state on each render: receipts and the checks run on them, the tasks rows,
@@ -1357,8 +1800,12 @@ function boardCards() {
   else if (busy) add({id: "model-load", col: "run", who: "iolin", t: "Loading the model", note: ($("prog")?.textContent || "").slice(0, 90), zone: "devices", item: "model", chip: "model", cmd: "status"});
   const recent = receipts.slice(-6);
   recent.forEach(r => { const n = receipts.indexOf(r) + 1, v = verdict(r), q = askedFor(r), last = checks.filter(c => c.run_id === r.run_id && !c.tamper).at(-1);
-    add({id: "r-" + r.run_id, col: v === "FAIL" ? "need" : "done", who: "iolin", t: q ? q : "Recap of the session", v, rid: `v${n} · ${r.run_id.slice(0, 8)}`,
-      note: last ? `re-checked ${hm(last.at)} · signature ${last.ok ? "VALID" : "INVALID"}` : v === "ABSTAIN" ? "demo reply: nothing real to judge" : v === "FAIL" ? "the signature doesn't match this record" : "signature matches the record",
+    const sa = r.spend?.action_taken, refused = sa === "stop" || sa === "approve_denied", over = (r.spend?.budgets_checked || []).find(e => e.decision === "over");
+    const spNote = sa === "stop" ? `refused before the model ran · ${over ? `budget ${over.id}: ${fmtUnit(over.unit, over.used)} of ${fmtUnit(over.unit, over.limit)} today` : "over budget"} · raise it under Spend`
+      : sa === "approve_denied" ? "you denied the over-budget run · nothing ran" : sa === "downgrade" ? `switched from ${r.spend.downgraded_from} to ${r.spend.model} by a budget` : sa === "approved" ? "over budget, approved by you" : "";
+    add({id: "r-" + r.run_id, col: v === "FAIL" || refused ? "need" : "done", who: "iolin", t: q ? q : "Recap of the session", v, rid: `v${n} · ${r.run_id.slice(0, 8)}`,
+      st: sa === "stop" ? "spstop" : sa === "approve_denied" ? "spdeny" : sa === "downgrade" ? "spdg" : sa === "approved" ? "spok" : undefined,
+      note: last ? `re-checked ${hm(last.at)} · signature ${last.ok ? "VALID" : "INVALID"}${spNote ? " · " + spNote : ""}` : spNote ? spNote : v === "ABSTAIN" ? "demo reply: nothing real to judge" : v === "FAIL" ? "the signature doesn't match this record" : "signature matches the record",
       zone: "runs", item: "receipts", chip: "receipts", cmd: "verify " + n, ts: Date.parse(r.signed_at) || 0}); });
   // checks: an edited copy that failed (or, worse, passed) needs you until the stored receipt is re-checked
   checks.forEach((c, k) => { if (!c.tamper) return; const fix = checks.slice(k + 1).find(x => x.run_id === c.run_id && !x.tamper && x.ok);
@@ -1367,6 +1814,16 @@ function boardCards() {
       zone: "runs", item: "receipts", chip: "receipts", cmd: "verify " + c.n, ts: c.at}); });
   const demo = receipts.filter(r => verdict(r) === "ABSTAIN").length;
   if (demo) add({id: "abstain", col: "need", who: "checker", t: `${demo} run${demo === 1 ? "" : "s"} ABSTAIN`, v: "ABSTAIN", note: "pre-recorded demo replies have nothing real to judge; a real model in this browser (?live=1) gets PASS or FAIL", zone: "runs", item: "receipts", chip: "receipts", cmd: "receipts"});
+  // spend: an over-budget run waiting for you, budgets at their warn % or limit (this browser, and a paired host)
+  if (spPending) add({id: "sp-ask", col: "need", who: "you", t: "Approve an over-budget run?", st: "spask", note: `${spPending.d.reason} · Approve or Deny under Spend`, zone: "runs", item: "receipts", chip: "spend", cmd: "spend", ts: spPending.at});
+  (spHost.data?.pending_approvals || []).forEach(a => add({id: "sp-hap-" + a.id, col: "need", who: "you", t: "Host run waiting for approval", st: "spask", note: `${a.reason || a.id} · approve or deny under Spend`, zone: "runs", item: "receipts", chip: "host spend", cmd: "spend"}));
+  const spBars = spStatus().map(b => ({...b, src: "browser"})).concat(spHost.data ? spHostView().bars.map(b => ({...b, src: "host"})) : []);
+  spBars.filter(b => b.state !== "ok").forEach(b => { const where = b.src === "host" ? "host" : "this browser", sub = b.subject && b.subject !== b.scope ? `:${b.subject}` : "", pct = Math.floor(b.used * 100 / Math.max(1, b.limit));
+    const dg = b.state === "over" && b.action === "downgrade";
+    add({id: `sp-${b.src}-${b.id}-${b.unit}-${b.subject}`, col: dg ? "done" : "need", who: b.src === "host" ? "host" : "iolin", st: b.state === "over" ? (dg ? "spdg" : "spover") : "spwarn",
+      t: b.state === "over" ? `Budget ${b.id} reached` : `Budget ${b.id} at ${pct}%`,
+      note: `${fmtUnit(b.unit, b.used)} of ${fmtUnit(b.unit, b.limit)} today · ${where}${sub ? " · " + b.scope + sub : ""} · ${b.state === "over" ? (dg ? `runs switch to ${b.downgrade_to}` : b.action === "approve" ? "the next run waits for you" : "the next run is refused") : "warning"}`,
+      zone: "runs", item: "receipts", chip: b.src === "host" ? "host spend" : "spend", cmd: "spend"}); });
   // tasks rows: rechk, model, sync, export
   const bad = receipts.filter(r => verified[r.run_id] === false).length;
   add(N ? {id: "rechk", col: bad ? "need" : "done", who: "checker", t: bad ? `${bad} of ${N} receipts fail the signature check` : `All ${N} receipt signatures valid`, v: bad ? "FAIL" : null, note: "rechk → .verify-all", zone: "runs", item: "receipts", chip: "receipts", cmd: "verify"}
@@ -1393,7 +1850,8 @@ function renderBoard() { const kb = $("kb"); if (!kb || !signer || !cur) return;
   const fb = $("bFilt"); fb.hidden = f === "all"; fb.innerHTML = f === "all" ? "" : `filtered: ${esc(zn)}<b aria-hidden="true">×</b>`; fb.setAttribute("aria-label", `Filtered to ${zn}. Clear the filter`);
   $("tHelp").hidden = termTab === "board" && f !== "all";
   if (f !== boardZone) { $("boardSay").textContent = f === "all" ? `Board shows every card (${all.length})` : `Board filtered to ${zn}: ${shown.length} card${shown.length === 1 ? "" : "s"}`; boardZone = f; }
-  const PILL = {PASS: "ok", FAIL: "bad", ABSTAIN: "am"}, STP = {todo: ["am", "not set"], set: ["am", "pending"], warn: ["bad", "fix"]};
+  const PILL = {PASS: "ok", FAIL: "bad", ABSTAIN: "am"}, STP = {todo: ["am", "not set"], set: ["am", "pending"], warn: ["bad", "fix"],
+    spstop: ["bad", "stopped · over budget"], spdeny: ["bad", "denied"], spdg: ["ok", "switched model"], spok: ["am", "approved"], spask: ["am", "needs approval"], spover: ["bad", "over budget"], spwarn: ["am", "budget warning"]};
   const card = c => { const g = ZGLYPH[c.zone] || "◇", zs = ZSHORT[c.zone] || c.zone, chip = c.zone === "auth" ? `${g} auth access` : `${g} ${c.chip} · ${zs}`;
     return `<li class="kc${c.moved ? " moved" : ""}" data-id="${esc(c.id)}" data-zone="${c.zone}" style="--c:${(BCOLS.find(b => b[0] === c.col) || [])[2]}">`
       + `<button type="button" class="kc-main" data-k="m:${esc(c.id)}" data-cmd="${esc(c.cmd)}" title="Runs: ${esc(c.cmd)}"><span class="kc-t">${esc(c.t)}</span>`
@@ -2322,6 +2780,8 @@ async function tour(n) {
 (async () => {
   S = {...DEF, ...(await DB.get("settings") || {})}; sessions = await DB.get("sessions") || []; signer = await getSigner();
   receipts = (await DB.all("receipts")).sort((a, b) => a.signed_at < b.signed_at ? -1 : 1);
+  try { const sp = await DB.get("spend"); if (sp && Array.isArray(sp.budgets)) SPD = {...SPD, ...sp}; } catch (e) { console.warn("iolin: spend state not read", e); }
+  spPriceDigest = await sha(canonical(SP_PRICES)); spBind();
   await Promise.all(receipts.map(async r => { verified[r.run_id] = await verify(r); }));
   if (!sessions.length) sessions.push(newSession()); const cid = await DB.get("cur"); cur = sessions.find(s => s.id === cid) || sessions.at(-1);
   await probe(); await fillModels(); if (DEMO) { engine = demoEngine; loaded = "demo-engine"; }
@@ -2337,7 +2797,7 @@ async function tour(n) {
   document.querySelectorAll(".ttab").forEach(b => b.onclick = () => switchTerm(b.dataset.t));
   const hist = []; let hi = 0;
   // Board: a card runs its command (the same terminal handler); its Iot chip focuses that zone and item in the live space
-  const BOARD_CMDS = new Set(["help","clear","stop","tour","auth","status","model","templates","template","ask","recap","receipts","verify","tamper","set","sessions","agents","feed","bus","open","export","demo","zb"]);
+  const BOARD_CMDS = new Set(["help","clear","stop","tour","auth","status","model","templates","template","ask","recap","receipts","verify","tamper","set","sessions","agents","feed","bus","open","export","demo","zb","spend","budgets"]);
   $("kb").addEventListener("click", e => { const chip = e.target.closest(".kc-iot"); if (chip) return focusIot(chip.dataset.z, chip.dataset.item);
     const b = e.target.closest("[data-cmd]"); if (b) run(b.dataset.cmd, "board"); });
   $("bFilt").onclick = () => { zone = "all"; $("zsel").value = "all"; renderZones(); renderScene(); $("bcmd").focus({preventScroll:true}); };
@@ -2396,6 +2856,16 @@ async function tour(n) {
   const q = new URLSearchParams(location.search);
   if (q.has("welcome") || !(await DB.get("tourDone"))) tour(0);
   if (q.has("welcome")) { q.delete("welcome"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); }
+  if (q.has("test")) window.__iolinTest = {
+    // test only (?test=1): a stand-in for the WebLLM module, so a model switch can be driven in a browser without WebGPU.
+    // It streams a fixed reply and reports usage the way WebLLM does (a last chunk with usage, when include_usage is set).
+    stubWebLLM: async () => { const mk = id => ({chat: {completions: {create: async ({messages, stream_options}) => (async function* () {
+        for (const w of `stub reply from ${id}`.split(/(\s+)/)) yield {choices: [{delta: {content: w}}]};
+        if (stream_options?.include_usage) yield {choices: [], usage: {prompt_tokens: 5 + messages.length, completion_tokens: 4}}; })()}}, interruptGenerate() {}, unload: async () => {}});
+      webllm = {prebuiltAppConfig: {model_list: CURATED.map(m => ({model_id: m[0]}))}, CreateMLCEngine: async id => mk(id), CreateWebWorkerMLCEngine: async (w, id) => mk(id), hasModelInCache: async () => false, deleteModelAllInfoInCache: async () => {}};
+      gpuOk = true; tier = 2; DEMO = false; engine = null; loaded = null; await fillModels(); renderAll(); },
+    spend: () => ({budgets: SPD.budgets, ledger: SPD.ledger, events: SPD.events, pending: !!spPending, src: spSrc, host: {url: spHost.url, hasToken: !!spHost.token, data: !!spHost.data}}),
+  };
   window.__iolin = {ready:true, tourStep:() => tourStep, run, signer:() => ({alg:signer.alg, pub_b64:signer.pub_b64}), last:() => receipts.at(-1)};
 })();
 </script>
