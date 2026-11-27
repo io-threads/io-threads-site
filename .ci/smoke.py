@@ -1,12 +1,16 @@
 """Browser smoke test run before every Pages deploy: each page loads with no script errors, and a logged-out
-visitor to the members pages lands on log in.   python3 .ci/smoke.py   (serves the repo root on :8811)"""
+visitor to the members pages lands on log in.   python3 .ci/smoke.py   (serves the repo root on a free local port, or $SMOKE_PORT; never 8787/8811/8812)"""
 import functools, http.server, pathlib, re, sys, threading
 from playwright.sync_api import sync_playwright
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-srv = http.server.ThreadingHTTPServer(("127.0.0.1", 8811), functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT)))
+import os
+_P = int(os.environ.get("SMOKE_PORT", "0"))   # 0 = the OS picks a free port
+if _P in (8787, 8811, 8812):   # reserved for the operator's live services
+    sys.exit(f"SMOKE_PORT {_P} is reserved; pick another or leave it unset")
+srv = http.server.ThreadingHTTPServer(("127.0.0.1", _P), functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(ROOT)))
 threading.Thread(target=srv.serve_forever, daemon=True).start()
-BASE, fails = "http://127.0.0.1:8811/", []
+BASE, fails = f"http://127.0.0.1:{srv.server_address[1]}/", []
 
 with sync_playwright() as p:
     b = p.chromium.launch()
