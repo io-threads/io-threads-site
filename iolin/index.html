@@ -713,7 +713,7 @@ body.full::before{display:none}
     <h2 id="h-app">What held. What broke.</h2>
     <p class="lead">Monthly findings from your own checks, in an app that runs your loop.</p>
     <p class="ctas"><a class="pri" href="mailto:team@io-threads.com?subject=Waitlist%3A%20iolin%20app">Get the app</a><a href="/join.html">Join free</a></p>
-    <p class="fine">Downloads for iOS, Windows and Mac coming soon.</p>
+    <p class="fine">Runs in your browser now; add it to your Home Screen.</p>
     <div class="feats">
       <div class="feat"><small>01</small><h3>The issue, monthly.</h3><p>One real check, written up plainly, with a board read at the end.</p></div>
       <div class="feat"><small>02</small><h3>Your loop, live.</h3><p>Hosts, targets and rechecks from intraday to monthly, in one place.</p></div>
@@ -1094,7 +1094,7 @@ const DEMO_REPLIES = [
   [/receipt|proof|prove|verify|sign|record|tamper|check/i, "Every run gets a receipt: the model, the settings, a hash of the prompt and the reply, and the time, signed with a key that never leaves this device.\n\nTo check it, press Verify: the signature has to match the exact words. Change a single word and the check fails. A receipt proves this key signed the record; it doesn't prove the answer is right, which is why iolin keeps the history next to it."],
   [/help|what can you|what do you|capab|use you|for me/i, "I can draft and edit text, summarise notes, explain code, compare options and keep a running history you can replay.\n\nWhat makes iolin different is where it runs and what it keeps: the model runs on hardware you control, and every answer comes with a signed record. Try asking about privacy, or press Verify on the receipt under Production."],
   [/model|gpu|download|size|fast|speed|run/i, "In the full app the model runs on your own hardware: a small model (about 0.6B parameters, roughly 335 MB) on a phone or laptop, larger ones on a Mac or a team host.\n\nThis page is the demo, so replies are pre-recorded and nothing is downloaded. To run a real model in this browser, open Setup and choose Run a real model."],
-  [/price|cost|plan|pay|team|buy/i, "iolin is free in your browser, with Home Plus, Team and Private plans; the API plans start at Starter. The Join page has the current options. Teams can run it on a host they own, with shared sessions and the same signed records for every run."],
+  [/price|cost|plan|pay|team|buy/i, "iolin is free in your browser, with Team and Private plans for organisations; the API plans start at Starter. The Join page has the current options. Teams can run it on a host they own, with shared sessions and the same signed records for every run."],
   [/^(hi|hello|hey)\b/i, "Hello. This is the iolin demo: replies are pre-recorded, but the receipts are real. Ask what iolin keeps private, or how a receipt is checked."],
 ];
 const demoReply = q => (TPL_REPLIES.find(([re]) => re.test(q)) || DEMO_REPLIES.find(([re]) => re.test(q.trim())) || [0, "Here's how that would work in iolin: your question goes to a model running on hardware you control, the answer streams back here, and a signed receipt records the run.\n\nThis page is the demo, so this reply is pre-recorded. Ask about privacy, receipts or models to see more."])[1];

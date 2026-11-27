@@ -203,6 +203,7 @@ header.top a.mark.mark b{font-size:20px;font-weight:400;letter-spacing:normal}
 .ap-plus h2{font:600 clamp(1.6rem,4vw,2.4rem)/1.1 var(--f-display);margin:0}
 .ap-plus h2 em{font-style:normal;color:light-dark(#FFD45C,#8A5A00)}
 .ap-plus h2 span{display:block;font-weight:400;opacity:.85}
+.ap-plus .ap-cmd{margin:0;overflow-x:auto;background:rgba(0,0,0,.25);border-radius:8px;padding:12px 14px;font:.82rem/1.5 var(--f-mono,ui-monospace,monospace);white-space:pre}
 .ap-plus .deck{max-width:60ch;margin:0;opacity:.9}
 .ap-plus ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:var(--sp2)}
 .ap-plus li{border:1px solid color-mix(in oklch,var(--paper) 25%,transparent);border-radius:10px;padding:12px;display:grid;gap:4px}
@@ -306,16 +307,17 @@ header.top a.mark.mark b{font-size:20px;font-weight:400;letter-spacing:normal}
     <div class="ap-scroll"><table><thead><tr><th>Email</th><th>Verified</th><th>Plan</th><th>Status</th><th>Role</th><th>Joined</th></tr></thead><tbody id="ap-adm-rows"></tbody></table></div>
   </section>
   <section class="ap-plus" aria-labelledby="ap-h-plus">
-    <p class="ap-soon">iot+ · Coming soon</p>
-    <h2 id="ap-h-plus">iot<em>+</em> <span>Bring your people. Run it together.</span></h2>
-    <p class="deck">The web runner for the iostem API. Add friends and run each other's machines, skills, MCP servers and agents directly. Take on small challenges, and see what everyone's building.</p>
+    <p class="ap-soon">iostem API · live now</p>
+    <h2 id="ap-h-plus">Connect an MCP server <span>Put the iostem API inside your agent.</span></h2>
+    <p class="deck">The API is also an MCP server. Add it to Claude Code or any MCP client with your key from this page; listing its tools is free, and each tool call counts like an API call.</p>
+    <pre class="ap-cmd"><code>claude mcp add --transport http iot https://tckvatqkjfrvavleunzk.supabase.co/functions/v1/iot/v1/mcp --header "Authorization: Bearer $IOT_KEY"</code></pre>
     <ul>
-      <li><b>Run on a friend's machine</b><code>POST /circle/runs</code></li>
-      <li><b>Join a live session</b><code>POST /circle/sessions/{id}/join</code></li>
-      <li><b>Connect an MCP server</b><code>POST /circle/mcp</code></li>
-      <li><b>Take a challenge</b><code>POST /circle/jobs/{id}/claim</code></li>
+      <li><b>Connect an MCP server</b><code>POST /iot/v1/mcp</code></li>
+      <li><b>Check data before training</b><code>POST /iot/v1/pretrain/checks</code></li>
+      <li><b>Gate a release</b><code>POST /iot/v1/forwardtrain/gates</code></li>
+      <li><b>Score agent setups</b><code>POST /iot/v1/agents/scores</code></li>
     </ul>
-    <a class="btn" href="sample-report.html#h-plus">See the preview</a>
+    <a class="btn" href="api.html">Read the API docs</a>
   </section>
 </div>
 <script src="vendor/supabase-2.45.4.js"></script>
