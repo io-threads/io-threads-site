@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#d8c6a5">
+<!-- Installable web app: Add to Home Screen on iPhone/iPad, Install in Chromium. It is the same browser app in its own window. -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="iolin">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="iolin by io threads. Work that stands guard and agents that keep their word, with a private AI that runs on your own device.">
 <title>iolin · io threads</title>
 <meta property="og:title" content="iolin · a private AI that runs in your browser">
@@ -24,7 +31,23 @@ body{font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-s
   background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.18),transparent 40%);}
 a{color:inherit}
 /* ---------- site chrome ---------- */
-.site{max-width:1180px;margin:0 auto;padding:18px 20px 40px}
+.site{max-width:1180px;margin:0 auto;padding:18px 20px 40px;
+  /* safe areas (notch, home indicator, landscape sides): zero in a normal tab, real in the Home Screen app */
+  padding:calc(18px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(20px + env(safe-area-inset-left))}
+/* Home Screen app: the status bar is translucent, so paint the twilight band behind it */
+@media (display-mode:standalone){body::after{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top);background:#11141C;z-index:70;pointer-events:none}}
+/* install hint + update notice (small chips under the buttons) */
+.ihint{display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:100%;margin:0 0 16px;padding:7px 8px 7px 12px;border:1px solid var(--site-line);border-radius:999px;font-size:13.5px;color:var(--site-ink);background:rgba(255,255,255,.22);width:fit-content}
+.ihint[hidden]{display:none}.ihint b{font-weight:600}
+.ihint button{font:inherit;font-size:13px;border:1px solid var(--site-line);background:transparent;color:var(--site-ink);border-radius:999px;padding:3px 10px;cursor:pointer}
+.ihint button.pri{background:var(--site-ink);color:var(--site);border-color:var(--site-ink);font-weight:600}
+.ihint .x{border:none;padding:2px 8px;font-size:16px;line-height:1;color:var(--site-quiet)}
+.ihint .ishort{display:none}
+/* full screen (phones open there): the chips sit in the top band left of Close, one line each */
+body.full .ihints{position:fixed;z-index:60;top:calc(10px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));right:calc(96px + env(safe-area-inset-right));display:flex;flex-direction:column;gap:6px;align-items:flex-start;pointer-events:none}
+body.full .ihint{pointer-events:auto;margin:0;flex-wrap:nowrap;white-space:nowrap;max-width:100%;overflow:hidden;font-size:12.5px;padding:4px 4px 4px 10px;background:var(--site);box-shadow:0 2px 10px rgba(0,0,0,.25)}
+body.full .ihint>span{overflow:hidden;text-overflow:ellipsis}
+body.full .ihint .ilong{display:none}body.full .ihint .ishort{display:inline}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .brand{display:flex;align-items:center;gap:10px;font-size:20px;color:inherit;text-decoration:none}
 /* o-ring mark, same as every other page: the ring draws, then the I-tick drops in; it nods on hover */
@@ -209,8 +232,8 @@ body.full.stack .side .sh{padding:6px 0;margin:4px 0;border-bottom:1px solid var
 .status .g{color:var(--green)}
 /* full-screen mode */
 body.full{overflow:hidden}
-body.full .stage{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--w-bg) 68%,#000);overflow:auto}
-.closefs{display:none}body.full .closefs{display:block;position:fixed;right:12px;top:12px;z-index:60}
+body.full .stage{position:fixed;inset:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);z-index:50;background:color-mix(in srgb,var(--w-bg) 68%,#000);overflow:auto}
+.closefs{display:none}body.full .closefs{display:block;position:fixed;right:calc(12px + env(safe-area-inset-right));top:calc(12px + env(safe-area-inset-top));z-index:60}
 body.full.stack .stage::before{content:"";display:block;position:sticky;top:0;height:56px;background:color-mix(in srgb,var(--w-bg) 68%,#000);border-bottom:1px solid var(--w-line);z-index:5}
 body.full.stack .closefs{top:8px}
 /* stacked layout for narrow full-screen */
@@ -454,6 +477,11 @@ body.full::before{display:none}
   <div class="ctas">
     <button class="btn" id="startBtn">Start your session</button>
     <button class="btn ghost" id="fullBtn">Open full screen</button>
+  </div>
+  <div class="ihints">
+  <div class="ihint" id="ihintIos" hidden role="note"><span class="ilong"><b>Add to Home Screen:</b> Share → Add to Home Screen. It opens this same browser app in its own window.</span><span class="ishort">Install: Share → <b>Add to Home Screen</b></span><button class="x" id="ihintIosX" aria-label="Dismiss">×</button></div>
+  <div class="ihint" id="ihintPwa" hidden><span class="ilong">Keep iolin in its own window. It's this same browser app.</span><span class="ishort">iolin in its own window</span><button class="pri" id="ihintInstall">Install</button><button class="x" id="ihintPwaX" aria-label="Dismiss">×</button></div>
+  <div class="ihint" id="swUpd" hidden role="status"><span>A newer iolin is ready.</span><button id="swUpdGo">Reload</button></div>
   </div>
 
   <div class="stage" id="stage">
@@ -2154,8 +2182,6 @@ async function tour(n) {
   if (!sessions.length) sessions.push(newSession()); const cid = await DB.get("cur"); cur = sessions.find(s => s.id === cid) || sessions.at(-1);
   await probe(); await fillModels(); if (DEMO) { engine = demoEngine; loaded = "demo-engine"; }
   try { await seedSamples(); } catch (e) { console.warn("iolin: sample threads skipped", e); }
-  // App shell: opens instantly next time and works offline (sw.js; the page itself is always fetched fresh first).
-  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
   // Speed: fetch the model library while the page is idle; a returning visitor's cached model reloads without a download.
   if (LIVE && gpuOk && !DEMO) (window.requestIdleCallback ? f => requestIdleCallback(f, {timeout: 3000}) : f => setTimeout(f, 1200))(() => {
     warmLib()?.then(async m => {
@@ -2215,6 +2241,39 @@ async function tour(n) {
   if (q.has("welcome") || !(await DB.get("tourDone"))) tour(0);
   if (q.has("welcome")) { q.delete("welcome"); history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : "")); }
   window.__iolin = {ready:true, tourStep:() => tourStep, run, signer:() => ({alg:signer.alg, pub_b64:signer.pub_b64}), last:() => receipts.at(-1)};
+})();
+</script>
+<script>
+/* ---------- installable app: service worker, update notice, Add to Home Screen hint ---------- */
+(() => {
+  const $ = id => document.getElementById(id), QS = new URLSearchParams(location.search);
+  const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+  const standalone = () => navigator.standalone === true || matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches;
+
+  // App shell (sw.js): the page is fetched fresh first and the cached copy opens it offline. ?sw=0 skips it.
+  if ("serviceWorker" in navigator && window.isSecureContext && QS.get("sw") !== "0") {
+    let reloading = false, asked = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => { if (asked && !reloading) { reloading = true; location.reload(); } });
+    const offer = w => { if (!w || !navigator.serviceWorker.controller) return; $("swUpd").hidden = false;
+      $("swUpdGo").onclick = () => { asked = true; w.postMessage({type: "SKIP_WAITING"}); }; };
+    navigator.serviceWorker.register("sw.js", {scope: "./"}).then(reg => {
+      offer(reg.waiting);
+      reg.addEventListener("updatefound", () => { const w = reg.installing; w && w.addEventListener("statechange", () => w.state === "installed" && offer(w)); });
+    }).catch(() => {});
+  }
+
+  // Install hint: never inside the installed app, never after it's dismissed.
+  const KEY = "iolin-install-hint";
+  if (standalone() || store.get(KEY) === "off") return;
+  const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  const safari = ios && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua);
+  const off = el => { el.hidden = true; store.set(KEY, "off"); };
+  if (safari) { $("ihintIos").hidden = false; $("ihintIosX").onclick = () => off($("ihintIos")); }
+  let deferred = null;
+  addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferred = e; if (store.get(KEY) !== "off") $("ihintPwa").hidden = false; });
+  $("ihintPwaX").onclick = () => off($("ihintPwa"));
+  $("ihintInstall").onclick = async () => { if (!deferred) return; deferred.prompt(); try { await deferred.userChoice; } catch {} deferred = null; $("ihintPwa").hidden = true; };
+  addEventListener("appinstalled", () => { $("ihintPwa").hidden = true; store.set(KEY, "off"); });
 })();
 </script>
 </body>
