@@ -252,7 +252,7 @@ with sync_playwright() as p:
     p2.goto(URL, wait_until="networkidle"); p2.wait_for_timeout(1500)
     if p2.query_selector("#tSkip") and p2.is_visible("#tSkip"): p2.click("#tSkip")
     p2.click('.tab[data-v="setup"]'); p2.set_input_files("#impFile", str(path)); p2.wait_for_timeout(1500)
-    o = p2.inner_text("#termPane"); p2.fill("#cmd", "receipts"); p2.press("#cmd", "Enter"); p2.wait_for_timeout(800)
+    o = p2.inner_text("#termPane"); p2.click('[data-t="term"]'); p2.fill("#cmd", "receipts"); p2.press("#cmd", "Enter"); p2.wait_for_timeout(800)   # Board is the default bottom tab: open the terminal first
     o2 = p2.inner_text("#termPane")
     check("data", "import restores sessions/receipts in a new browser", len(re.findall(r"\bv\d+\s", o2)) >= n_rec, o2[-160:].replace("\n", " | "))
     ctx2.close()

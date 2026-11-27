@@ -115,8 +115,8 @@ h1 b{font-weight:400}
 .win[data-env="dawn"] .step{color:#5b3fb0}
 .win[data-env="dawn"] .snip pre,.win[data-env="dawn"] pre{color:#2B2118}
 /* the terminal stays dark in every theme, so it keeps the bright accents */
-.win[data-env="dawn"] .term{--green:#34d399;--amber:#f5a524;--purple:#a78bfa;--blue:#7aa2ff}
-.win[data-env="dawn"] .term .ttab{color:#8a90a0}.win[data-env="dawn"] .term .ttab.on{background:#1b1e26;color:#dfe2e8}
+.win[data-env="dawn"] .term:not(.board){--green:#34d399;--amber:#f5a524;--purple:#a78bfa;--blue:#7aa2ff}
+.win[data-env="dawn"] .term:not(.board) .ttab{color:#8a90a0}.win[data-env="dawn"] .term:not(.board) .ttab.on{background:#1b1e26;color:#dfe2e8}
 .win[data-env="dawn"] .dt-st{color:color-mix(in srgb,var(--c) 55%,#000)}
 .win[data-env="dawn"] .mk .k{color:color-mix(in srgb,var(--c,var(--w-acc)) 50%,#000)}
 .win[data-env="dawn"] .term .u-hl{color:#f2a07b}.win[data-env="dawn"] .term .u-ok{color:#34d399}.win[data-env="dawn"] .term pre{color:#cfd3dc}
@@ -167,7 +167,7 @@ body.full.stack .side .sh{padding:6px 0;margin:4px 0;border-bottom:1px solid var
 .pass{color:var(--green);font:12px var(--mono)}.abst{color:var(--amber);font:12px var(--mono)}.fail{color:var(--red);font:12px var(--mono)}
 .tasks div{display:grid;grid-template-columns:64px 1fr auto;gap:6px;font:13.5px var(--mono);padding:6px 4px}.tasks .k{color:#f2a07b}.tasks .v{color:var(--w-ink2,#c9ccd4);font-family:inherit}
 /* main */
-.main{display:grid;grid-template-rows:auto 1fr 300px;min-width:0;min-height:0}
+.main{display:grid;grid-template-rows:auto 1fr 320px;min-width:0;min-height:0}
 .proj{padding:12px 16px 10px;border-bottom:1px solid var(--w-line)}
 .proj .l1{display:flex;align-items:center;gap:10px}.proj .l1 b{font-size:18px;font-weight:500}.proj .l1 span{color:var(--w-quiet)}
 .tabs{display:flex;justify-content:flex-end;margin-top:8px}
@@ -225,7 +225,51 @@ body.full.stack .side .sh{padding:6px 0;margin:4px 0;border-bottom:1px solid var
 .tbody .ln{white-space:pre-wrap;word-break:break-word}.tbody .o{padding-left:24px;color:#98a0ae}
 .u-pj{color:var(--purple)}.u-ag{color:var(--blue)}.u-ok{color:var(--green)}.u-hl{color:#f2a07b}.u-bad{color:var(--red)}.u-am{color:var(--amber)}
 .prompt{display:flex;gap:8px;align-items:center}.prompt input{flex:1;background:transparent;border:none;outline:none;color:var(--w-ink);font:inherit;caret-color:var(--w-ink)}
-#outPane{display:none}
+#outPane,#termPane{display:none}
+/* Board: the default bottom tab. Cards come from this tab's own state (receipts, checks, tasks, model, device, auth access);
+   each card's Iot chip focuses its zone in the live space, and a focused zone filters the board. It follows the window theme;
+   Terminal and Output stay dark. */
+.term.board{background:var(--w-panel)}
+.ttab .tn{font:11px var(--mono);margin-left:5px;padding:0 6px;border-radius:99px;color:var(--amber);background:color-mix(in srgb,var(--amber) 16%,transparent)}
+.ttab .tn:empty{display:none}
+.ttab.new::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--purple);margin-left:6px;vertical-align:2px}
+.ttab:focus-visible,.bfilt:focus-visible,.blast:focus-visible{outline:1.5px solid var(--w-acc,#9dbbff);outline-offset:1px}
+.thelp{color:var(--w-dim);font-size:12px;white-space:nowrap}
+.bfilt{all:unset;cursor:pointer;font:12px var(--mono);border:1px solid var(--w-line);border-radius:99px;padding:2px 9px;color:var(--w-ink);background:var(--w-field,#13151b);white-space:nowrap}
+.bfilt b{font-weight:400;color:var(--w-quiet);margin-left:4px}.bfilt:hover b{color:var(--w-ink)}.bfilt[hidden]{display:none}
+.bpane{display:none;grid-template-rows:minmax(0,1fr) auto;gap:6px;min-height:0;padding:0 10px 8px}
+.kb{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-height:0;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:thin}
+.kcol{display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0;min-width:0;border:1px solid var(--w-line);border-radius:10px;background:var(--w-sunk,#0f1015);scroll-snap-align:start}
+.kcol h3{display:flex;align-items:center;gap:7px;margin:0;padding:6px 10px;font-size:12.5px;font-weight:500;color:var(--w-ink);border-bottom:1px solid var(--w-line)}
+.kcol h3 i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.kcol h3 span{margin-left:auto;font:11.5px var(--mono);color:var(--w-quiet)}
+.kcol ul{list-style:none;margin:0;padding:6px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;min-height:0;scrollbar-width:thin}
+.kcol .empty{color:var(--w-dim);font-size:12px;padding:6px 4px;line-height:1.4}
+.kc{border:1px solid var(--w-line);border-left:3px solid var(--c);border-radius:8px;background:var(--w-field,#13151b);min-width:0;flex:none}
+.kc-main{all:unset;box-sizing:border-box;cursor:pointer;display:grid;gap:3px;width:100%;padding:6px 8px 4px;min-width:0;border-radius:7px 7px 0 0}
+.kc-main:hover{background:var(--w-hover,rgba(255,255,255,.05))}
+.kc-t{font-size:12.5px;line-height:1.3;color:var(--w-ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.kc-m{display:flex;gap:6px;align-items:center;flex-wrap:wrap;min-width:0}.kc-m code{font:11px var(--mono);color:var(--w-quiet);overflow-wrap:anywhere}
+.kc-n{font-size:11.5px;line-height:1.35;color:var(--w-quiet);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.kc-f{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:2px 8px 6px;font-size:11px;color:var(--w-dim);min-width:0}
+.kc-f .who{white-space:nowrap;margin-left:auto}.kc-f .who b{font-weight:500;color:var(--w-quiet)}
+.kc-f time{font:11px var(--mono)}
+.kc-iot{all:unset;box-sizing:border-box;cursor:pointer;font:11px var(--mono);border:1px solid var(--w-line);border-radius:6px;padding:1px 6px;color:var(--w-ink2,#c9ccd4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.kc-iot:hover{border-color:var(--w-quiet);color:var(--w-ink)}
+.kc-main:focus-visible,.kc-iot:focus-visible,.kc-more:focus-visible{outline:1.5px solid var(--w-acc,#9dbbff);outline-offset:1px}
+.kc-more{all:unset;cursor:pointer;font-size:11.5px;color:var(--w-quiet);padding:2px 4px}.kc-more:hover{color:var(--w-ink)}
+.kc .pill{font-size:10.5px;padding:0 6px}
+@media (prefers-reduced-motion:no-preference){.kc.moved{animation:kcin .6s ease-out}@keyframes kcin{from{box-shadow:0 0 0 2px var(--c)}to{box-shadow:0 0 0 0 transparent}}}
+.bcmd{display:flex;gap:8px;align-items:center;border:1px solid var(--w-line);border-radius:9px;background:var(--w-field,#13151b);padding:4px 6px 4px 10px;font:12.5px var(--mono);min-width:0}
+.bcmd input{flex:1;min-width:80px;background:transparent;border:none;outline:none;color:var(--w-ink);font:inherit;caret-color:var(--w-ink)}
+.bcmd input::placeholder{color:var(--w-dim)}
+.bcmd:focus-within{border-color:var(--w-acc,#9dbbff)}
+.blast{all:unset;cursor:pointer;flex:0 1 46%;min-width:0;color:var(--w-quiet);font:11.5px var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;padding:2px 4px;border-radius:5px}
+.blast:hover{color:var(--w-ink)}.blast:empty{display:none}
+/* the matching scene object glows while its card is shown */
+.win{--pulse:#ffffff}.win[data-env="dawn"]{--pulse:#2B2118}
+#scene g.pulse{filter:drop-shadow(0 0 2px var(--pulse)) drop-shadow(0 0 5px var(--pulse))}
+@media (prefers-reduced-motion:no-preference){#scene g.pulse{animation:ipulse .8s ease-in-out 3}@keyframes ipulse{0%,100%{filter:drop-shadow(0 0 1px var(--pulse))}50%{filter:drop-shadow(0 0 3px var(--pulse)) drop-shadow(0 0 9px var(--pulse))}}}
 /* status bar */
 .status{display:flex;gap:18px;align-items:center;padding:0 14px;border-top:1px solid var(--w-line);color:var(--w-quiet);font-size:12.5px;background:var(--w-sunk,#0f1015);white-space:nowrap;overflow:hidden}
 .status .br{background:var(--w-raise);border-radius:6px;padding:2px 8px;color:var(--w-ink)}
@@ -251,6 +295,9 @@ body.full.stack .zones{display:none}
 body.full.stack .vhead span:last-child{display:none}
 body.full.stack .events{bottom:48px;font-size:11px}
 body.full.stack .tbody{font-size:13px}
+body.full.stack .kb{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(210px,76%)}
+body.full.stack .thelp{display:none}
+body.full.stack .ttabs{min-width:0;overflow-x:auto}
 body.full.stack .proj .l1{flex-wrap:wrap}
 body.full.stack .fdr{grid-template-columns:minmax(0,1fr);height:auto;max-height:210px}body.full.stack .fdr .c1,body.full.stack .fdr .c3{display:none}
 body.full.stack .fbar{margin-top:14px}body.full.stack .zboard{zoom:.6;height:620px}
@@ -699,8 +746,13 @@ body.full::before{display:none}
             </div></div>
           </div>
 
-          <div class="term">
-            <div class="ttabs"><button class="ttab on" data-t="term">Terminal</button><button class="ttab" data-t="out">Output</button><span style="flex:1"></span><span style="color:var(--w-dim);font-size:12px">type <span class="u-hl">help</span></span></div>
+          <div class="term board" id="termBox">
+            <div class="ttabs"><button class="ttab on" data-t="board" aria-pressed="true">Board<span class="tn" id="bNeed" title="needs you"></span></button><button class="ttab" data-t="term" aria-pressed="false">Terminal</button><button class="ttab" data-t="out" aria-pressed="false">Output</button><span style="flex:1"></span><button type="button" class="bfilt" id="bFilt" hidden></button><span class="thelp" id="tHelp">type <span class="u-hl">help</span></span></div>
+            <div class="bpane" id="boardPane" style="display:grid">
+              <div class="kb" id="kb" role="region" aria-label="Board: what's queued, running, needs you and done"></div>
+              <div class="bcmd"><span class="u-pj" id="bUser">you</span><span style="color:var(--w-dim)">$</span><input id="bcmd" autocomplete="off" spellcheck="false" placeholder="type a command or ask…" aria-label="Command or question (same as the terminal)"><button type="button" class="blast" id="bLast" title="Open the full output"></button></div>
+              <div class="osr" id="boardSay" aria-live="polite"></div>
+            </div>
             <div class="tbody" id="termPane"><div id="tlog"></div><div class="prompt"><span class="u-pj" id="pUser">you</span><span style="color:var(--w-dim)">$</span><input id="cmd" autocomplete="off" spellcheck="false" aria-label="terminal"></div></div>
             <div class="tbody" id="outPane"></div>
           </div>
@@ -945,13 +997,21 @@ function renderEvents() { $("events").innerHTML = events.slice(-2).map(e => `${e
 
 /* ---------- terminal ---------- */
 const tlog = $("tlog");
-function line(html, cls = "") { const d = document.createElement("div"); d.className = "ln " + cls; d.innerHTML = html; tlog.appendChild(d); $("termPane").scrollTop = 1e9; return d; }
+function line(html, cls = "") { const d = document.createElement("div"); d.className = "ln " + cls; d.innerHTML = html; tlog.appendChild(d); $("termPane").scrollTop = 1e9; lastLine(d.textContent, "term"); return d; }
+// the Board's command line shows the latest terminal line; clicking it opens the full output
+function lastLine(text, tab) { const b = $("bLast"); if (!b || !String(text).trim()) return; b.textContent = String(text).trim().slice(0, 160); b.dataset.t = tab; }
 const me = () => S.name || "you";
 function echo(cmd) { line(`<span class="u-pj">${esc(me())}</span> <span style="color:var(--w-dim)">$</span>  ${esc(cmd)}`); }
 function out(html, cls = "") { return line(html, "o " + cls); }
-function showOutput(text) { $("outPane").textContent = text; switchTerm("out"); }
-function switchTerm(k) { document.querySelectorAll(".ttab").forEach(b => b.classList.toggle("on", b.dataset.t === k));
-  $("termPane").style.display = k === "term" ? "block" : "none"; $("outPane").style.display = k === "out" ? "block" : "none"; if (k === "term") $("cmd").focus({preventScroll:true}); }
+// Output opens as before, except for a command sent from the Board: then the Board stays and the Output tab gets a dot.
+let termTab = "board", outBack = "term", runSrc = "";
+function showOutput(text) { $("outPane").textContent = text;
+  if (runSrc === "board" && termTab === "board") { document.querySelector('.ttab[data-t="out"]').classList.add("new"); lastLine(($("bLast").textContent || "").replace(/ · see Output$/, "") + " · see Output", "out"); }
+  else { if (termTab !== "out") outBack = termTab; switchTerm("out"); } }
+function switchTerm(k) { termTab = k; document.querySelectorAll(".ttab").forEach(b => { const on = b.dataset.t === k; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); if (on) b.classList.remove("new"); });
+  $("termPane").style.display = k === "term" ? "block" : "none"; $("outPane").style.display = k === "out" ? "block" : "none";
+  $("boardPane").style.display = k === "board" ? "grid" : "none"; $("termBox").classList.toggle("board", k === "board"); $("tHelp").hidden = k === "board" && zone !== "all";
+  if (k === "term") $("cmd").focus({preventScroll:true}); if (k === "board") renderBoard(); }
 
 const HELP = [
   ["status","device, model, storage and receipts"],["auth | auth template","auth access: keys, network, rules, templates, harness, gates · print the deployment template"],["model list | load <small|medium|large|id> | stop","manage your local model"],
@@ -960,8 +1020,8 @@ const HELP = [
   ["set name|temp|top_p|max|ctx <value>","change a setting"],["templates | template <name>","list or start an Instruct template"],["sessions | sessions new","list or start sessions"],
   ["agents | agents live | agents {json}","which agent setup is best on a task (iostem API agent scores)"],["agents key <iot_…> | agents forget","use your iot key in this tab only"],["feed connect <token> | feed watch | feed stop","show a terminal from your own machine (local_feed.py), live in Output"],["open <file>","open a workspace file in Output"],["export","download your workspace"],["demo on|off","pre-recorded replies (default); off opens the real-model page"],["stop","stop the reply in progress"],["tour","replay the getting-started tour"],["clear","clear the terminal"]];
 
-async function run(raw) {
-  const cmd = raw.trim(); if (!cmd) return; echo(cmd.replace(KEY_RE, m => m.slice(0, 8) + "…"));
+async function run(raw, src = "") {
+  runSrc = src; const cmd = raw.trim(); if (!cmd) return; echo(cmd.replace(KEY_RE, m => m.slice(0, 8) + "…"));
   const [c0, ...rest] = cmd.replace(/^zb\s+/, "").split(/\s+/); const arg = rest.join(" "); used.add(c0); renderSide();
   try {
     if (c0 === "help") HELP.forEach(([a, b]) => out(`<span class="u-hl">${esc(a)}</span>  ${esc(b)}`));
@@ -1008,7 +1068,8 @@ async function cmdVerify(tamper, n) {
   let r = structuredClone(receipts[i]); if (tamper) r.execution_mode = r.execution_mode === "cloud" ? "local-browser" : "cloud";
   const ok = await verify(r);
   out(`receipt v${i + 1} ${r.run_id.slice(0,8)} · ${r.alg} · ${ok ? '<span class="u-ok">VALID</span>' : '<span class="u-bad">INVALID</span>'}${tamper ? ` · changed execution_mode to "${r.execution_mode}"` : ""}`);
-  showOutput(JSON.stringify(r, null, 1)); setTimeout(() => switchTerm("term"), 1400);
+  checks.push({n: i + 1, run_id: r.run_id, tamper, ok, at: Date.now()}); renderBoard();
+  showOutput(JSON.stringify(r, null, 1)); if (termTab === "out") setTimeout(() => termTab === "out" && switchTerm(outBack === "out" ? "term" : outBack), 1400);
   ev(me(), tamper ? `tamper v${i + 1} · ${ok ? "valid" : "check FAIL"}` : `verify v${i + 1} · ${ok ? "PASS" : "FAIL"}`, ok ? "m" : "");
 }
 /* ---------- agents: which agent setup is best (iostem API POST /v1/agents/scores) ---------- */
@@ -1173,6 +1234,7 @@ async function ask(q, from, recap = false) {
   if (!engine) { out(`no model running · type <span class="u-hl">model load</span>${gpuOk ? "" : " or <span class=\"u-hl\">demo on</span>"}`); return; }
   if (busy) return out("busy · wait for the current reply"); busy = true; stop = false; thinking = true; $("stopGen").disabled = false; renderScene();
   if (!recap) { cur.messages.push({role:"user", content:q}); if (cur.title === "New session") cur.title = q.slice(0, 40); }
+  asking = recap ? "Recap of the session" : q; renderBoard();
   renderChat(); let bub = addBubble("a", ""); bub.classList.add("typing");
   const tl = from === "term" ? out("") : null; ev("iolin", recap ? "recap · working" : "answering · working");
   const messages = [{role:"system", content:S.system}, ...cur.messages.map(m => ({role:m.role, content:m.content})), ...(recap ? [{role:"user", content:q}] : [])];
@@ -1204,7 +1266,7 @@ function openFile(name) {
 }
 async function exportAll() { const data = {app:APP_ID, exported_at:iso(), settings:S, sessions, receipts, signing_public_key:{alg:signer.alg, key_id:signer.key_id, pub_b64:signer.pub_b64},
   note:"Private keys never leave the browser."}; const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], {type:"application/json"})); a.download = "iolin-workspace.json"; a.click(); ev(me(), "export workspace"); }
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], {type:"application/json"})); a.download = "iolin-workspace.json"; a.click(); exportedAt = Date.now(); ev(me(), "export workspace"); renderBoard(); }
 
 /* ---------- render: sidebar ---------- */
 function renderTree() {
@@ -1272,7 +1334,89 @@ function renderTasks() {
   $("tasks").innerHTML = rows.map(([k, v, s, c]) => `<div data-cmd="${c}" style="cursor:pointer"><span class="k">${k}</span><span class="v">→ ${esc(v)}</span>${s}</div>`).join("");
   $("tasks").querySelectorAll("[data-cmd]").forEach(d => d.onclick = () => run(d.dataset.cmd));
 }
-function renderSide() { renderTree(); renderSessions(); renderProd(); renderVers(); renderTasks(); }
+function renderSide() { renderTree(); renderSessions(); renderProd(); renderVers(); renderTasks(); renderBoard(); }
+
+/* ---------- board (bottom panel) ----------
+   Every card is derived from this tab's state on each render: receipts and the checks run on them, the tasks rows,
+   the model and this device, and auth access (authRows). Nothing is stored for the board itself except when a card
+   was first seen in its column (its time) and the order of the Needs-you column. */
+let checks = [], exportedAt = 0, asking = "", boardSig = "", boardZone = "all";
+const boardSeen = {};
+const BCOLS = [["queue", "Queued", "#8F9AB0", "Nothing waiting."], ["run", "Running", "#a78bfa", "Nothing running. Ask something below."],
+  ["need", "Needs you", "#f5a524", "Nothing needs you."], ["done", "Done", "#34d399", "Signed runs land here with their receipt."]];
+const ZSHORT = {auth:"Auth", devices:"Devices", files:"Files", runs:"Runs", agents:"Agents", net:"Network"};
+const ZGLYPH = {auth:"◈", devices:"▣", files:"▢", runs:"▤", agents:"◉", net:"⌁"};
+const AUTH_ITEM = {"Signing key":"key", "Network access":"shield", "Server key":"shield", "Rules":"templates", "Templates":"templates", "Open placeholders":"templates", "Harness":"gate", "Gates":"gate", "iostem API key":"gate"};
+const hm = ms => new Date(ms).toLocaleTimeString([], {hour: "numeric", minute: "2-digit"});
+const askedFor = r => sessions.flatMap(x => x.messages).find((m, i, arr) => arr[i + 1]?.run_id === r.run_id)?.content;
+function boardCards() {
+  const C = [], add = c => C.push(c), N = receipts.length;
+  const verdict = r => verified[r.run_id] === false ? "FAIL" : r.execution_mode === "demo" ? "ABSTAIN" : "PASS";
+  // runs: an ask in progress, then every signed receipt with its verdict
+  if (thinking) add({id: "ask-now", col: "run", who: "iolin", t: asking || "Answering", note: "answering · a receipt is signed when the reply ends", zone: "agents", item: "orb", chip: "iolin", cmd: "stop"});
+  else if (busy) add({id: "model-load", col: "run", who: "iolin", t: "Loading the model", note: ($("prog")?.textContent || "").slice(0, 90), zone: "devices", item: "model", chip: "model", cmd: "status"});
+  const recent = receipts.slice(-6);
+  recent.forEach(r => { const n = receipts.indexOf(r) + 1, v = verdict(r), q = askedFor(r), last = checks.filter(c => c.run_id === r.run_id && !c.tamper).at(-1);
+    add({id: "r-" + r.run_id, col: v === "FAIL" ? "need" : "done", who: "iolin", t: q ? q : "Recap of the session", v, rid: `v${n} · ${r.run_id.slice(0, 8)}`,
+      note: last ? `re-checked ${hm(last.at)} · signature ${last.ok ? "VALID" : "INVALID"}` : v === "ABSTAIN" ? "demo reply: nothing real to judge" : v === "FAIL" ? "the signature doesn't match this record" : "signature matches the record",
+      zone: "runs", item: "receipts", chip: "receipts", cmd: "verify " + n, ts: Date.parse(r.signed_at) || 0}); });
+  // checks: an edited copy that failed (or, worse, passed) needs you until the stored receipt is re-checked
+  checks.forEach((c, k) => { if (!c.tamper) return; const fix = checks.slice(k + 1).find(x => x.run_id === c.run_id && !x.tamper && x.ok);
+    add({id: "chk-" + k, col: c.ok || !fix ? "need" : "done", who: "checker", t: c.ok ? `Edited copy of v${c.n} still verified` : `Edited copy of v${c.n} failed the check`, v: c.ok ? "PASS" : "FAIL",
+      rid: `v${c.n} · ${c.run_id.slice(0, 8)}`, note: fix ? `stored v${c.n} re-checked ${hm(fix.at)}: VALID` : `one field changed (execution_mode) · run verify ${c.n} to re-check the stored receipt`,
+      zone: "runs", item: "receipts", chip: "receipts", cmd: "verify " + c.n, ts: c.at}); });
+  const demo = receipts.filter(r => verdict(r) === "ABSTAIN").length;
+  if (demo) add({id: "abstain", col: "need", who: "checker", t: `${demo} run${demo === 1 ? "" : "s"} ABSTAIN`, v: "ABSTAIN", note: "pre-recorded demo replies have nothing real to judge; a real model in this browser (?live=1) gets PASS or FAIL", zone: "runs", item: "receipts", chip: "receipts", cmd: "receipts"});
+  // tasks rows: rechk, model, sync, export
+  const bad = receipts.filter(r => verified[r.run_id] === false).length;
+  add(N ? {id: "rechk", col: bad ? "need" : "done", who: "checker", t: bad ? `${bad} of ${N} receipts fail the signature check` : `All ${N} receipt signatures valid`, v: bad ? "FAIL" : null, note: "rechk → .verify-all", zone: "runs", item: "receipts", chip: "receipts", cmd: "verify"}
+    : {id: "rechk", col: "queue", who: "checker", t: "Recheck every receipt", note: "rechk → .verify-all · waits for the first receipt", zone: "runs", item: "receipts", chip: "receipts", cmd: "receipts"});
+  const mname = loaded ? (loaded === "demo-engine" ? "demo engine" : loaded.split("-").slice(0, 3).join(" ").toLowerCase()) : "no model";
+  add(loaded ? {id: "model", col: "run", who: "iolin", t: `${mname} live`, note: loaded === "demo-engine" ? "pre-recorded replies, nothing downloaded" : `${engineMode ? "running in the " + (engineMode === "worker" ? "background worker" : "page") : "running"} on ${dev.name}`, zone: "devices", item: "model", chip: mname, cmd: "status"}
+    : busy ? null : {id: "model", col: "need", who: "you", t: "No model running", note: gpuOk ? "type model load, or pick one in Setup" : "this browser has no WebGPU · demo on runs the flow with pre-recorded replies", zone: "devices", item: "model", chip: "model", cmd: "model list"});
+  add({id: "device", col: "run", who: "you", t: `${dev.name} connected`, note: `${dev.browser} · ${gpuOk ? "WebGPU ready" : "no WebGPU"}${dev.store ? " · " + dev.store : ""}`, zone: "devices", item: "device", chip: String(dev.name || "device").toLowerCase(), cmd: "status"});
+  add({id: "sync", col: "done", who: "you", t: "settings.json saved", note: "sync → settings.json · in this browser", zone: "files", item: "settings", chip: "settings.json", cmd: "open settings.json"});
+  add({id: "export", col: exportedAt ? "done" : "queue", who: "you", t: exportedAt ? "Workspace exported" : "Export the workspace", note: exportedAt ? "iolin-workspace.json · private key not included" : "export → workspace.json · sessions, receipts and the public key", zone: "files", item: "readme", chip: "workspace", cmd: "export", ts: exportedAt || 0});
+  if (errors) add({id: "errors", col: "need", who: "iolin", t: `${errors} error${errors === 1 ? "" : "s"} this session`, note: "the terminal has the message", zone: "agents", item: "orb", chip: "iolin", cmd: "status"});
+  // auth access: every item that isn't set needs you; the ones that are set make one Done card
+  const R = authRows(), okR = R.filter(r => r[1] === "ok");
+  R.filter(r => r[1] !== "ok").forEach(([k, st, v]) => add({id: "auth-" + k, col: "need", who: "you", t: k, st, note: v, zone: "auth", item: AUTH_ITEM[k], chip: "auth access", cmd: "auth"}));
+  if (okR.length) add({id: "auth-ok", col: "done", who: "you", t: `Auth access: ${okR.length} of ${R.length} set`, note: okR.map(r => r[0]).join(" · "), zone: "auth", chip: "auth access", cmd: "auth"});
+  return C.filter(Boolean);
+}
+function renderBoard() { const kb = $("kb"); if (!kb || !signer || !cur) return;
+  const now = Date.now(), all = boardCards(), f = zone;
+  all.forEach(c => { const s = boardSeen[c.id]; if (!s || s.col !== c.col) boardSeen[c.id] = {col: c.col, at: now, moved: !!s}; c.ts = c.ts || boardSeen[c.id].at; c.moved = boardSeen[c.id].moved && now - boardSeen[c.id].at < 1500; });
+  const need = all.filter(c => c.col === "need").length; $("bNeed").textContent = need || "";
+  $("bUser").textContent = me().toLowerCase();
+  const shown = f === "all" ? all : all.filter(c => c.zone === f), zn = (ZONES.find(z => z[0] === f) || [])[1] || f;
+  const fb = $("bFilt"); fb.hidden = f === "all"; fb.innerHTML = f === "all" ? "" : `filtered: ${esc(zn)}<b aria-hidden="true">×</b>`; fb.setAttribute("aria-label", `Filtered to ${zn}. Clear the filter`);
+  $("tHelp").hidden = termTab === "board" && f !== "all";
+  if (f !== boardZone) { $("boardSay").textContent = f === "all" ? `Board shows every card (${all.length})` : `Board filtered to ${zn}: ${shown.length} card${shown.length === 1 ? "" : "s"}`; boardZone = f; }
+  const PILL = {PASS: "ok", FAIL: "bad", ABSTAIN: "am"}, STP = {todo: ["am", "not set"], set: ["am", "pending"], warn: ["bad", "fix"]};
+  const card = c => { const g = ZGLYPH[c.zone] || "◇", zs = ZSHORT[c.zone] || c.zone, chip = c.zone === "auth" ? `${g} auth access` : `${g} ${c.chip} · ${zs}`;
+    return `<li class="kc${c.moved ? " moved" : ""}" data-id="${esc(c.id)}" data-zone="${c.zone}" style="--c:${(BCOLS.find(b => b[0] === c.col) || [])[2]}">`
+      + `<button type="button" class="kc-main" data-k="m:${esc(c.id)}" data-cmd="${esc(c.cmd)}" title="Runs: ${esc(c.cmd)}"><span class="kc-t">${esc(c.t)}</span>`
+      + (c.v || c.rid || c.st ? `<span class="kc-m">${c.v ? `<span class="pill ${PILL[c.v]}">${c.v}</span>` : ""}${c.st ? `<span class="pill ${STP[c.st]?.[0] || "am"}">${STP[c.st]?.[1] || esc(c.st)}</span>` : ""}${c.rid ? `<code>receipt ${esc(c.rid)}</code>` : ""}</span>` : "")
+      + (c.note ? `<span class="kc-n">${esc(c.note)}</span>` : "") + `</button>`
+      + `<div class="kc-f"><button type="button" class="kc-iot" data-k="i:${esc(c.id)}" data-z="${c.zone}" data-item="${esc(c.item || "")}" aria-label="Show ${esc(c.chip)} in the Iot live space (${esc(zs)})" title="${esc(chip)}">${esc(chip)}</button><span class="who"><b>${esc(c.who)}</b> · <time datetime="${new Date(c.ts).toISOString()}">${hm(c.ts)}</time></span></div></li>`; };
+  const html = BCOLS.map(([k, name, col, empty]) => { const L = shown.filter(c => c.col === k).sort((a, b) => b.ts - a.ts),
+      more = k === "done" && receipts.length > 6 && (f === "all" || f === "runs") ? `<li><button type="button" class="kc-more" data-k="more" data-cmd="receipts">${receipts.length - 6} earlier receipt${receipts.length - 6 === 1 ? "" : "s"} · list them</button></li>` : "";
+    return `<section class="kcol" style="--c:${col}" aria-label="${name}"><h3><i></i>${name}<span>${L.length}</span></h3><ul>${L.length ? L.map(card).join("") : `<li class="empty">${f === "all" ? empty : `No ${esc(zn)} cards here.`}</li>`}${more}</ul></section>`; }).join("");
+  if (html === boardSig) return; boardSig = html;
+  const a = document.activeElement, fk = kb.contains(a) ? a.dataset.k : null, sx = kb.scrollLeft, sy = [...kb.querySelectorAll("ul")].map(u => u.scrollTop);
+  kb.innerHTML = html; kb.scrollLeft = sx; kb.querySelectorAll("ul").forEach((u, i) => (u.scrollTop = sy[i] || 0));
+  if (fk) kb.querySelector(`[data-k="${CSS.escape(fk)}"]`)?.focus({preventScroll: true});
+}
+function focusIot(z, item) {
+  if (view !== "live") setView("live");
+  zone = z; $("zsel").value = z; const t0 = performance.now(); pulse = {z, item: item || "", at: t0, until: t0 + 2600};
+  renderZones(); renderScene(); clearTimeout(pulseT); pulseT = setTimeout(() => { pulse = null; renderScene(); }, 2600);
+  $("view").scrollIntoView({block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+}
+let pulse = null, pulseT = 0;
+const pulseOn = (z, item) => !!pulse && performance.now() <= pulse.until && pulse.z === z && (!pulse.item || pulse.item === item);
+const pulseAttr = (z, item, cls = "") => pulseOn(z, item) ? ` class="${cls}pulse" style="animation-delay:-${Math.round(performance.now() - pulse.at)}ms"` : cls ? ` class="${cls.trim()}"` : "";
 
 /* ---------- render: chat, projects, setup ---------- */
 function addBubble(k, text, meta) { const d = document.createElement("div"); d.className = "bub " + k; d.appendChild(document.createTextNode(text));
@@ -1436,7 +1580,7 @@ function placeLabels(L) {   // the focused zone's labels go first and are never 
     for (let t = 0; t <= LAB_TRIES; t++) if (!hits(l.a - l.w / 2, l.b - 19 - t * LAB_LIFT, l.w)) { off = -t * LAB_LIFT; break; }
     if (off === null && l.zk === focus) off = -LAB_TRIES * LAB_LIFT;
     if (off === null) continue;
-    placed.push([l.a - l.w / 2, l.b - 19 + off, l.w]); out[i] = `<g opacity="${zone === "all" || zone === l.zk ? 1 : .28}" class="lab" data-sz="${l.zk}">${labelSvg(l, off)}</g>`; }
+    placed.push([l.a - l.w / 2, l.b - 19 + off, l.w]); out[i] = `<g opacity="${zone === "all" || zone === l.zk ? 1 : .28}"${pulseAttr(l.zk, l.item, "lab ")} data-sz="${l.zk}"${l.item ? ` data-item="${l.item}"` : ""}>${labelSvg(l, off)}</g>`; }
   return out.filter(Boolean).join(""); }
 // one fixed frame per zone (and wide/narrow screen): the box that holds the zone at every yaw, so turning never zooms.
 // Each point sweeps an ellipse about C; labels add their box (and room for two lifts) around their anchor.
@@ -1533,7 +1677,7 @@ function renderScene() {
   s += `<g opacity="${hi("net")}" data-sz="net"><polyline points="${[iso2(-6,-6,2.6),iso2(6,-6,2.6),iso2(6,6,2.6)].map(p=>p.join(",")).join(" ")}" fill="none" stroke="#34d399" stroke-dasharray="4 5" stroke-width="1.2"/>`;
   [[-3,-6],[0,-6],[3,-6],[6,-3],[6,0]].forEach(([x,y]) => { const [a,b] = iso2(x,y,2.6), [c,d] = iso2(x,y,1.8); s += `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#34d39966"/><circle cx="${a}" cy="${b}" r="3" fill="#34d399"/>`; }); s += `</g>`;
   // objects are drawn back to front for the current yaw; labels go on top of everything
-  const objs = [], labs = [], put = (x, y, z, svg) => objs.push([depth(x, y), `<g opacity="${hi(z)}" data-sz="${z}">${svg}</g>`]), tag = (z, ...ls) => ls.forEach(l => labs.push({...l, zk: z}));
+  const objs = [], labs = [], put = (x, y, z, svg, item = "") => objs.push([depth(x, y), `<g opacity="${hi(z)}" data-sz="${z}"${item ? ` data-item="${item}"` : ""}${pulseAttr(z, item)}>${svg}</g>`]), tag = (z, ...ls) => ls.forEach(l => labs.push({...l, zk: z}));
   // auth access: a strip behind Devices, under the start of the network line; key, VPN shield, template sheets, gate
   s += tile(-6,-9,5,3,"#f472b6","auth");
   { const R = sceneTurning && authRowsNow ? authRowsNow : (authRowsNow = authRows()), st = k => (R.find(r => r[0] === k) || [])[1];
@@ -1542,17 +1686,17 @@ function renderScene() {
     // key: a flat ring (bow) and a shaft with one tooth
     const [kt, ks, kf] = c("Signing key");
     put(-5.2, -8.2, "auth", box(-5.8,-8.8,0.8,0.18,0.14,kt,ks,kf) + box(-5.8,-8.0,0.8,0.18,0.14,kt,ks,kf) + box(-5.8,-8.8,0.18,0.98,0.14,kt,ks,kf) + box(-5.18,-8.8,0.18,0.98,0.14,kt,ks,kf)
-      + box(-5.0,-8.46,1.1,0.2,0.14,kt,ks,kf) + box(-4.1,-8.46,0.2,0.42,0.14,kt,ks,kf) + dot(-5.4,-8.4,0.9,"Signing key"));
+      + box(-5.0,-8.46,1.1,0.2,0.14,kt,ks,kf) + box(-4.1,-8.46,0.2,0.42,0.14,kt,ks,kf) + dot(-5.4,-8.4,0.9,"Signing key"), "key");
     // network: a shield (extruded pentagon) for the VPN / network check
     { const [t, sd] = c("Network access"), cx = -3.9, cy = -8.2, pts = [[0,-.55],[.5,-.3],[.42,.25],[0,.6],[-.42,.25],[-.5,-.3]].map(([dx, dy]) => [cx + dx, cy + dy]);
       put(cx, cy, "auth", poly(pts.map(([x, y]) => iso2(x, y, 0)), sd, SP.edge) + pts.map((q, i) => { const r = pts[(i + 1) % pts.length]; return poly([iso2(q[0],q[1],0), iso2(r[0],r[1],0), iso2(r[0],r[1],0.9), iso2(q[0],q[1],0.9)], sd, SP.edge); }).join("")
-        + poly(pts.map(([x, y]) => iso2(x, y, 0.9)), t, SP.edge) + dot(cx, cy, 1.5, "Network access")); }
+        + poly(pts.map(([x, y]) => iso2(x, y, 0.9)), t, SP.edge) + dot(cx, cy, 1.5, "Network access"), "shield"); }
     // templates: a stack of sheets; the top sheet takes the open-placeholders state
     let tp = ""; for (let i = 0; i < 4; i++) tp += box(-2.9,-8.7,1.2,0.9,0.08, i === 3 ? c("Open placeholders")[0] : "#f472b6", "#8a3c66", "#b04e85", i * 0.14);
-    put(-2.3, -8.2, "auth", tp + dot(-2.3,-8.25,0.95,"Templates"));
+    put(-2.3, -8.2, "auth", tp + dot(-2.3,-8.25,0.95,"Templates"), "templates");
     // gate: two posts and a lintel, clear of the sheets, tinted by the Gates state (harness dot on top)
     const [gt, gs, gf] = c("Gates");
-    put(-0.9, -7.6, "auth", box(-1.0,-8.4,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-7.0,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-8.4,0.2,1.6,0.2,gt,gs,gf,2.2) + dot(-0.9,-7.6,2.8,"Harness"));
+    put(-0.9, -7.6, "auth", box(-1.0,-8.4,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-7.0,0.2,0.2,2.2,gt,gs,gf) + box(-1.0,-8.4,0.2,1.6,0.2,gt,gs,gf,2.2) + dot(-0.9,-7.6,2.8,"Harness"), "gate");
     // label where the network line starts (above mac and demo engine), tied to the strip by a leader line
     // straight up from the corner where the network line starts: same floor point, so it stays vertical at any yaw
     const [la, lb] = iso2(-6,-6,4.4), [ta, tb] = iso2(-6,-6,2.6);
@@ -1560,25 +1704,25 @@ function renderScene() {
     tag("auth", label(-6,-6,4.4, `auth access · ${R.filter(r => r[1] === "ok").length} of ${R.length} set`, ($("win") && $("win").dataset.env === "dawn") ? "#9d2f6b" : "#f9a8d4")); }
   // device (this device)
   const phone = /iPhone|Android/.test(dev.name);
-  put(-3.4, -3.6, "devices", (phone ? box(-4,-4,1.2,0.4,2,"#c9d2e3","#8792a8","#a4aec2") : box(-4.6,-4.4,2.4,1.6,0.35,"#dfe3ea","#9aa1ae","#b8bec9") + box(-4.6,-4.4,2.4,0.15,1.6,"#2b3140","#1f2430","#3a4256",0.35)));
-  tag("devices", label(-3.6,-3.8, phone ? 2.4 : 2.2, dev.name.toLowerCase()));
+  put(-3.4, -3.6, "devices", (phone ? box(-4,-4,1.2,0.4,2,"#c9d2e3","#8792a8","#a4aec2") : box(-4.6,-4.4,2.4,1.6,0.35,"#dfe3ea","#9aa1ae","#b8bec9") + box(-4.6,-4.4,2.4,0.15,1.6,"#2b3140","#1f2430","#3a4256",0.35)), "device");
+  tag("devices", {...label(-3.6,-3.8, phone ? 2.4 : 2.2, dev.name.toLowerCase()), item: "device"});
   // model tower (lit when loaded)
   const lit = !!loaded; put(-1.65, -1.85, "devices", box(-2.2,-2.4,1.1,1.1,3.2, lit ? "#2e3546" : "#1b1f29", lit ? "#121620" : "#101319", lit ? "#1b2130" : "#141820")
-     + (lit && angDist(yaw, 0) < 0.25 ? [0.6,1.2,1.8,2.4].map(z => { const [a,b] = iso2(-1.1,-1.8,z); return `<rect x="${a-1}" y="${b-6}" width="3" height="10" fill="#34d399" opacity=".8" transform="translate(${a} ${b}) skewY(-30) translate(${-a} ${-b})"/>`; }).join("") : ""));   // the lit windows are drawn on the original front wall only
-  tag("devices", label(-1.6,-1.8,3.5, loaded ? (loaded === "demo-engine" ? "demo engine" : loaded.split("-").slice(0,3).join(" ").toLowerCase()) : "no model", lit ? "#34d399" : "#8a90a0"));
+     + (lit && angDist(yaw, 0) < 0.25 ? [0.6,1.2,1.8,2.4].map(z => { const [a,b] = iso2(-1.1,-1.8,z); return `<rect x="${a-1}" y="${b-6}" width="3" height="10" fill="#34d399" opacity=".8" transform="translate(${a} ${b}) skewY(-30) translate(${-a} ${-b})"/>`; }).join("") : ""), "model");   // the lit windows are drawn on the original front wall only
+  tag("devices", {...label(-1.6,-1.8,3.5, loaded ? (loaded === "demo-engine" ? "demo engine" : loaded.split("-").slice(0,3).join(" ").toLowerCase()) : "no model", lit ? "#34d399" : "#8a90a0"), item: "model"});
   // files: settings sheet + readme
-  put(2.5, -3.8, "files", box(1.4,-4.6,2.2,1.6,0.12,"#4a8f7a","#2c5a4d","#36705f")); put(2.2, -1.7, "files", box(1.6,-2.4,1.2,1.4,0.6,"#cdd6ff","#8f9ad0","#aab5ea"));
-  tag("files", label(2.4,-4,.6,"settings.json"), label(2.2,-1.8,1,"README.md"));
+  put(2.5, -3.8, "files", box(1.4,-4.6,2.2,1.6,0.12,"#4a8f7a","#2c5a4d","#36705f"), "settings"); put(2.2, -1.7, "files", box(1.6,-2.4,1.2,1.4,0.6,"#cdd6ff","#8f9ad0","#aab5ea"), "readme");
+  tag("files", {...label(2.4,-4,.6,"settings.json"), item: "settings"}, {...label(2.2,-1.8,1,"README.md"), item: "readme"});
   // runs: receipts stack (one slab per receipt, max 12)
   const n = Math.min(12, receipts.length); let st = "";
   for (let i = 0; i < n; i++) { const r = receipts[receipts.length - n + i], bad = verified[r.run_id] === false;
     st += box(-4.6,2,2.4,1.8,0.16, bad ? "#f87171" : i === n - 1 ? "#ffd38a" : "#f5a524", bad ? "#9b3b3b" : "#9a6512", bad ? "#c24c4c" : "#c47f19", i * 0.2); }
-  put(-3.4, 2.9, "runs", st); tag("runs", label(-3.4,2.9, n * 0.2 + 0.7, receipts.length ? `receipts · ${receipts.length}` : "receipts · 0"));
+  put(-3.4, 2.9, "runs", st, "receipts"); tag("runs", {...label(-3.4,2.9, n * 0.2 + 0.7, receipts.length ? `receipts · ${receipts.length}` : "receipts · 0"), item: "receipts"});
   // agents: orb + beams when thinking
   const [ox, oy] = iso2(3,3,2.6); let so = "";
   if (thinking) { const [tx, ty] = iso2(-1.6,-1.8,3.2), [rx, ry] = iso2(-3.4,2.9,1); so += `<polygon points="${ox},${oy} ${tx-14},${ty} ${tx+14},${ty+6}" fill="#a78bfa22" stroke="#a78bfa55"/><polygon points="${ox},${oy} ${rx-14},${ry} ${rx+16},${ry+8}" fill="#34d39918" stroke="#34d39955"/>`; }
   so += `<ellipse cx="${ox}" cy="${oy + 26}" rx="34" ry="12" fill="none" stroke="#a78bfa88"/><circle class="orb${thinking ? " hot" : ""}" style="animation-delay:-${Math.round(performance.now() % (thinking ? 1200 : 3000))}ms" cx="${ox}" cy="${oy}" r="${thinking ? 26 : 16}" fill="url(#glow)"/><circle cx="${ox}" cy="${oy}" r="5" fill="#d9ccff"/>`;
-  put(3, 3, "agents", so); tag("agents", label(3,3,3.4, thinking ? "iolin · working" : loaded ? "iolin · ready" : "iolin · idle", "#a78bfa"));
+  put(3, 3, "agents", so, "orb"); tag("agents", {...label(3,3,3.4, thinking ? "iolin · working" : loaded ? "iolin · ready" : "iolin · idle", "#a78bfa"), item: "orb"});
   s += objs.sort((u, v) => u[0] - v[0]).map(o => o[1]).join("") + placeLabels(labs);
   $("scene").innerHTML = s;
   const vb = sceneFrame(labs); if ($("scene").getAttribute("viewBox") !== vb) $("scene").setAttribute("viewBox", vb);
@@ -1648,7 +1792,7 @@ function renderZones() { $("zones").innerHTML = ZONES.map(([k, n, c]) => `<div d
   $("zones").querySelectorAll("div").forEach(d => d.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); d.click(); } });
   $("zones").querySelectorAll("div").forEach(d => d.onclick = () => { zone = zone === d.dataset.z ? "all" : d.dataset.z; $("zsel").value = zone; renderZones(); renderScene(); });
   $("zsel").innerHTML = `<option value="all">● All zones</option>` + ZONES.map(([k, n]) => `<option value="${k}" ${zone === k ? "selected" : ""}>● ${n}</option>`).join("");
-  $("zsel").onchange = e => { zone = e.target.value; renderZones(); renderScene(); }; }
+  $("zsel").onchange = e => { zone = e.target.value; renderZones(); renderScene(); }; renderBoard(); }
 
 /* ---------- top-level ---------- */
 /* ---------- Instruct templates ---------- */
@@ -2153,14 +2297,14 @@ async function tour(n) {
       coach(2, `<h4>This browser can't run a model yet.</h4><p>Local models need WebGPU: Chrome or Edge on a laptop, or Safari on iOS 26 / macOS 26. You can still try the whole flow in demo mode, with pre-recorded replies and real receipts.</p>
         <div class="row"><button class="wbtn pri" id="tDemo">Try demo mode</button>${skip}</div>`); bind(); }
     $("tDemo").onclick = async () => { await run("demo on"); tour(3); }; return; }
-  if (n === 2) { hl("termPane"); coach(2, `<h4>Downloading your model…</h4><p>Keep this tab open. Progress shows here and in the terminal.</p><div class="bar"><i id="tBar"></i></div><p id="tProg" style="font-size:12.5px;color:var(--w-quiet)">starting</p>${skip}`); bind();
+  if (n === 2) { switchTerm("term"); hl("termPane"); coach(2, `<h4>Downloading your model…</h4><p>Keep this tab open. Progress shows here and in the terminal.</p><div class="bar"><i id="tBar"></i></div><p id="tProg" style="font-size:12.5px;color:var(--w-quiet)">starting</p>${skip}`); bind();
     const iv = setInterval(() => { if (tourStep !== 2) return clearInterval(iv); $("tBar").style.width = $("bar").style.width; $("tProg").textContent = $("prog").textContent.slice(0, 120); }, 300);
     echo("model load " + $("model").value); await loadModel(); clearInterval(iv);
     if (engine && tourStep === 2) tour(3);
     else if (tourStep === 2) { coach(2, `<h4>That model didn't start.</h4><p>${esc($("prog").textContent)}</p><div class="row"><button class="wbtn pri" id="tSmall">Try the smallest model</button><button class="wbtn" id="tDemo2">Use demo mode</button>${skip}</div>`); bind();
       $("tSmall").onclick = () => { $("model").value = CURATED[0][0]; tour(2); }; $("tDemo2").onclick = async () => { await run("demo on"); tour(3); }; }
     return; }
-  if (n === 3) { hl("termPane"); const qq = "What can you help me with, and does anything I type leave this device?";
+  if (n === 3) { switchTerm("term"); hl("termPane"); const qq = "What can you help me with, and does anything I type leave this device?";
     coach(3, `<h4>Ask your first question.</h4><p>It runs ${loaded === "demo-engine" ? "in demo mode" : "on your " + esc(dev.name)}. Watch the terminal: the reply streams in, then a receipt is signed.</p>
       <div class="row"><input id="tQ" value="${esc(qq)}"><button class="wbtn pri" id="tAsk">Ask</button>${skip}</div>`); bind();
     $("tQ").onkeydown = e => { if (e.key === "Enter") $("tAsk").click(); };
@@ -2192,6 +2336,18 @@ async function tour(n) {
   document.querySelectorAll(".tab").forEach(b => b.onclick = () => setView(b.dataset.v));
   document.querySelectorAll(".ttab").forEach(b => b.onclick = () => switchTerm(b.dataset.t));
   const hist = []; let hi = 0;
+  // Board: a card runs its command (the same terminal handler); its Iot chip focuses that zone and item in the live space
+  const BOARD_CMDS = new Set(["help","clear","stop","tour","auth","status","model","templates","template","ask","recap","receipts","verify","tamper","set","sessions","agents","feed","bus","open","export","demo","zb"]);
+  $("kb").addEventListener("click", e => { const chip = e.target.closest(".kc-iot"); if (chip) return focusIot(chip.dataset.z, chip.dataset.item);
+    const b = e.target.closest("[data-cmd]"); if (b) run(b.dataset.cmd, "board"); });
+  $("bFilt").onclick = () => { zone = "all"; $("zsel").value = "all"; renderZones(); renderScene(); $("bcmd").focus({preventScroll:true}); };
+  $("bLast").onclick = () => switchTerm($("bLast").dataset.t || "term");
+  $("bcmd").addEventListener("keydown", e => {
+    if (e.key === "Enter") { const v = $("bcmd").value.trim(); $("bcmd").value = ""; if (!v) return; hist.push(v.replace(KEY_RE, m => m.slice(0, 8) + "…")); hi = hist.length;
+      run(BOARD_CMDS.has(v.split(/\s+/)[0]) ? v : "ask " + v, "board"); }
+    else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hi = Math.max(0, hi - 1); $("bcmd").value = hist[hi]; }
+    else if (e.key === "ArrowDown" && hist.length) { e.preventDefault(); hi = Math.min(hist.length, hi + 1); $("bcmd").value = hist[hi] || ""; }
+    else if (e.key === "c" && e.ctrlKey && busy && thinking) { stop = true; out("^C stopping…"); } });
   $("cmd").addEventListener("keydown", e => {
     if (e.key === "Enter") { const v = $("cmd").value; $("cmd").value = ""; if (v.trim()) { hist.push(v.replace(KEY_RE, m => m.slice(0, 8) + "…")); hi = hist.length; } run(v); }
     else if (e.key === "ArrowUp" && hist.length) { e.preventDefault(); hi = Math.max(0, hi - 1); $("cmd").value = hist[hi]; }
