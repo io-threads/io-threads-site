@@ -8,10 +8,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ops | io threads</title>
 <meta name="robots" content="noindex">
-<meta name="description" content="io threads ops console for admins: what's live, releases, engine checks, members and what visitors see.">
+<meta name="description" content="io threads ops console for admins: what's live, releases, engine checks, payment alerts, members and what visitors see.">
 <link rel="canonical" href="https://io-threads.com/ops.html">
 <meta property="og:title" content="Ops | io threads">
-<meta property="og:description" content="io threads ops console for admins: what's live, releases, engine checks, members and what visitors see.">
+<meta property="og:description" content="io threads ops console for admins: what's live, releases, engine checks, payment alerts, members and what visitors see.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://io-threads.com/ops.html">
 <meta property="og:site_name" content="io threads">
@@ -22,7 +22,7 @@
 <meta property="og:image:alt" content="io threads: your AI claim is only as good as the person who checked it. Verdict table showing PASS, FAIL and ABSTAIN.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Ops | io threads">
-<meta name="twitter:description" content="io threads ops console for admins: what's live, releases, engine checks, members and what visitors see.">
+<meta name="twitter:description" content="io threads ops console for admins: what's live, releases, engine checks, payment alerts, members and what visitors see.">
 <meta name="twitter:image" content="https://io-threads.com/assets/og-card.png">
 <meta name="theme-color" content="#141D2D">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%232a1416'/%3E%3Ccircle cx='256' cy='282' r='150' fill='none' stroke='%23E07A52' stroke-width='44'/%3E%3Cline x1='256' y1='58' x2='256' y2='108' stroke='%23E07A52' stroke-width='44' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -273,6 +273,12 @@ header.top a.mark.mark b{font-size:20px;font-weight:400;letter-spacing:normal}
       <div class="op-scroll"><table><thead><tr><th>Change</th><th>Member</th><th>When</th></tr></thead><tbody id="op-log"></tbody></table></div>
     </section>
   </div>
+  <section class="op-card" aria-labelledby="op-h-pay" style="margin-top:var(--sp4)">
+    <p class="op-k">Square webhook, daily reconcile and checkout problems (newest 20)</p>
+    <h2 id="op-h-pay">Payment alerts</h2>
+    <p class="fine" id="op-pay-sum"></p>
+    <div class="op-scroll"><table><thead><tr><th>Where</th><th>Alert</th><th>About</th><th>Details</th><th>When</th></tr></thead><tbody id="op-pay"></tbody></table></div>
+  </section>
   </div>
 </div>
 <script src="vendor/supabase-2.45.4.js"></script>
@@ -356,6 +362,12 @@ if(r.overage){var o=r.overage;$("op-overage").textContent="Metered overage "+o.m
     if(!rel.length)row($("op-rel"),["","No releases recorded yet.","",""]);
     $("op-log").textContent="";(r.log||[]).forEach(function(x){row($("op-log"),[x.action.replace("_"," ")+(x.detail&&x.detail.plan?" → "+x.detail.plan+(x.detail.status&&x.detail.status!=="active"?" ("+x.detail.status+")":""):""),x.target_email,ago(x.created_at)])});
     if(!(r.log||[]).length)row($("op-log"),["No admin changes yet.","",""]);
+    // Payment alerts (ops_runs kind payment): every money problem the server found. Plain text only.
+    var pay=r.payments||[],day=pay.filter(function(x){return Date.now()-new Date(x.created_at).getTime()<86400000});
+    $("op-pay-sum").textContent=pay.length?(day.length?day.length+" in the last 24 h":"None in the last 24 h")+" · Square Dashboard: app.squareup.com":"No payment alerts recorded.";
+    $("op-pay").textContent="";pay.forEach(function(x){var sm=x.summary&&typeof x.summary==="object"?Object.keys(x.summary).slice(0,4).map(function(k){var v=x.summary[k];return k+": "+(typeof v==="object"?JSON.stringify(v):String(v))}).join(" · ").slice(0,160):"";
+      row($("op-pay"),[x.env==="production"?"Production":"Staging",el("span",x.verdict,x.env==="production"?"bad-t":"warn-t"),x.ref||"",sm,ago(x.created_at)])});
+    if(!pay.length)row($("op-pay"),["","Nothing to act on.","","",""]);
     projects(site,(r.releases||[]).filter(function(x){return x.env==="production"})[0],(r.releases||[]).filter(function(x){return x.env==="staging"})[0],r.links);
     $("op-when").textContent="Updated "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
   }).catch(function(){$("op-when").textContent="Couldn't reach the admin service. Try Refresh."})}
