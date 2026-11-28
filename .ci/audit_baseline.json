@@ -1,0 +1,13 @@
+{
+ "_about": "Uses of 'audit' per page on 2026-11-27. The attorney rule: no NEW uses until section 2 has a ruling. .ci/check.py fails if a page goes above its count; lower the count when a use is removed.",
+ "pages": {
+  "about.html": 1,
+  "api.html": 4,
+  "index.html": 10,
+  "industries.html": 19,
+  "looop.html": 1,
+  "sample-report.html": 2,
+  "security.html": 4,
+  "services.html": 12
+ }
+}
