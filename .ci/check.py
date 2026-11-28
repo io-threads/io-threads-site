@@ -99,6 +99,12 @@ def main():
     if any((DIST / n).exists() for n in ("kit.html",)): fails.append("dist/kit.html: preview-only page leaked into production")
     for need in ("robots.txt", "sitemap.xml", "404.html", "index.html", "assets/og-card.png"):
         if not (DIST / need).exists(): fails.append(f"missing {need}")
+    # attorney rule: no new uses of "audit" until the ruling; existing uses are counted in .ci/audit_baseline.json
+    ab = json.loads((pathlib.Path(__file__).parent / "audit_baseline.json").read_text())["pages"]
+    for n, f in pages.items():
+        c = len(re.findall(r"\baudit\w*", re.sub(r"<[^>]+>", " ", f.read_text()), re.I))
+        if c > ab.get(n, 0):
+            fails.append(f"{n}: {c} uses of 'audit' (baseline {ab.get(n, 0)}); new uses wait for the attorney ruling")
     for x in notes: print("NOTE", x)
     for x in fails: print("FAIL", x)
     print(f"{len(pages)} pages checked: {'OK' if not fails else f'{len(fails)} FAIL'}")
